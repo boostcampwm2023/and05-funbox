@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/background_color"
+    tools:context=".ProfileFragment">
+
+    <TextView
+        android:id="@+id/tv_title_profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/profile_setting_title"
+        android:textSize="24sp"
+        android:layout_marginTop="180dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btn_add_profile"/>
+
+    <ImageButton
+        android:id="@+id/btn_add_profile"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/group_1940"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_title_profile"
+        app:layout_constraintBottom_toTopOf="@id/btn_profile"
+        android:contentDescription="TODO" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_profile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/success_button"
+        android:text="@string/submit"
+        android:textSize="24sp"
+        android:textColor="@color/white"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="120dp"
+        android:layout_marginEnd="120dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_add_profile" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
