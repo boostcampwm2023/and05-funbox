@@ -6,4 +6,5 @@
     <string name="submit">완료</string>
     <string name="nickname_setting_title">닉네임을 설정해주세요</string>
     <string name="profile_setting_title">프로필을 설정해주세요</string>
+    <string name="description">매뉴</string>
 </resources>
