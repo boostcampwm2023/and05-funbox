@@ -8,7 +8,7 @@ import com.example.funbox.databinding.FragmentNicknameBinding
 
 class NicknameFragment : BaseFragment<FragmentNicknameBinding>(R.layout.fragment_nickname) {
 
-    private val viewModel: TitleViewModel by viewModels()
+    private val viewModel: NicknameViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -16,7 +16,6 @@ class NicknameFragment : BaseFragment<FragmentNicknameBinding>(R.layout.fragment
 
         collectLatestFlow(viewModel.nicknameUiEvent) { handleUiEvent(it) }
     }
-
 
     private fun handleUiEvent(event: NicknameUiEvent) = when (event) {
         is NicknameUiEvent.NicknameSuccess -> {
