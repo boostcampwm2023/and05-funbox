@@ -1,20 +1,29 @@
 package com.example.funbox
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-class NicknameFragment : Fragment() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.example.funbox.databinding.FragmentNicknameBinding
+
+class NicknameFragment : BaseFragment<FragmentNicknameBinding>(R.layout.fragment_nickname) {
+
+    private val viewModel: TitleViewModel by viewModels()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.vm = viewModel
+
+        collectLatestFlow(viewModel.nicknameUiEvent) { handleUiEvent(it) }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_nickname, container, false)
+
+    private fun handleUiEvent(event: NicknameUiEvent) = when (event) {
+        is NicknameUiEvent.NicknameSuccess -> {
+            findNavController().navigate(R.id.action_NicknameFragment_to_ProfileFragment)
+        }
+        is NicknameUiEvent.NetworkErrorEvent -> {
+            showSnackBar(R.string.network_error_message)
+        }
     }
 }
