@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.example.funbox.ProfileViewModel" />
@@ -30,11 +31,13 @@
 
         <ImageButton
             android:id="@+id/btn_add_profile"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:background="@null"
             android:contentDescription="@string/btn_add_profile_description"
-            android:src="@drawable/group_1940"
             android:onClick="@{() -> vm.startSelectProfile()}"
+            android:scaleType="fitCenter"
+            android:src="@drawable/group_1940"
             app:layout_constraintBottom_toTopOf="@id/btn_profile"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -47,9 +50,9 @@
             android:layout_marginStart="120dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="120dp"
-            android:background="@drawable/success_button"
+            android:background="@{(vm.profileUiState.isBtnProfileEnable == true) ? @drawable/success_button : @drawable/fail_button}"
             android:text="@string/submit"
-            android:textColor="@color/white"
+            android:textColor="@{(vm.profileUiState.isBtnProfileEnable == true) ? @color/white : @color/black}"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -2,7 +2,6 @@ package com.example.funbox
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.ImageDecoder
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -10,7 +9,10 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import coil.load
 import androidx.fragment.app.viewModels
+import coil.size.Scale
+import coil.transform.RoundedCornersTransformation
 import com.example.funbox.databinding.FragmentProfileBinding
 
 @RequiresApi(Build.VERSION_CODES.P)
@@ -22,14 +24,14 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_p
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
         Manifest.permission.READ_EXTERNAL_STORAGE
     )
-    private val readImage = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) {
-        if (it != null) {
-            val bitmap = ImageDecoder.decodeBitmap(
-                ImageDecoder.createSource(
-                    requireActivity().contentResolver,
-                    it,
-                )
-            )
+    private val readImage = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) {
+            this.binding.btnAddProfile.load(uri) {
+                scale(Scale.FILL)
+                crossfade(enable = true)
+                transformations(RoundedCornersTransformation(10F))
+            }
+            this.viewModel.successSelectProfile(uri)
         }
     }
 
@@ -46,9 +48,10 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_p
         }
 
         if (deniedPermission > 0) {
-            requestPermissions(permissionList, 999)
+            requireActivity().requestPermissions(permissionList, 999)
         } else {
             readImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+
         }
     }
 
