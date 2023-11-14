@@ -32,6 +32,8 @@
         </activity>
         <activity
             android:name=".TitleActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
