@@ -3,7 +3,16 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="next">다음</string>
+    <string name="no_next">X</string>
     <string name="submit">완료</string>
     <string name="nickname_setting_title">닉네임을 설정해주세요</string>
     <string name="profile_setting_title">프로필을 설정해주세요</string>
+    <string name="iv_main_logo_description">FunBox 로고</string>
+    <string name="btn_main_naver_login_description">NAVER 소셜 로그인 버튼</string>
+    <string name="btn_add_profile_description">프로필 추가 버튼</string>
+    <string name="fragment_title_label">타이틀 화면</string>
+    <string name="fragment_nickname_label">닉네임 입력</string>
+    <string name="fragment_profile_label">프로필 설정</string>
+    <string name="network_error_message">네트워크에 문제가 있습니다.</string>
+    <string name="permission_message_toast">권한 허용이 필요합니다.</string>
 </resources>
