@@ -1,48 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/background_color"
+    xmlns:tools="http://schemas.android.com/tools"
     tools:context=".NicknameFragment">
 
-    <TextView
-        android:id="@+id/tv_title_nickname"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/nickname_setting_title"
-        android:textSize="24sp"
-        android:layout_marginBottom="32dp"
-        android:layout_marginTop="200dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/et_nickname"/>
+    <data>
 
-    <EditText
-        android:id="@+id/et_nickname"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/nickname_edittext"
-        app:layout_constraintTop_toBottomOf="@id/tv_title_nickname"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btn_nickname"/>
+        <variable
+            name="vm"
+            type="com.example.funbox.NicknameViewModel" />
+    </data>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_nickname"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/success_button"
-        android:text="@string/next"
-        android:textSize="24sp"
-        android:textColor="@color/white"
-        android:layout_marginStart="120dp"
-        android:layout_marginEnd="120dp"
-        android:layout_marginTop="32dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/et_nickname" />
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/background_color">
+
+            <TextView
+                android:id="@+id/tv_title_nickname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="100dp"
+                android:text="@string/nickname_setting_title"
+                android:textSize="24sp"
+                app:layout_constraintBottom_toTopOf="@id/et_nickname"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:layout_marginTop="32dp"
+                android:id="@+id/et_nickname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:autofillHints="@null"
+                android:background="@drawable/nickname_edittext"
+                android:gravity="center"
+                android:inputType="textPersonName"
+                android:onTextChanged="@{(userNickname, s, b, c) -> vm.validateUserNickname(userNickname)}"
+                android:padding="16dp"
+                app:layout_constraintBottom_toTopOf="@id/btn_nickname"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_title_nickname"
+                tools:ignore="LabelFor,SpeakableTextPresentCheck" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_nickname"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="120dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="120dp"
+                android:layout_marginBottom="240dp"
+                android:background="@{(vm.nicknameUiState.isNextBtnEnable == true) ? @drawable/success_button : @drawable/fail_button}"
+                android:enabled="@{vm.nicknameUiState.isNextBtnEnable}"
+                android:onClick="@{() -> vm.goToProfileFragment()}"
+                android:text="@string/next"
+                android:textColor="@{(vm.nicknameUiState.isNextBtnEnable == true) ? @color/white : @color/black}"
+                android:textSize="24sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/et_nickname"
+                tools:ignore="SpeakableTextPresentCheck" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</layout>
