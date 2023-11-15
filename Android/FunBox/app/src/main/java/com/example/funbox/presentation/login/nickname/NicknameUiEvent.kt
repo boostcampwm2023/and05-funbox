@@ -1,4 +1,4 @@
-package com.example.funbox.presentation.login
+package com.example.funbox.presentation.login.nickname
 
 sealed class NicknameUiEvent {
     data class NetworkErrorEvent(val message: String = "Network Error") : NicknameUiEvent()

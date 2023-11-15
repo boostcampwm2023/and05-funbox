@@ -37,13 +37,13 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.mapViewModel=viewModel
+        binding.mapViewModel = viewModel
 
-        binding.floatingActionButton.setOnClickListener{
+        binding.floatingActionButton.setOnClickListener {
             toggleFab()
         }
 
-        binding.floatingWrite.setOnClickListener{
+        binding.floatingWrite.setOnClickListener {
             val messageDialog = MessageDialog()
             messageDialog.show(parentFragmentManager, "messageDialog")
         }
@@ -69,7 +69,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             ObjectAnimator.ofFloat(binding.floatingSetting, "translationY", 0f).apply { start() }
             ObjectAnimator.ofFloat(binding.floatingWrite, "translationY", 0f).apply { start() }
             binding.floatingActionButton.setImageResource(R.drawable.add_24)
-        }else{
+        } else {
             ObjectAnimator.ofFloat(binding.floatingSetting, "translationY", -200f).apply { start() }
             ObjectAnimator.ofFloat(binding.floatingWrite, "translationY", -400f).apply { start() }
             binding.floatingActionButton.setImageResource(R.drawable.close_24)
@@ -92,11 +92,11 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
             val marker = Marker()
             marker.position = it.loc
-            marker.iconTintColor=Color.RED
-            marker.map =naverMap
-            marker.captionText=it.name
+            marker.iconTintColor = Color.RED
+            marker.map = naverMap
+            marker.captionText = it.name
             marker.captionTextSize = 20F
-            if (it.isMsg){
+            if (it.isMsg) {
                 hasMsg.open(marker)
             }
             marker.setOnClickListener { _ ->
@@ -104,28 +104,31 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 viewModel.userDetail.value
 
                 val infoWindow = InfoWindow()
-                infoWindow.adapter = object : InfoWindow.DefaultViewAdapter(requireContext()){
+                infoWindow.adapter = object : InfoWindow.DefaultViewAdapter(requireContext()) {
                     override fun getContentView(p0: InfoWindow): View {
-                        val view:View = View.inflate(context,R.layout.map_profile, null)
+                        val view: View = View.inflate(context, R.layout.map_profile, null)
 
-                        view.findViewById<ImageView>(R.id.iv_profile).load(viewModel.userDetail.value.profile)
-                        view.findViewById<TextView>(R.id.tv_profile_name).text=viewModel.userDetail.value.name
-                        view.findViewById<TextView>(R.id.tv_profile_msg).text=viewModel.userDetail.value.msg
+                        view.findViewById<ImageView>(R.id.iv_profile)
+                            .load(viewModel.userDetail.value.profile)
+                        view.findViewById<TextView>(R.id.tv_profile_name).text =
+                            viewModel.userDetail.value.name
+                        view.findViewById<TextView>(R.id.tv_profile_msg).text =
+                            viewModel.userDetail.value.msg
 
                         return view
                     }
                 }
-                if (!marker.hasInfoWindow()||marker.infoWindow==hasMsg){
+                if (!marker.hasInfoWindow() || marker.infoWindow == hasMsg) {
                     infoWindow.open(marker)
-                }else{
+                } else {
                     marker.infoWindow?.close()
-                    if (it.isMsg){
+                    if (it.isMsg) {
                         hasMsg.open(marker)
                     }
                 }
-                true }
+                true
+            }
         }
     }
-
 
 }
