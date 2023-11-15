@@ -3,8 +3,6 @@ package com.example.funbox.presentation.map
 import com.example.funbox.presentation.BaseFragment
 import com.example.funbox.MessageDialog
 import com.example.funbox.R
-
-<<<<<<< Updated upstream
 import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -31,36 +29,12 @@ class MapFragment : Fragment() {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         binding.mapViewModel=viewModel
-=======
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.viewModels
-import com.example.funbox.databinding.FragmentProfileBinding
-
-
-class MapFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_map) {
-
-    private val viewModel: MapViewModel by viewModels()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        // Inflate the layout for this fragment
->>>>>>> Stashed changes
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-<<<<<<< Updated upstream
         binding.floatingActionButton.setOnClickListener{
             toggleFab()
         }
@@ -89,8 +63,3 @@ class MapFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_map) 
 
 
 }
-=======
-    }
-
-}
->>>>>>> Stashed changes
