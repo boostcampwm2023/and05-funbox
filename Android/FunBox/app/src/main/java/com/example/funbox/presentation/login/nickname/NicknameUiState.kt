@@ -1,4 +1,4 @@
-package com.example.funbox.presentation.login
+package com.example.funbox.presentation.login.nickname
 
 data class NicknameUiState(
     val nicknameValidState: NicknameValidState = NicknameValidState.None

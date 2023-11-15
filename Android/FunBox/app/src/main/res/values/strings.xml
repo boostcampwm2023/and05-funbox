@@ -16,4 +16,6 @@
     <string name="fragment_profile_label">프로필 설정</string>
     <string name="network_error_message">네트워크에 문제가 있습니다.</string>
     <string name="permission_message_toast">권한 허용이 필요합니다.</string>
+    <string name="social_login_info_naver_client_name">네이버 아이디 로그인</string>
+    <string name="social_login_info_naver_success">NAVER 로그인 성공</string>
 </resources>

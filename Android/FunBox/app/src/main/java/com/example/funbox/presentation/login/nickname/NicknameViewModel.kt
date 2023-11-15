@@ -1,4 +1,4 @@
-package com.example.funbox.presentation.login
+package com.example.funbox.presentation.login.nickname
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

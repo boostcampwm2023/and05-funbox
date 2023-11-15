@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
-class MapViewModel :ViewModel(){
+class MapViewModel : ViewModel(){
     private val _myMessage = MutableStateFlow("")
     val myMessage: StateFlow<String> = _myMessage
     private val locX : MutableStateFlow<Double?>  = MutableStateFlow(null)
@@ -16,5 +16,4 @@ class MapViewModel :ViewModel(){
             message
         }
     }
-
 }
