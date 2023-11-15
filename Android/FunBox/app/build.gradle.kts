@@ -21,8 +21,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "MAP_API_KEY", getApiKey("MAP_API_KEY"))
-        manifestPlaceholders["MAP_API_KEY"] = getApiKey("MAP_API_KEY")
+        resValue("string", "map_api_key", getApiKey("MAP_API_KEY"))
+
     }
 
     buildTypes {
@@ -74,7 +74,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
-    implementation ("com.squareup.retrofit2:retrofit:2.6.4")
-    implementation ("com.squareup.retrofit2:retrofit-gson:2.6.4")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+    implementation("com.squareup.moshi:moshi-kotlin:1.9.0")
 }
