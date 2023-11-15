@@ -115,7 +115,7 @@ class MapFragment : Fragment() {
     }
 
     private fun sendXYtoApi(latitude: Double, longitude: Double) {
-        LoadUserService.create().search(latitude,longitude)
+        LoadUserService.create().search(latitude,longitude).execute()
     }
 
 
