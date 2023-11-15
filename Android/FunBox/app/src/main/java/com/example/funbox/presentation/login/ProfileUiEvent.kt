@@ -1,4 +1,4 @@
-package com.example.funbox
+package com.example.funbox.presentation.login
 
 sealed class ProfileUiEvent {
 

@@ -1,9 +1,5 @@
 package com.example.funbox
 
-import android.app.AlertDialog
-import android.app.Dialog
-import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,8 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.example.funbox.databinding.DialogMessageBinding
-import com.example.funbox.databinding.DialogPositiveBinding
-import com.example.funbox.databinding.FragmentMapBinding
+import com.example.funbox.presentation.map.MapViewModel
 
 class MessageDialog: DialogFragment() {
 

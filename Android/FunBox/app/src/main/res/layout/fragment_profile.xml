@@ -7,14 +7,14 @@
 
         <variable
             name="vm"
-            type="com.example.funbox.ProfileViewModel" />
+            type="com.example.funbox.presentation.login.ProfileViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/background_color"
-        tools:context=".ProfileFragment">
+        tools:context=".presentation.login.ProfileFragment">
 
         <TextView
             android:id="@+id/tv_title_profile"

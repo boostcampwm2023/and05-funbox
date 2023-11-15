@@ -1,6 +1,7 @@
-package com.example.funbox
+package com.example.funbox.presentation.map
 
 import androidx.lifecycle.ViewModel
+<<<<<<< Updated upstream
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -14,4 +15,10 @@ class MapViewModel :ViewModel(){
             message
         }
     }
+=======
+
+
+class MapViewModel : ViewModel() {
+
+>>>>>>> Stashed changes
 }
