@@ -1,4 +1,4 @@
-package com.example.funbox
+package com.example.funbox.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

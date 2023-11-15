@@ -1,4 +1,4 @@
-package com.example.funbox
+package com.example.funbox.ui.login
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -13,7 +13,9 @@ import coil.load
 import androidx.fragment.app.viewModels
 import coil.size.Scale
 import coil.transform.RoundedCornersTransformation
+import com.example.funbox.R
 import com.example.funbox.databinding.FragmentProfileBinding
+import com.example.funbox.ui.BaseFragment
 
 @RequiresApi(Build.VERSION_CODES.P)
 class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_profile) {

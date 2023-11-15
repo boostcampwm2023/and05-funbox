@@ -1,4 +1,4 @@
-package com.example.funbox
+package com.example.funbox.ui.login
 
 import android.content.pm.PackageManager
 import android.graphics.Rect
@@ -9,6 +9,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
+import com.example.funbox.R
 import com.example.funbox.databinding.ActivityTitleBinding
 
 class TitleActivity : AppCompatActivity() {

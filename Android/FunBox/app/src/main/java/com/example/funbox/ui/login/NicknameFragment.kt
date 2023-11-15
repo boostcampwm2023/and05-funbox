@@ -1,10 +1,12 @@
-package com.example.funbox
+package com.example.funbox.ui.login
 
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.example.funbox.R
 import com.example.funbox.databinding.FragmentNicknameBinding
+import com.example.funbox.ui.BaseFragment
 
 class NicknameFragment : BaseFragment<FragmentNicknameBinding>(R.layout.fragment_nickname) {
 

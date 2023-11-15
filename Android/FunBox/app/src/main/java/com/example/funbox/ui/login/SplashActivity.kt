@@ -1,4 +1,4 @@
-package com.example.funbox
+package com.example.funbox.ui.login
 
 import android.annotation.SuppressLint
 import android.content.Intent

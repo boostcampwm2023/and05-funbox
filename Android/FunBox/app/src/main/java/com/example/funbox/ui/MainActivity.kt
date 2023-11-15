@@ -1,7 +1,8 @@
-package com.example.funbox
+package com.example.funbox.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.funbox.R
 import com.example.funbox.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {

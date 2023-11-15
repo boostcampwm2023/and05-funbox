@@ -1,4 +1,4 @@
-package com.example.funbox
+package com.example.funbox.ui.login
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
