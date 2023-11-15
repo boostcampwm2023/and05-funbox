@@ -14,14 +14,21 @@ android {
     defaultConfig {
         applicationId = "com.example.funbox"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "MAP_API_KEY", getApiKey("MAP_API_KEY"))
+        buildConfigField("String", "NAVER_LOGIN_ID_KEY", getApiKey("NAVER_LOGIN_ID_KEY"))
+        buildConfigField("String", "NAVER_LOGIN_SECRET_KEY", getApiKey("NAVER_LOGIN_SECRET_KEY"))
         manifestPlaceholders["MAP_API_KEY"] = getApiKey("MAP_API_KEY")
+        manifestPlaceholders["NAVER_LOGIN_ID_KEY"] = getApiKey("NAVER_LOGIN_ID_KEY")
+        manifestPlaceholders["NAVER_LOGIN_SECRET_KEY"] = getApiKey("NAVER_LOGIN_SECRET_KEY")
+        resValue("string", "map_api_key", getApiKey("MAP_API_KEY"))
+        resValue("string", "naver_login_id_key", getApiKey("NAVER_LOGIN_ID_KEY"))
+        resValue("string", "naver_login_secret_key", getApiKey("NAVER_LOGIN_SECRET_KEY"))
     }
 
     buildTypes {
@@ -72,6 +79,11 @@ dependencies {
 
     implementation ("com.squareup.retrofit2:retrofit:2.8.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.6.0")
+
+    implementation ("com.navercorp.nid:oauth-jdk8:5.1.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
+
+    implementation ("com.jakewharton.timber:timber:5.0.1")
     
     testImplementation("junit:junit:4.13.2")
 
