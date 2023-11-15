@@ -1,4 +1,4 @@
-package com.example.funbox.presentation.login
+package com.example.funbox.presentation.login.profile
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
