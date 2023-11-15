@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.example.funbox.databinding.DialogMessageBinding
-import com.example.funbox.ui.map.MapViewModel
+import com.example.funbox.presentation.map.MapViewModel
 
 class MessageDialog: DialogFragment() {
 

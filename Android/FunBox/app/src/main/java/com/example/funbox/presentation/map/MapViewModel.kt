@@ -1,4 +1,4 @@
-package com.example.funbox.ui.map
+package com.example.funbox.presentation.map
 
 import androidx.lifecycle.ViewModel
 <<<<<<< Updated upstream

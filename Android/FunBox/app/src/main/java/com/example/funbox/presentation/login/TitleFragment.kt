@@ -1,4 +1,4 @@
-package com.example.funbox.ui.login
+package com.example.funbox.presentation.login
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

@@ -1,4 +1,4 @@
-package com.example.funbox.ui
+package com.example.funbox.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

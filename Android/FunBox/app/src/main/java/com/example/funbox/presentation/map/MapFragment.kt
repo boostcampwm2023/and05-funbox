@@ -1,6 +1,6 @@
-package com.example.funbox.ui.map
+package com.example.funbox.presentation.map
 
-import com.example.funbox.ui.BaseFragment
+import com.example.funbox.presentation.BaseFragment
 import com.example.funbox.MessageDialog
 import com.example.funbox.R
 

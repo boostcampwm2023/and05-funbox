@@ -1,4 +1,4 @@
-package com.example.funbox.ui.login
+package com.example.funbox.presentation.login
 
 data class ProfileUiState(
     val profileValidState: ProfileValidState = ProfileValidState.None

@@ -5,7 +5,7 @@
     <data>
         <variable
             name="mapViewModel"
-            type="com.example.funbox.ui.map.MapViewModel" />
+            type="com.example.funbox.presentation.map.MapViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

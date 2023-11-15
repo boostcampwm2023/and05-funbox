@@ -1,4 +1,4 @@
-package com.example.funbox.ui.login
+package com.example.funbox.presentation.login
 
 import android.content.pm.PackageManager
 import android.graphics.Rect

@@ -28,7 +28,7 @@
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="${MAP_API_KEY}" />
         <activity
-            android:name=".ui.login.SplashActivity"
+            android:name=".presentation.login.SplashActivity"
             android:exported="true"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -38,12 +38,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.login.TitleActivity"
+            android:name=".presentation.login.TitleActivity"
             android:configChanges="keyboardHidden|orientation"
             android:windowSoftInputMode="adjustResize"
             android:exported="false" />
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".presentation.MainActivity"
             android:exported="true" />
     </application>
 

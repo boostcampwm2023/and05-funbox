@@ -1,4 +1,4 @@
-package com.example.funbox.ui
+package com.example.funbox.presentation
 
 import android.os.Bundle
 import android.view.LayoutInflater
