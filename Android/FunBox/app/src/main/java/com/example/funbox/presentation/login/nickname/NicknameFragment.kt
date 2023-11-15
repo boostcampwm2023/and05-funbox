@@ -1,4 +1,4 @@
-package com.example.funbox.presentation.login
+package com.example.funbox.presentation.login.nickname
 
 import android.os.Bundle
 import android.view.View
