@@ -1,4 +1,4 @@
-# Team RPG (Rythm, Power, Gypjoongryuk!)
+# Team RPG (Rhythm, Power, Gypjoongryuk!)
 
 ## 팀 구성
 <div align="center">
