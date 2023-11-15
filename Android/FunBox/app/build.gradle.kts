@@ -75,6 +75,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     implementation ("com.squareup.retrofit2:retrofit:2.6.4")
-    implementation ("com.squareup.retrofit2:retrofit-gson:2.6.4")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.google.android.gms:play-services-location:20.0.0")
 }
