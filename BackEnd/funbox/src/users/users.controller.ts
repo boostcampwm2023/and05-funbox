@@ -1,20 +1,18 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { User } from './user.model';
-import { UserLocationDto } from './dto/user-location.dto';
+import { User } from './user.entity';
 
 @Controller('users')
 export class UsersController {
     constructor(private usersService: UsersService) {}
-    
+
     @Get()
-    test(): string  {
+    test(): string {
         return "hello?";
     }
 
-    @Post("/location")
-    findNearUsers(@Body() userLocationDto: UserLocationDto): User[] {
-        this.usersService.updateUserLocation(userLocationDto);
-        return this.usersService.getNearUsers(userLocationDto);
+    @Get('/create')
+    createUser(): Promise<User> {
+        return this.usersService.createUsertest();
     }
 }
