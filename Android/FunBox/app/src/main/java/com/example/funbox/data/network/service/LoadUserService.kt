@@ -11,8 +11,8 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface LoadUserService {
-    @GET("/login")
-    fun login(
+    @GET("/search")
+    fun search(
         @Query("locX") locX : Double,
         @Query("locY") locY : Double,
     ) : Call<String>

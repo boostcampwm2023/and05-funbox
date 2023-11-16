@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.update
 class MapViewModel : ViewModel() {
     private val _myMessage = MutableStateFlow("")
     val myMessage: StateFlow<String> = _myMessage
+    private val locX : MutableStateFlow<Double?>  = MutableStateFlow(null)
+    private val locY : MutableStateFlow<Double?>  = MutableStateFlow(null)
 
     private val _users = MutableStateFlow(listOf<User>())
     val users: StateFlow<List<User>> = _users
