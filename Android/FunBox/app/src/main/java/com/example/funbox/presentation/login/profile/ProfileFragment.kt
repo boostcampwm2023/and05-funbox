@@ -1,41 +1,34 @@
 package com.example.funbox.presentation.login.profile
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
-import coil.load
 import androidx.fragment.app.viewModels
-import coil.size.Scale
-import coil.transform.RoundedCornersTransformation
 import com.example.funbox.R
 import com.example.funbox.databinding.FragmentProfileBinding
 import com.example.funbox.presentation.BaseFragment
+import com.example.funbox.presentation.MainActivity
+import com.example.funbox.presentation.login.AccessPermission
 
-@RequiresApi(Build.VERSION_CODES.P)
 class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_profile) {
 
     private val viewModel: ProfileViewModel by viewModels()
-    private val permissionList = arrayOf(
-        Manifest.permission.CAMERA,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    )
-    private val readImage = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) {
-            this.binding.btnAddProfile.load(uri) {
-                scale(Scale.FILL)
-                crossfade(enable = true)
-                transformations(RoundedCornersTransformation(10F))
-            }
-            this.viewModel.successSelectProfile(uri)
+    private val profileImagePicker =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            this.viewModel.selectProfile(uri)
         }
-    }
+    private val requestMultiPermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+            var flag = true
+            it.entries.forEach { entry ->
+                flag = entry.value
+            }
+            if (flag) {
+                profileImagePicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            }
+        }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -44,26 +37,15 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_p
         collectLatestFlow(viewModel.profileUiEvent) { handleUiEvent(it) }
     }
 
-    private fun checkPermission() {
-        val deniedPermission = permissionList.count {
-            ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_DENIED
-        }
-
-        if (deniedPermission > 0) {
-            requireActivity().requestPermissions(permissionList, 999)
-        } else {
-            readImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-
-        }
-    }
-
     private fun handleUiEvent(event: ProfileUiEvent) = when (event) {
         is ProfileUiEvent.ProfileSelect -> {
-            checkPermission()
+            requestMultiPermissions.launch(AccessPermission.profilePermissionList)
         }
+
         is ProfileUiEvent.ProfileSuccess -> {
-            TODO("Go to Main")
+            startActivity(Intent(requireActivity(), MainActivity::class.java))
         }
+
         is ProfileUiEvent.NetworkErrorEvent -> {
             showSnackBar(R.string.network_error_message)
         }

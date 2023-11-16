@@ -12,6 +12,9 @@ import kotlinx.coroutines.launch
 
 class ProfileViewModel : ViewModel() {
 
+    private val _profileImageUri = MutableStateFlow<Uri?>(null)
+    val profileImageUri = _profileImageUri.asStateFlow()
+
     private val _profileUiEvent = MutableSharedFlow<ProfileUiEvent>()
     val profileUiEvent = _profileUiEvent.asSharedFlow()
 
@@ -24,13 +27,20 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    fun successSelectProfile(uri: Uri?) {
+    fun successSelectProfile() {
+        viewModelScope.launch {
+            _profileUiEvent.emit(ProfileUiEvent.ProfileSuccess)
+        }
+    }
+
+    fun selectProfile(uri: Uri?) {
         if (uri == null) {
             _profileUiState.update { uiState ->
                 uiState.copy(profileValidState = ProfileValidState.None)
             }
         }
         else {
+            _profileImageUri.value = uri
             _profileUiState.update { uiState ->
                 uiState.copy(profileValidState = ProfileValidState.Valid)
             }
