@@ -17,6 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.example.funbox.data.network.service.LoadUserService
 import com.example.funbox.databinding.FragmentMapBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -49,6 +50,8 @@ class MapFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setLocationListener()
+
 
         setLocationListener()
 
@@ -106,12 +109,18 @@ class MapFragment : Fragment() {
                     val latitude = it.latitude
                     val longitude = it.longitude
 
+                    sendXYtoApi(latitude,longitude)
+
                     Log.d("XXXXXXXXXXXXX",latitude.toString())
                     Log.d("XXXXXXXXX",longitude.toString())
                 }
             }
     }
 
+
+    private fun sendXYtoApi(latitude: Double, longitude: Double) {
+        LoadUserService.create().search(latitude,longitude).execute()
+    }
 
 
     private fun toggleFab() {
