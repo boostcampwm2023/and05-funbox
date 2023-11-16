@@ -4,6 +4,6 @@ sealed class TitleUiEvent {
 
     data class NetworkErrorEvent(val message: String = "Network Error") : TitleUiEvent()
 
-    object NaverLoginStart : TitleUiEvent()
-    object NaverLoginSuccess : TitleUiEvent()
+    data object NaverLoginStart : TitleUiEvent()
+    data object NaverLoginSuccess : TitleUiEvent()
 }

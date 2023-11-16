@@ -1,6 +1,5 @@
 package com.example.funbox.presentation.map
 
-
 import com.example.funbox.MessageDialog
 import com.example.funbox.R
 import android.animation.ObjectAnimator
@@ -8,39 +7,26 @@ import android.graphics.Color
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationListener
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import coil.load
-import coil.size.Scale
-import coil.transform.RoundedCornersTransformation
 import com.example.funbox.databinding.FragmentMapBinding
 import com.example.funbox.presentation.BaseFragment
-import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
-import kotlinx.coroutines.flow.map
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.funbox.data.network.service.LoadUserService
-import com.example.funbox.databinding.FragmentMapBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 
 class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnMapReadyCallback {
@@ -49,11 +35,10 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     private val viewModel: MapViewModel by activityViewModels()
 
-
     private lateinit var naverMap: NaverMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val handler = Handler()
-    
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.mapViewModel = viewModel
@@ -71,7 +56,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
         viewModel.mapApi()
         initMapView()
-
     }
 
 
@@ -101,6 +85,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             )
         }
     }
+
     private val locationRunnable = object : Runnable {
         override fun run() {
             // 주기적으로 위치 업데이트 요청
@@ -108,6 +93,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             handler.postDelayed(this, 5000) // 다음 위치 업데이트는 5초 뒤에
         }
     }
+
     private fun requestLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
@@ -126,17 +112,17 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                     val latitude = it.latitude
                     val longitude = it.longitude
 
-                    sendXYtoApi(latitude,longitude)
+                    sendXYtoApi(latitude, longitude)
 
-                    Log.d("XXXXXXXXXXXXX",latitude.toString())
-                    Log.d("XXXXXXXXX",longitude.toString())
+                    Log.d("XXXXXXXXXXXXX", latitude.toString())
+                    Log.d("XXXXXXXXX", longitude.toString())
                 }
             }
     }
 
 
     private fun sendXYtoApi(latitude: Double, longitude: Double) {
-        LoadUserService.create().search(latitude,longitude).execute()
+        // LoadUserService.create().search(latitude, longitude).execute()
     }
 
 

@@ -41,7 +41,8 @@
             app:layout_constraintBottom_toTopOf="@id/btn_profile"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_title_profile" />
+            app:layout_constraintTop_toBottomOf="@id/tv_title_profile"
+            app:profile_image_uri="@{vm.profileImageUri}" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_profile"
@@ -51,6 +52,7 @@
             android:layout_marginTop="32dp"
             android:layout_marginEnd="120dp"
             android:background="@{(vm.profileUiState.isBtnProfileEnable == true) ? @drawable/success_button : @drawable/fail_button}"
+            android:onClick="@{() -> vm.successSelectProfile()}"
             android:text="@string/submit"
             android:textColor="@{(vm.profileUiState.isBtnProfileEnable == true) ? @color/white : @color/black}"
             android:textSize="24sp"
