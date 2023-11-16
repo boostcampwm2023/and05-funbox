@@ -53,6 +53,9 @@ class MapFragment : Fragment() {
         setLocationListener()
 
 
+        setLocationListener()
+
+
         binding.floatingActionButton.setOnClickListener{
             toggleFab()
         }
@@ -113,6 +116,7 @@ class MapFragment : Fragment() {
                 }
             }
     }
+
 
     private fun sendXYtoApi(latitude: Double, longitude: Double) {
         LoadUserService.create().search(latitude,longitude).execute()
