@@ -29,6 +29,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
 
+
 class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnMapReadyCallback {
 
     private var isFabOpen = false
@@ -111,18 +112,17 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 location?.let {
                     val latitude = it.latitude
                     val longitude = it.longitude
+                    viewModel.setXY(latitude,longitude)
 
                     sendXYtoApi(latitude, longitude)
 
-                    Log.d("XXXXXXXXXXXXX", latitude.toString())
-                    Log.d("XXXXXXXXX", longitude.toString())
                 }
             }
     }
 
 
     private fun sendXYtoApi(latitude: Double, longitude: Double) {
-        // LoadUserService.create().search(latitude, longitude).execute()
+        //LoadUserService.create().search(latitude,longitude).execute()
     }
 
 

@@ -26,6 +26,15 @@ class MapViewModel : ViewModel() {
         }
     }
 
+    fun setXY(x:Double,y:Double){
+        locX.update {
+            x
+        }
+        locY.update {
+            y
+        }
+    }
+
     fun mapApi() {
         _users.update {
             listOf(
