@@ -41,6 +41,7 @@ class MapFragment : Fragment() {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         binding.mapViewModel=viewModel
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         return binding.root
@@ -129,4 +130,3 @@ class MapFragment : Fragment() {
 
 
 }
-
