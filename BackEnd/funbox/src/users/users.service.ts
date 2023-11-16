@@ -22,4 +22,10 @@ export class UsersService {
         }
         return found;
     }
+
+    async updateUserMessage(id: number, message: string): Promise<User> {
+        const user = await this.getUserById(id);
+        user.message = message;
+        return await user.save();
+    }
 }

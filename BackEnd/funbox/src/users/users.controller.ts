@@ -22,4 +22,13 @@ export class UsersController {
         const user = await this.usersService.getUserById(id)
         return UserResponseDto.of(user);
     }
+
+    @Patch("/message")
+    async updateUserMessage(
+        @Body('message') message: string
+    ): Promise<UserResponseDto> {
+        const id = 1; // TODO: auth 모듈을 통해 user id 추출
+        const user = await this.usersService.updateUserMessage(id, message)
+        return UserResponseDto.of(user);
+    }
 }
