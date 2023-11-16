@@ -29,13 +29,7 @@
             android:value="@string/map_api_key" />
         <activity
             android:name=".presentation.MainActivity"
-            android:exported="true"
-            android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:exported="true">
         </activity>
         <activity
             android:name=".presentation.login.TitleActivity"
@@ -44,7 +38,15 @@
             android:exported="false" />
         <activity
             android:name=".presentation.login.SplashActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:theme="@style/SplashTheme">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

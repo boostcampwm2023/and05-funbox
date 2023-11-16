@@ -13,7 +13,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         Timber.plant(Timber.DebugTree())
-        startActivity(Intent(this, MainActivity::class.java))
+        startActivity(Intent(this, TitleActivity::class.java))
         finish()
     }
 }

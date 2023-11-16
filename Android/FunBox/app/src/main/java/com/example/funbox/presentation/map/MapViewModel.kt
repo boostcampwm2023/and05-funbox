@@ -1,8 +1,8 @@
 package com.example.funbox.presentation.map
 
 import androidx.lifecycle.ViewModel
-import com.example.funbox.data.User
-import com.example.funbox.data.UserDetail
+import com.example.funbox.data.dto.User
+import com.example.funbox.data.dto.UserDetail
 import com.naver.maps.geometry.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

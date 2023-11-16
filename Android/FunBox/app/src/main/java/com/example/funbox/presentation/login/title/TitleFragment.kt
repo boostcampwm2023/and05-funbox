@@ -18,7 +18,6 @@ import timber.log.Timber
 class TitleFragment : BaseFragment<FragmentTitleBinding>(R.layout.fragment_title) {
 
     private val viewModel: TitleViewModel by viewModels()
-    private var naverToken: String? = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -29,14 +28,11 @@ class TitleFragment : BaseFragment<FragmentTitleBinding>(R.layout.fragment_title
     }
 
     private fun initNaverIdLoginSdk() {
-        val naverClientId = getString(R.string.naver_login_id_key)
-        val naverClientSecret = getString(R.string.naver_login_secret_key)
-        val naverClientName = getString(R.string.social_login_info_naver_client_name)
         NaverIdLoginSDK.initialize(
             requireContext(),
-            naverClientId,
-            naverClientSecret,
-            naverClientName
+            getString(R.string.naver_login_id_key),
+            getString(R.string.naver_login_secret_key),
+            getString(R.string.social_login_info_naver_client_name)
         )
     }
 
@@ -57,10 +53,9 @@ class TitleFragment : BaseFragment<FragmentTitleBinding>(R.layout.fragment_title
 
         val oauthLoginCallback = object : OAuthLoginCallback {
             override fun onSuccess() {
-                naverToken = NaverIdLoginSDK.getAccessToken()
                 NidOAuthLogin().callProfileApi(profileCallback)
                 viewModel.successNaverLogin()
-                naverToken?.let { Timber.d("NAVER Token: $it") }
+                NaverIdLoginSDK.getAccessToken()?.let { token -> Timber.d("NAVER Token: $token") }
             }
 
             override fun onFailure(httpStatus: Int, message: String) {
