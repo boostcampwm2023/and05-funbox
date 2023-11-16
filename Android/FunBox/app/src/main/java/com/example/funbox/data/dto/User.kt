@@ -1,4 +1,4 @@
-package com.example.funbox.data
+package com.example.funbox.data.dto
 
 import com.naver.maps.geometry.LatLng
 

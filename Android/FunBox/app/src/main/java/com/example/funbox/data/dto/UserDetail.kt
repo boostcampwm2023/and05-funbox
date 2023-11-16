@@ -1,4 +1,4 @@
-package com.example.funbox.data
+package com.example.funbox.data.dto
 
 data class UserDetail (
     val msg: String,
