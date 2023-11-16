@@ -1,12 +1,17 @@
 package com.example.funbox.presentation.map
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.funbox.data.dto.User
 import com.example.funbox.data.dto.UserDetail
+import com.example.funbox.presentation.login.nickname.NicknameUiEvent
 import com.naver.maps.geometry.LatLng
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class MapViewModel : ViewModel() {
     private val _myMessage = MutableStateFlow("")
@@ -20,9 +25,12 @@ class MapViewModel : ViewModel() {
     private val _userDetail= MutableStateFlow(UserDetail("","",""))
     val userDetail : StateFlow<UserDetail> = _userDetail
 
-    fun setMessage(message: String) {
-        _myMessage.update {
-            message
+    private val _mapUiEvent = MutableSharedFlow<MapUiEvent>()
+    val mapUiEvent = _mapUiEvent.asSharedFlow()
+
+    fun startMessageDialog() {
+        viewModelScope.launch {
+            _mapUiEvent.emit(MapUiEvent.MessageOpen)
         }
     }
 
