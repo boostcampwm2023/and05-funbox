@@ -9,7 +9,6 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -24,11 +23,8 @@ import com.naver.maps.map.overlay.Marker
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
-import com.example.funbox.data.network.service.LoadUserService
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-
-
 
 class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnMapReadyCallback {
 
@@ -40,25 +36,27 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val handler = Handler()
 
+    private fun handleUiEvent(event: MapUiEvent) = when (event) {
+        is MapUiEvent.MessageOpen -> {
+            MessageDialog().show(parentFragmentManager, "messageDialog")
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.mapViewModel = viewModel
+        binding.vm = viewModel
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         setLocationListener()
+
+        collectLatestFlow(viewModel.mapUiEvent) { handleUiEvent(it) }
 
         binding.floatingActionButton.setOnClickListener {
             toggleFab()
         }
 
-        binding.floatingWrite.setOnClickListener {
-            val messageDialog = MessageDialog()
-            messageDialog.show(parentFragmentManager, "messageDialog")
-        }
-
         viewModel.mapApi()
         initMapView()
     }
-
 
     private fun initMapView() {
         val fm = childFragmentManager
@@ -112,7 +110,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 location?.let {
                     val latitude = it.latitude
                     val longitude = it.longitude
-                    viewModel.setXY(latitude,longitude)
+                    viewModel.setXY(latitude, longitude)
 
                     sendXYtoApi(latitude, longitude)
 
@@ -120,11 +118,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             }
     }
 
-
     private fun sendXYtoApi(latitude: Double, longitude: Double) {
         //LoadUserService.create().search(latitude,longitude).execute()
     }
-
 
     private fun toggleFab() {
         if (isFabOpen) {
@@ -192,5 +188,4 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             }
         }
     }
-
 }

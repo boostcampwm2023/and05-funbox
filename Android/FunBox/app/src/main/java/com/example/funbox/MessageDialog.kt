@@ -28,7 +28,6 @@ class MessageDialog: DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.positiveButton.setOnClickListener{
-            viewModel.setMessage(binding.editTextText.text.toString())
             dismiss()
         }
     }

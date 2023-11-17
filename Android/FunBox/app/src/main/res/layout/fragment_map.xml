@@ -4,7 +4,7 @@
 
     <data>
         <variable
-            name="mapViewModel"
+            name="vm"
             type="com.example.funbox.presentation.map.MapViewModel" />
     </data>
 
@@ -13,6 +13,7 @@
         android:layout_height="match_parent">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:onClick="@{() -> vm.startMessageDialog()}"
             android:id="@+id/floating_write"
             style="?attr/floatingActionButtonSmallStyle"
             android:layout_width="wrap_content"
@@ -53,13 +54,6 @@
             android:layout_height="match_parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{mapViewModel.myMessage}"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
