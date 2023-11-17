@@ -1,6 +1,8 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
+import { UserLocationDto } from './dto/user-location.dto';
+import { NearUsersDto } from './dto/near-users.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 
 @Controller('users')
@@ -17,6 +19,12 @@ export class UsersController {
         return this.usersService.createUsertest();
     }
 
+    @Post()
+    async updateUserLocationAndReturnNearUsers(@Body() userLocationDto: UserLocationDto): Promise<NearUsersDto[]> {
+        await this.usersService.updateUserLocation(userLocationDto);
+        return await this.usersService.findNearUsers(userLocationDto);
+    }
+  
     @Get('/:id')
     async getUserById(@Param('id') id: number): Promise<UserResponseDto> {
         const user = await this.usersService.getUserById(id)

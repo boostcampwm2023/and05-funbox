@@ -5,24 +5,24 @@ export class User extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({length: 15, nullable: true})
     username: string;
 
-    @Column()
-    created_at: string; //timestamp
+    @Column({type: 'timestamp',nullable: false})
+    created_at: string;
 
-    @Column()
+    @Column({length: 255, nullable: true})
     profile_url: string;
 
-    @Column()
+    @Column({type: 'double', nullable: true})
     locX: number;
 
-    @Column()
+    @Column({type: 'double', nullable: true})
     locY: number;
 
-    @Column()
+    @Column({length: 31, nullable: true})
     message: string;
 
-    @Column()
-    messaged_at: string; //timestamp
+    @Column({type: 'timestamp',nullable: true})
+    messaged_at: string;
 }
