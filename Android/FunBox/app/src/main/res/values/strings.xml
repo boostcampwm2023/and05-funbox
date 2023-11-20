@@ -15,6 +15,8 @@
     <string name="permission_message_toast">권한 허용이 필요합니다.</string>
     <string name="social_login_info_naver_client_name">네이버 아이디 로그인</string>
     <string name="social_login_info_naver_success">NAVER 로그인 성공</string>
+    <string name="game_question_card_title">질문 카드</string>
+    <string name="game_to_be_determined">To Be Continued…</string>
 
     <string name="iv_main_logo_description">FunBox 로고</string>
     <string name="btn_main_naver_login_description">NAVER 소셜 로그인 버튼</string>
