@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="fm"
+            type="com.example.funbox.presentation.setting.SettingFragment" />
+    </data>
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5EFE7">
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/backButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@null"
@@ -26,6 +33,7 @@
         android:background="@drawable/bg_green_rectangle"
         android:elevation="1000dp"
         android:text="닉네임 변경"
+        android:onClick="@{() -> fm.clickNickNameSetting()}"
         android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -44,6 +52,7 @@
         android:background="@drawable/bg_green_rectangle"
         android:elevation="1000dp"
         android:text="프로필 변경"
+        android:onClick="@{() -> fm.clickProfileSetting()}"
         android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -80,6 +89,7 @@
         android:background="@drawable/bg_red_rectangle"
         android:elevation="1000dp"
         android:text="회원 탈퇴하기"
+        android:onClick="@{() -> fm.clickWithDraw()}"
         android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -88,8 +98,8 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ImageButton
-        android:id="@+id/imageButton3"
+    <ImageView
+        android:id="@+id/profileImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@null"
@@ -102,19 +112,21 @@
         app:srcCompat="@drawable/profile_none" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/nameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="41dp"
         android:text="이름"
+        android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/changeNickNameButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton3"
+        app:layout_constraintTop_toBottomOf="@+id/profileImageView"
         app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

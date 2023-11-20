@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nvai_graph"
-    app:startDestination="@id/GameSelectFragment">
+    app:startDestination="@id/settingFragment">
 
     <fragment
         android:id="@+id/mapFragment"
@@ -38,4 +38,8 @@
         android:name="com.example.funbox.presentation.game.quiz.QuizFragment"
         tools:layout="QuizFragment">
     </fragment>
+    <fragment
+        android:id="@+id/settingFragment"
+        android:name="com.example.funbox.presentation.setting.SettingFragment"
+        android:label="SettingFragment" />
 </navigation>
