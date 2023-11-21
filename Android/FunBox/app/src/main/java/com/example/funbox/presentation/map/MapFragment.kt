@@ -146,46 +146,54 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             }
         }
 
-        viewModel.users.value.map {
+        val infoWindow = InfoWindow()
 
-            val marker = Marker()
-            marker.position = it.loc
-            marker.iconTintColor = Color.RED
-            marker.map = naverMap
-            marker.captionText = it.name
-            marker.captionTextSize = 20F
-            if (it.isMsg) {
-                hasMsg.open(marker)
-            }
-            marker.setOnClickListener { _ ->
-                viewModel.userDetailApi(it.id)
-                viewModel.userDetail.value
-
-                val infoWindow = InfoWindow()
-                infoWindow.adapter = object : InfoWindow.DefaultViewAdapter(requireContext()) {
-                    override fun getContentView(p0: InfoWindow): View {
-                        val view: View = View.inflate(context, R.layout.map_profile, null)
-
-                        view.findViewById<ImageView>(R.id.iv_profile)
-                            .load(viewModel.userDetail.value.profile)
-                        view.findViewById<TextView>(R.id.tv_profile_name).text =
-                            viewModel.userDetail.value.name
-                        view.findViewById<TextView>(R.id.tv_profile_msg).text =
-                            viewModel.userDetail.value.msg
-
-                        return view
-                    }
+        map.setOnMapClickListener { _, _ ->
+            viewModel.buttonGone()
+            viewModel.users.value.forEach {
+                it.mapPin?.infoWindow?.close()
+                if (it.isMsg) {
+                    it.mapPin?.let { mapPin -> hasMsg.open(mapPin) }
                 }
-                if (!marker.hasInfoWindow() || marker.infoWindow == hasMsg) {
-                    infoWindow.open(marker)
-                } else {
-                    marker.infoWindow?.close()
-                    if (it.isMsg) {
-                        hasMsg.open(marker)
-                    }
-                }
-                true
             }
+        }
+
+        viewModel.users.value.map { user ->
+
+            val marker = Marker().apply {
+                position = user.loc
+                iconTintColor = Color.RED
+                this.map = naverMap
+                captionText = user.name
+                captionTextSize = 20F
+                if (user.isMsg) {
+                    hasMsg.open(this)
+                }
+                setOnClickListener { _ ->
+                    viewModel.userDetailApi(user.id)
+                    val adapter = MapProfileAdapter(requireContext(), viewModel.userDetail.value)
+                    infoWindow.adapter = adapter
+
+                    if (!this.hasInfoWindow() || this.infoWindow == hasMsg) {
+                        viewModel.buttonVisible()
+                        viewModel.users.value.forEach {
+                            if (it.isMsg) {
+                                it.mapPin?.let { mapPin -> hasMsg.open(mapPin) }
+                            }
+                        }
+                        infoWindow.open(this)
+                    } else {
+                        viewModel.buttonGone()
+                        this.infoWindow?.close()
+                        if (user.isMsg) {
+                            hasMsg.open(this)
+                        }
+                    }
+
+                    true
+                }
+            }
+            user.mapPin = marker
         }
     }
 }
