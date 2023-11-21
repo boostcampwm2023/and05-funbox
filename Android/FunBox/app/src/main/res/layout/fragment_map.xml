@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View"/>
         <variable
             name="vm"
             type="com.example.funbox.presentation.map.MapViewModel" />
@@ -13,12 +14,12 @@
         android:layout_height="match_parent">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:onClick="@{() -> vm.startMessageDialog()}"
             android:id="@+id/floating_write"
             style="?attr/floatingActionButtonSmallStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
+            android:onClick="@{() -> vm.startMessageDialog()}"
             android:src="@drawable/write_24"
             app:layout_constraintBottom_toBottomOf="@id/floating_action_button"
             app:layout_constraintEnd_toEndOf="@id/floating_action_button"
@@ -51,9 +52,39 @@
             android:id="@+id/map"
             android:name="com.naver.maps.map.MapFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:onClick="@{()->vm.getGame()}"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_button"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:background="@null"
+            android:visibility="@{ vm.visibility ? View.VISIBLE : View.GONE, default=gone }"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Game Start"
+                android:id="@+id/btn_game_start"
+                android:onClick="@{()->vm.toGame()}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
