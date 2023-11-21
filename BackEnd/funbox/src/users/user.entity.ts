@@ -9,7 +9,7 @@ export class User extends BaseEntity {
     username: string;
 
     @Column({type: 'timestamp',nullable: false})
-    created_at: string;
+    created_at: Date;
 
     @Column({length: 255, nullable: true})
     profile_url: string;
@@ -24,5 +24,5 @@ export class User extends BaseEntity {
     message: string;
 
     @Column({type: 'timestamp',nullable: true})
-    messaged_at: string;
+    messaged_at: Date;
 }

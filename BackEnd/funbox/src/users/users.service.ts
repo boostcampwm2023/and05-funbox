@@ -8,12 +8,12 @@ export class UsersService {
     async createUsertest(): Promise<User> {
         const user = new User();
         user.username = "test";
-        user.created_at = "123123";
+        user.created_at = new Date();
         user.profile_url = "132123";
         user.locX = 123;
         user.locY = 123;
         user.message =  "hihi";
-        user.messaged_at = "123123";
+        user.messaged_at = new Date();
         return await user.save();
     }
 
@@ -59,6 +59,7 @@ export class UsersService {
     async updateUserMessage(id: number, message: string): Promise<User> {
         const user = await this.getUserById(id);
         user.message = message;
+        user.messaged_at = new Date();
         return await user.save();
     }
 }
