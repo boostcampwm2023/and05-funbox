@@ -1,18 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.example.funbox.presentation.game.wait.WaitViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/background_color"
         tools:context=".presentation.game.wait.WaitFragment">
 
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/user_info_wait"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="72dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/wait_background"
+            android:contentDescription="@string/user_wait_description"
+            app:cardBackgroundColor="@color/edittext_color"
+            app:cardCornerRadius="40dp"
+            app:cardElevation="10dp"
+            app:layout_constraintBottom_toTopOf="@id/side_info_wait"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/user_profile_wait"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center"
+                android:layout_margin="16dp"
+                android:background="@drawable/rounded_corner_rect_shadow"
+                android:contentDescription="@string/user_profile_wait_description"
+                android:elevation="10dp"
+                app:setImage="@{vm.waitUiState}" />
+
+            <TextView
+                android:id="@+id/user_id_wait"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/user_id_wait"
+                android:textSize="40sp" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/side_info_wait"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="72dp"
+            android:background="@drawable/wait_background"
+            android:contentDescription="@string/side_wait_description"
+            app:cardBackgroundColor="@color/edittext_color"
+            app:cardCornerRadius="40dp"
+            app:cardElevation="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/user_info_wait">
+
+            <ImageView
+                android:id="@+id/side_profile_wait"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center"
+                android:layout_margin="16dp"
+                android:background="@drawable/rounded_corner_rect_shadow"
+                android:contentDescription="@string/side_profile_wait_description"
+                android:elevation="10dp"
+                app:setImage="@{vm.waitUiState}" />
+
+            <TextView
+                android:id="@+id/side_id_wait"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/side_id_wait"
+                android:textSize="40sp" />
+
+            <TextView
+                android:id="@+id/msg_wait"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:layout_margin="16dp"
+                android:text="@string/msg_wait"
+                android:textSize="32sp" />
+
+        </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

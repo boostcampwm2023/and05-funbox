@@ -9,12 +9,12 @@
 
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/positiveButton"
+        android:id="@+id/dialogNegativeButton"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/bg_green_rectangle"
-        android:text="수정"
+        android:background="@drawable/bg_red_rectangle"
+        android:text="삭제"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -22,19 +22,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <EditText
-        android:id="@+id/dialogEditText"
+    <TextView
+        android:id="@+id/negativeTextView"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
-        android:layout_marginBottom="44dp"
-        android:background="@drawable/bg_input_text"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="40dp"
         android:ems="10"
         android:gravity="center_horizontal|center_vertical"
         android:inputType="text"
         android:text="Name"
-        app:layout_constraintBottom_toTopOf="@+id/positiveButton"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/dialogNegativeButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

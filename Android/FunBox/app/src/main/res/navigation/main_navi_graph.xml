@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nvai_graph"
-    app:startDestination="@id/mapFragment">
+    app:startDestination="@id/QuizFragment">
+
 
     <fragment
         android:id="@+id/mapFragment"
@@ -21,8 +22,8 @@
         android:name="com.example.funbox.presentation.game.gameselect.GameSelectFragment"
         tools:layout="GameSelectFragment">
         <action
-            android:id="@+id/action_GameSelectFragment_to_MapFragment"
-            app:destination="@id/mapFragment"
+            android:id="@+id/action_GameSelectFragment_to_WaitFragment"
+            app:destination="@id/WaitFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
         <argument
@@ -34,6 +35,11 @@
         android:id="@+id/WaitFragment"
         android:name="com.example.funbox.presentation.game.wait.WaitFragment"
         tools:layout="WaitFragment">
+        <action
+            android:id="@+id/action_WaitFragment_to_QuizFragment"
+            app:destination="@id/QuizFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
     </fragment>
 
     <fragment
@@ -41,4 +47,8 @@
         android:name="com.example.funbox.presentation.game.quiz.QuizFragment"
         tools:layout="QuizFragment">
     </fragment>
+    <fragment
+        android:id="@+id/settingFragment"
+        android:name="com.example.funbox.presentation.setting.SettingFragment"
+        android:label="SettingFragment" />
 </navigation>

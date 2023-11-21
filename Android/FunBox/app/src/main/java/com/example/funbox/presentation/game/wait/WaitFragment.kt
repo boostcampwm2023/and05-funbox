@@ -3,6 +3,7 @@ package com.example.funbox.presentation.game.wait
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.example.funbox.R
 import com.example.funbox.databinding.FragmentWaitBinding
 import com.example.funbox.presentation.BaseFragment
@@ -21,6 +22,10 @@ class WaitFragment : BaseFragment<FragmentWaitBinding>(R.layout.fragment_wait) {
     private fun handleUiEvent(event: WaitUiEvent) = when (event) {
         is WaitUiEvent.NetworkErrorEvent -> {
             showSnackBar(R.string.network_error_message)
+        }
+
+        is WaitUiEvent.WaitSuccess -> {
+            findNavController().navigate(R.id.action_WaitFragment_to_QuizFragment)
         }
     }
 }
