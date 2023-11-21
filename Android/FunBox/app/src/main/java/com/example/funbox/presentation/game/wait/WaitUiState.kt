@@ -1,5 +1,6 @@
 package com.example.funbox.presentation.game.wait
 
 data class WaitUiState(
-    val tmp: Boolean = true
+    val waiting: Boolean = true,
+    val finishWaiting: Boolean = false
 )
