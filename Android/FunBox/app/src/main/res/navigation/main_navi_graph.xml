@@ -21,8 +21,8 @@
         android:name="com.example.funbox.presentation.game.gameselect.GameSelectFragment"
         tools:layout="GameSelectFragment">
         <action
-            android:id="@+id/action_GameSelectFragment_to_MapFragment"
-            app:destination="@id/mapFragment"
+            android:id="@+id/action_GameSelectFragment_to_WaitFragment"
+            app:destination="@id/WaitFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
     </fragment>
@@ -31,6 +31,11 @@
         android:id="@+id/WaitFragment"
         android:name="com.example.funbox.presentation.game.wait.WaitFragment"
         tools:layout="WaitFragment">
+        <action
+            android:id="@+id/action_WaitFragment_to_QuizFragment"
+            app:destination="@id/QuizFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
     </fragment>
 
     <fragment
