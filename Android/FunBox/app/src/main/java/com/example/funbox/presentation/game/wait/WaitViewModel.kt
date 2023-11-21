@@ -13,6 +13,4 @@ class WaitViewModel : ViewModel() {
 
     private val _waitUiState = MutableStateFlow<WaitUiState>(WaitUiState())
     val waitUiState = _waitUiState.asStateFlow()
-
-
 }
