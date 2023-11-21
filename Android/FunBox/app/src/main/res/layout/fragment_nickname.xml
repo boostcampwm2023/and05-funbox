@@ -34,10 +34,10 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
-                android:layout_marginTop="32dp"
                 android:id="@+id/et_nickname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
                 android:autofillHints="@null"
                 android:background="@drawable/nickname_edittext"
                 android:gravity="center"

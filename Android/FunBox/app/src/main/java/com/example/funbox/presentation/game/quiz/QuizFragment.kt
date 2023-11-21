@@ -22,13 +22,7 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
         binding.vm = viewModel
         mapView = binding.mapViewGame
         mapView.onCreate(savedInstanceState)
-
-        val cfm = childFragmentManager
-        val mapFragment = cfm.findFragmentById(R.id.map_view_game) as MapFragment?
-            ?: MapFragment.newInstance().also { mapFragment ->
-                cfm.beginTransaction().add(R.id.map_view_game, mapFragment).commit()
-            }
-        mapFragment.getMapAsync(this)
+        setNaverMap()
 
         collectLatestFlow(viewModel.quizUiEvent) { handleUiEvent(it) }
     }
@@ -73,9 +67,22 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
 
     }
 
+    private fun setNaverMap() {
+        val cfm = childFragmentManager
+        val mapFragment = cfm.findFragmentById(R.id.map_view_game) as MapFragment?
+            ?: MapFragment.newInstance().also { mapFragment ->
+                cfm.beginTransaction().add(R.id.map_view_game, mapFragment).commit()
+            }
+        mapFragment.getMapAsync(this)
+    }
+
     private fun handleUiEvent(event: QuizUiEvent) = when (event) {
         is QuizUiEvent.NetworkErrorEvent -> {
             showSnackBar(R.string.network_error_message)
+        }
+
+        is QuizUiEvent.QuizAnswerSubmit -> {
+
         }
     }
 }
