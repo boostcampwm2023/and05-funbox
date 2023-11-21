@@ -1,6 +1,5 @@
 package com.example.funbox.presentation.map
 
-import com.example.funbox.MessageDialog
 import com.example.funbox.R
 import android.animation.ObjectAnimator
 import android.graphics.Color
@@ -10,9 +9,6 @@ import android.location.Location
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
-import coil.load
 import com.example.funbox.databinding.FragmentMapBinding
 import com.example.funbox.presentation.BaseFragment
 import com.naver.maps.map.MapFragment
@@ -23,8 +19,12 @@ import com.naver.maps.map.overlay.Marker
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import coil.load
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.geometry.LatLngBounds
 
 class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnMapReadyCallback {
 
@@ -39,6 +39,16 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     private fun handleUiEvent(event: MapUiEvent) = when (event) {
         is MapUiEvent.MessageOpen -> {
             MessageDialog().show(parentFragmentManager, "messageDialog")
+        }
+
+        is MapUiEvent.ToGame -> {
+            val action =
+                MapFragmentDirections.actionMapFragmentToGameSelectFragment(viewModel.userDetail.value.id)
+            findNavController().navigate(action)
+        }
+
+        is MapUiEvent.GetGame -> {
+            GetGameDialog().show(parentFragmentManager, "getGame")
         }
     }
 
@@ -56,6 +66,11 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
         viewModel.mapApi()
         initMapView()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.buttonGone()
     }
 
     private fun initMapView() {
@@ -138,6 +153,11 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     override fun onMapReady(map: NaverMap) {
         this.naverMap = map
+
+        naverMap.minZoom = 15.0
+        naverMap.maxZoom = 17.0
+        naverMap.uiSettings.isZoomControlEnabled = false
+        naverMap.extent = LatLngBounds(LatLng(31.43, 122.37), LatLng(44.35, 132.0))
 
         val hasMsg = InfoWindow()
         hasMsg.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
