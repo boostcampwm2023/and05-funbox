@@ -5,6 +5,7 @@
     <string name="next">다음</string>
     <string name="no_next">X</string>
     <string name="submit">완료</string>
+    <string name="answer_submit">입력</string>
     <string name="nickname_setting_title">닉네임을 설정해주세요</string>
     <string name="profile_setting_title">프로필을 설정해주세요</string>
     <string name="description">매뉴</string>
@@ -21,6 +22,8 @@
     <string name="side_id_wait">상대 유저 아이디</string>
     <string name="msg_wait">대기중…</string>
     <string name="finish_wait">게임 시작</string>
+    <string name="msg_question_quiz">상대방과 만나 질문해주세요!</string>
+    <string name="example_question_quiz">저의 MBTI는 뭘까요?</string>
 
     <string name="iv_main_logo_description">FunBox 로고</string>
     <string name="btn_main_naver_login_description">NAVER 소셜 로그인 버튼</string>
