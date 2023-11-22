@@ -26,9 +26,9 @@ export class User extends BaseEntity {
     @Column({type: 'timestamp', nullable: true})
     messaged_at: Date;
 
-    @Column({type: 'string', nullable: false})
+    @Column({length: 31, nullable: false})
     type_login: string;
 
-    @Column({type: 'string', nullable: false})
+    @Column({length: 127, nullable: false})
     id_oauth: string;
 }
