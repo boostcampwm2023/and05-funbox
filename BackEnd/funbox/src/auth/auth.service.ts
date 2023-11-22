@@ -10,25 +10,25 @@ export class AuthService {
 
     async tokenValidation(accessToken: string): Promise<UserAuthDto> {
         try {
-            console.log(accessToken);
             const decode = await this.jwtService.verifyAsync(accessToken,{secret: process.env.JWT_SECRET});
-            console.log(decode);
             const {id, username} = decode;
             return {id, username};
         } catch(error) {
-            console.log(error);
             throw new UnauthorizedException("Invalid access token");
         }
-        
+    }
+
+    async getNaverUser(naverAccessToken: string): Promise<boolean> {
+        return true;
     }
 
     async createNullUser(idOauth: string): Promise<{accessToken: string}> {
         const user = new User();
         this.setUserNull(user, idOauth);
+
         try {
             await user.save();
         } catch (error) {
-            
             if(error.code === 'ER_DUP_ENTRY') {
                 throw new ConflictException("Existing id (OAuth)");
             } else {
