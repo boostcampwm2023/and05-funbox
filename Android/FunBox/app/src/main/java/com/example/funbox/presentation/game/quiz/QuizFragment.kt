@@ -3,7 +3,9 @@ package com.example.funbox.presentation.game.quiz
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.UiThread
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.example.funbox.R
 import com.example.funbox.databinding.FragmentQuizBinding
 import com.example.funbox.presentation.BaseFragment
@@ -11,10 +13,11 @@ import com.naver.maps.map.MapFragment
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
+import timber.log.Timber
 
 class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), OnMapReadyCallback {
 
-    private val viewModel: QuizViewModel by viewModels()
+    private val viewModel: QuizViewModel by activityViewModels()
     private lateinit var mapView: MapView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -82,7 +85,19 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
         }
 
         is QuizUiEvent.QuizAnswerSubmit -> {
+            AnswerCheckFragment().show(childFragmentManager, "")
+        }
 
+        is QuizUiEvent.QuizAnswerCheck -> {
+            NetworkAlertFragment().show(childFragmentManager, "")
+        }
+
+        is QuizUiEvent.QuizOtherUserDisconnected -> {
+            ScoreBoardFragment().show(childFragmentManager, "")
+        }
+
+        is QuizUiEvent.QuizScoreBoard -> {
+            findNavController().navigate(R.id.action_QuizFragment_to_mapFragment)
         }
     }
 }
