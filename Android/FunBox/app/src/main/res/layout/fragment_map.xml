@@ -63,9 +63,10 @@
             app:layout_constraintTop_toTopOf="parent"
             android:onClick="@{()->vm.getGame()}"/>
 
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_button"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="120dp"
             android:background="@null"
             android:visibility="@{ vm.visibility ? View.VISIBLE : View.GONE, default=gone }"

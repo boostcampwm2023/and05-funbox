@@ -32,7 +32,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_get_game_title"
-            app:srcCompat="@drawable/profile_add" />
+            android:src="@drawable/profile_add" />
 
         <TextView
             android:id="@+id/tv_get_game_name"
