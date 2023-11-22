@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { User } from 'src/users/user.entity';
 import { UserAuthDto } from './dto/user-auth.dto';
 import * as crypto from 'crypto';
@@ -7,6 +7,20 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
     constructor(private jwtService: JwtService){}
+
+    async tokenValidation(accessToken: string): Promise<UserAuthDto> {
+        try {
+            console.log(accessToken);
+            const decode = await this.jwtService.verifyAsync(accessToken,{secret: process.env.JWT_SECRET});
+            console.log(decode);
+            const {id, username} = decode;
+            return {id, username};
+        } catch(error) {
+            console.log(error);
+            throw new UnauthorizedException("Invalid access token");
+        }
+        
+    }
 
     async createNullUser(idOauth: string): Promise<{accessToken: string}> {
         const user = new User();
