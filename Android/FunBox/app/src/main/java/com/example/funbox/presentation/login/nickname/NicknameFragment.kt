@@ -20,9 +20,14 @@ class NicknameFragment : BaseFragment<FragmentNicknameBinding>(R.layout.fragment
     }
 
     private fun handleUiEvent(event: NicknameUiEvent) = when (event) {
+        is NicknameUiEvent.NicknameSubmit -> {
+
+        }
+
         is NicknameUiEvent.NicknameSuccess -> {
             findNavController().navigate(R.id.action_NicknameFragment_to_ProfileFragment)
         }
+
         is NicknameUiEvent.NetworkErrorEvent -> {
             showSnackBar(R.string.network_error_message)
         }
