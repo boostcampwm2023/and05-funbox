@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { User } from 'src/users/user.entity';
 import { UserAuthDto } from './dto/user-auth.dto';
 
@@ -16,7 +16,16 @@ export class AuthService {
         user.messaged_at = null;
         user.type_login = "NAVER";
         user.id_oauth = id_oauth;
-        await user.save();
+        try {
+            await user.save();
+        } catch (error) {
+            if(error.code === 'ER_DUP_ENTRY') {
+                throw new ConflictException("Existing id (OAuth)");
+            } else {
+                throw new InternalServerErrorException();
+            }
+        }
+        
         return UserAuthDto.of(user);
     }
 }
