@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { User } from 'src/users/user.entity';
 import { UserAuthDto } from './dto/user-auth.dto';
 import * as crypto from 'crypto';
@@ -41,5 +41,13 @@ export class AuthService {
     hashedId(idOauth: string): string {
         const salt = "teamrpg";
         return crypto.createHash('sha256').update(idOauth + salt).digest('hex');
+    }
+
+    async findIdOauth(idOauth: string): Promise<UserAuthDto>{
+        const user = await User.findOne({where:{id_oauth: this.hashedId(idOauth)}});
+        if(!user) {
+            throw new NotFoundException(`Can't find User with idOauth`);
+        }
+        return UserAuthDto.of(user);
     }
 }

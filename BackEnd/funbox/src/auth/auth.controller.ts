@@ -10,4 +10,9 @@ export class AuthController {
     async makeNullUserAndReturnWithToken(@Body('id_oauth') idOauth: string) {
         return await this.authService.createNullUser(idOauth);
     }
+
+    @Post('/login')
+    async login(@Body('id_oauth') idOauth: string) {
+        return await this.authService.findIdOauth(idOauth);
+    }
 }
