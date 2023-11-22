@@ -1,13 +1,17 @@
 package com.example.funbox.presentation.login.title
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.funbox.R
 import com.example.funbox.databinding.FragmentTitleBinding
 import com.example.funbox.presentation.BaseFragment
+import com.example.funbox.presentation.MainActivity
+import com.example.funbox.presentation.login.NaverOAuthLoginCallback
+import com.example.funbox.presentation.login.NaverProfileCallback
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
@@ -17,7 +21,10 @@ import timber.log.Timber
 
 class TitleFragment : BaseFragment<FragmentTitleBinding>(R.layout.fragment_title) {
 
-    private val viewModel: TitleViewModel by viewModels()
+    private val viewModel: TitleViewModel by activityViewModels()
+    private val naverProfileCallback: NaverProfileCallback = NaverProfileCallback()
+    private val naverOAuthLoginCallback: NaverOAuthLoginCallback =
+        NaverOAuthLoginCallback(naverProfileCallback)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -36,7 +43,7 @@ class TitleFragment : BaseFragment<FragmentTitleBinding>(R.layout.fragment_title
         )
     }
 
-    private fun startNaverLogin() {
+    private fun getNaverProfile(): NidProfileCallback<NidProfileResponse> {
         val profileCallback = object : NidProfileCallback<NidProfileResponse> {
             override fun onSuccess(result: NidProfileResponse) {
                 Timber.d("회원 이름: ${result.profile?.id}")
@@ -51,6 +58,10 @@ class TitleFragment : BaseFragment<FragmentTitleBinding>(R.layout.fragment_title
             }
         }
 
+        return profileCallback
+    }
+
+    private fun getNaverOAuth(profileCallback: NidProfileCallback<NidProfileResponse>): OAuthLoginCallback {
         val oauthLoginCallback = object : OAuthLoginCallback {
             override fun onSuccess() {
                 NidOAuthLogin().callProfileApi(profileCallback)
@@ -67,6 +78,10 @@ class TitleFragment : BaseFragment<FragmentTitleBinding>(R.layout.fragment_title
             }
         }
 
+        return oauthLoginCallback
+    }
+
+    private fun startNaverLogin(oauthLoginCallback: OAuthLoginCallback) {
         NaverIdLoginSDK.authenticate(requireContext(), oauthLoginCallback)
     }
 
@@ -81,7 +96,19 @@ class TitleFragment : BaseFragment<FragmentTitleBinding>(R.layout.fragment_title
 
     private fun handleUiEvent(event: TitleUiEvent) = when (event) {
         is TitleUiEvent.NaverLoginStart -> {
-            startNaverLogin()
+            naverProfileCallback.profileUserId?.let { userId ->
+                viewModel.submitUserId(userId)
+            }
+        }
+
+        is TitleUiEvent.NaverAccessTokenSubmit -> {
+            naverOAuthLoginCallback.accessToken?.let { token ->
+                viewModel.submitAccessToken(token)
+            }
+        }
+
+        is TitleUiEvent.SignUpStart -> {
+            findNavController().navigate(R.id.action_TitleFragment_to_NicknameFragment)
         }
 
         is TitleUiEvent.NaverLoginSuccess -> {
@@ -90,7 +117,7 @@ class TitleFragment : BaseFragment<FragmentTitleBinding>(R.layout.fragment_title
                 resources.getString(R.string.social_login_info_naver_success),
                 Toast.LENGTH_SHORT
             ).show()
-            findNavController().navigate(R.id.action_TitleFragment_to_NicknameFragment)
+            startActivity(Intent(requireContext(), MainActivity::class.java))
         }
 
         is TitleUiEvent.NetworkErrorEvent -> {

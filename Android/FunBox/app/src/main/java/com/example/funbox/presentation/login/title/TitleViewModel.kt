@@ -2,6 +2,9 @@ package com.example.funbox.presentation.login.title
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.funbox.data.dto.User
+import com.example.funbox.data.repository.NaverLoginRepository
+import com.example.funbox.data.repository.NaverLoginRepositoryImpl
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -9,6 +12,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class TitleViewModel : ViewModel() {
+
+    private val naverLoginRepository: NaverLoginRepository = NaverLoginRepositoryImpl()
+
+    private val _user = MutableStateFlow<User?>(null)
+    val user = _user.asStateFlow()
 
     private val _titleUiEvent = MutableSharedFlow<TitleUiEvent>()
     val titleUiEvent = _titleUiEvent.asSharedFlow()
@@ -19,6 +27,38 @@ class TitleViewModel : ViewModel() {
     fun startNaverLogin() {
         viewModelScope.launch {
             _titleUiEvent.emit(TitleUiEvent.NaverLoginStart)
+        }
+    }
+
+    fun submitUserId(userId: String) {
+        viewModelScope.launch {
+            _user.value = naverLoginRepository.postNaverProfileUserId(userId)
+            when (_user.value) {
+                null -> {
+                    _titleUiEvent.emit(TitleUiEvent.NaverAccessTokenSubmit)
+                }
+
+                else -> {
+                    _titleUiEvent.emit(TitleUiEvent.NaverLoginSuccess)
+                }
+            }
+        }
+    }
+
+    fun submitAccessToken(token: String) {
+        viewModelScope.launch {
+            _user.value = naverLoginRepository.postNaverAccessToken(token)
+            _user.value?.let { user ->
+                when (user.name) {
+                    null -> {
+                        _titleUiEvent.emit(TitleUiEvent.SignUpStart)
+                    }
+
+                    else -> {
+                        _titleUiEvent.emit(TitleUiEvent.NaverLoginSuccess)
+                    }
+                }
+            }
         }
     }
 
