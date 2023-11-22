@@ -70,6 +70,7 @@
             android:layout_marginEnd="32dp"
             android:layout_marginBottom="16dp"
             android:background="@drawable/bg_green_rectangle"
+            android:onClick="@{() -> vm.showAnswerCheckDialog()}"
             android:text="@string/answer_correct"
             android:textColor="@color/white"
             android:textSize="20sp"
