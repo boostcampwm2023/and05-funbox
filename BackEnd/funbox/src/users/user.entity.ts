@@ -9,7 +9,7 @@ export class User extends BaseEntity {
     username: string;
 
     @Column({type: 'timestamp',nullable: false})
-    created_at: string;
+    created_at: Date;
 
     @Column({length: 255, nullable: true})
     profile_url: string;
@@ -23,6 +23,12 @@ export class User extends BaseEntity {
     @Column({length: 31, nullable: true})
     message: string;
 
-    @Column({type: 'timestamp',nullable: true})
-    messaged_at: string;
+    @Column({type: 'timestamp', nullable: true})
+    messaged_at: Date;
+
+    @Column({type: 'string', nullable: false})
+    type_login: string;
+
+    @Column({type: 'string', nullable: false})
+    id_oauth: string;
 }
