@@ -2,10 +2,13 @@ import { ConflictException, Injectable, InternalServerErrorException, NotFoundEx
 import { User } from 'src/users/user.entity';
 import { UserAuthDto } from './dto/user-auth.dto';
 import * as crypto from 'crypto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-    async createNullUser(idOauth: string): Promise<UserAuthDto> {
+    constructor(private jwtService: JwtService){}
+
+    async createNullUser(idOauth: string): Promise<{accessToken: string}> {
         const user = new User();
         this.setUserNull(user, idOauth);
         try {
@@ -19,7 +22,8 @@ export class AuthService {
                 throw new InternalServerErrorException();
             }
         }
-        return UserAuthDto.of(user);
+
+        return this.accessToken(user);
     }
 
     setUserNull(user: User, idOauth: string): User{
@@ -43,11 +47,18 @@ export class AuthService {
         return crypto.createHash('sha256').update(idOauth + salt).digest('hex');
     }
 
-    async findIdOauth(idOauth: string): Promise<UserAuthDto>{
+    async findIdOauth(idOauth: string): Promise<{accessToken: string}>{
         const user = await User.findOne({where:{id_oauth: this.hashedId(idOauth)}});
+        
         if(!user) {
             throw new NotFoundException(`Can't find User with idOauth`);
         }
-        return UserAuthDto.of(user);
+        
+        return this.accessToken(user);
+    }
+
+    accessToken(user: User) : {accessToken:string} {
+        const accessToken = this.jwtService.sign(UserAuthDto.of(user));
+        return { accessToken };
     }
 }
