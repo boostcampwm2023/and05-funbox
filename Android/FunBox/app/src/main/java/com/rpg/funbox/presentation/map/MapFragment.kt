@@ -49,6 +49,10 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         is MapUiEvent.GetGame -> {
             GetGameDialog().show(parentFragmentManager, "getGame")
         }
+
+        is MapUiEvent.ToSetting ->{
+            findNavController().navigate(R.id.action_mapFragment_to_settingFragment)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -70,6 +74,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     override fun onStart() {
         super.onStart()
         viewModel.buttonGone()
+        isFabOpen = false
     }
 
     private fun initMapView() {
@@ -153,7 +158,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     override fun onMapReady(map: NaverMap) {
         this.naverMap = map
 
-        naverMap.minZoom = 15.0
+        naverMap.minZoom = 13.0
         naverMap.maxZoom = 17.0
         naverMap.uiSettings.isZoomControlEnabled = false
         naverMap.extent = LatLngBounds(LatLng(31.43, 122.37), LatLng(44.35, 132.0))
