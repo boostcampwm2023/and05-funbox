@@ -1,6 +1,5 @@
 *.iml
 .gradle
-/release/app-release.aab
 /key.jks
 /key.properties
 /local.properties
@@ -13,6 +12,7 @@
 /.idea/misc.xml
 .DS_Store
 /build
+/release
 /captures
 .externalNativeBuild
 .cxx
