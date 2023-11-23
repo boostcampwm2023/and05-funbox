@@ -18,8 +18,20 @@ export class AuthService {
         }
     }
 
-    async getNaverUser(naverAccessToken: string): Promise<boolean> {
-        return true;
+    async getNaverUserId(accessToken: string): Promise<string> {
+        const url = 'https://openapi.naver.com/v1/nid/me'
+        const response = await fetch(url, {
+            method : "GET",
+            headers : {
+                Authorization: 'Bearer '+ accessToken
+            }
+        })
+        const userInfo = await response.json();
+        if(userInfo.message !== 'success') {
+            throw new UnauthorizedException("not valide naver token!")
+        }
+        const userId = userInfo.response.id;
+        return userId;
     }
 
     async createNullUser(idOauth: string): Promise<{accessToken: string}> {

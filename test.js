@@ -57,26 +57,44 @@
 //     console.log()
 // });
 
-fetch('http://localhost:3000/auth/test', {
-    method : "POST",
-    headers: {
-        'Content-Type':'application/json'
-    },
-    body : JSON.stringify({accessToken:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NzUsInVzZXJuYW1lIjpudWxsLCJpYXQiOjE3MDA2NzYxNDYsImV4cCI6MTcwMDkzNTM0Nn0.JSm_OHTs7VMS2vprZpG6ayqoOuZk_Zop_6HbeBeq9_8"})
-}).then((res)=>{
-    return res.json();
-}).then((data)=>{
-   console.log(data);
-});
+// fetch('http://localhost:3000/auth/test', {
+//     method : "POST",
+//     headers: {
+//         'Content-Type':'application/json'
+//     },
+//     body : JSON.stringify({accessToken:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NzUsInVzZXJuYW1lIjpudWxsLCJpYXQiOjE3MDA2NzYxNDYsImV4cCI6MTcwMDkzNTM0Nn0.JSm_OHTs7VMS2vprZpG6ayqoOuZk_Zop_6HbeBeq9_8"})
+// }).then((res)=>{
+//     return res.json();
+// }).then((data)=>{
+//    console.log(data);
+// });
 
-fetch('http://localhost:3000/users', {
-    method : "POST",
-    headers: {
-        'Content-Type':'application/json'
-    },
-    body : JSON.stringify({accessToken:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NzUsInVzZXJuYW1lIjpudWxsLCJpYXQiOjE3MDA2NzYxNDYsImV4cCI6MTcwMDkzNTM0Nn0.JSm_OHTs7VMS2vprZpG6ayqoOuZk_Zop_6HbeBeq9_8"})
-}).then((res)=>{
-    return res.json();
-}).then((data)=>{
-   console.log(data);
-});
+// fetch('http://localhost:3000/users', {
+//     method : "POST",
+//     headers: {
+//         'Content-Type':'application/json'
+//     },
+//     body : JSON.stringify({accessToken:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NzUsInVzZXJuYW1lIjpudWxsLCJpYXQiOjE3MDA2NzYxNDYsImV4cCI6MTcwMDkzNTM0Nn0.JSm_OHTs7VMS2vprZpG6ayqoOuZk_Zop_6HbeBeq9_8"})
+// }).then((res)=>{
+//     return res.json();
+// }).then((data)=>{
+//    console.log(data);
+// });
+
+function naverapitest() {
+    const naverToken = "AAAAPfvjGqF7xRSL5FwmLrv3B02HJdWD8ok4rswCGQbQETpDNUbh9SKfCtKoYWct484E9eHFa-FMCjjtODXUrMitvao";
+    
+    fetch("http://localhost:3000/auth/notoken", {
+        method : "POST",
+        headers: {
+           'Content-Type':'application/json'
+        },
+        body : JSON.stringify({naverAccessToken: naverToken})
+    }).then((res)=>{
+        return res.json();
+    }).then((data)=>{
+        console.log(data);
+    })    
+}
+
+naverapitest();

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -12,14 +12,12 @@ export class AuthController {
 
     @Post('/notoken')
     async getNaverUserAndFindUserDbIfNotMakeNullUser(@Body('naverAccessToken') naverAccessToken: string) {
-        const isNaverUser = await this.authService.getNaverUser(naverAccessToken);
-        if (!isNaverUser) {
-            throw new UnauthorizedException("invalid naver user");
-        }
+        const naverUserId = await this.authService.getNaverUserId(naverAccessToken);
+        
         try {
-            return await this.authService.findIdOauth(naverAccessToken);
+            return await this.authService.findIdOauth(naverUserId);
         } catch {
-            return await this.authService.createNullUser(naverAccessToken);
+            return await this.authService.createNullUser(naverUserId);
         }
     }
 }
