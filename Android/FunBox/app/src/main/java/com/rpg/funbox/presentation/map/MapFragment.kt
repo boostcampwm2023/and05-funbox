@@ -1,6 +1,5 @@
 package com.rpg.funbox.presentation.map
 
-import com.rpg.funbox.MessageDialog
 import com.rpg.funbox.R
 import android.animation.ObjectAnimator
 import android.graphics.Color
@@ -10,9 +9,6 @@ import android.location.Location
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
-import coil.load
 import com.rpg.funbox.databinding.FragmentMapBinding
 import com.rpg.funbox.presentation.BaseFragment
 import com.naver.maps.map.MapFragment
@@ -23,8 +19,11 @@ import com.naver.maps.map.overlay.Marker
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.geometry.LatLngBounds
 
 class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnMapReadyCallback {
 
@@ -39,6 +38,16 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     private fun handleUiEvent(event: MapUiEvent) = when (event) {
         is MapUiEvent.MessageOpen -> {
             MessageDialog().show(parentFragmentManager, "messageDialog")
+        }
+
+        is MapUiEvent.ToGame -> {
+            val action =
+                MapFragmentDirections.actionMapFragmentToGameSelectFragment(viewModel.userDetail.value.id)
+            findNavController().navigate(action)
+        }
+
+        is MapUiEvent.GetGame -> {
+            GetGameDialog().show(parentFragmentManager, "getGame")
         }
     }
 
@@ -56,6 +65,11 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
         viewModel.mapApi()
         initMapView()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.buttonGone()
     }
 
     private fun initMapView() {
@@ -139,6 +153,11 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     override fun onMapReady(map: NaverMap) {
         this.naverMap = map
 
+        naverMap.minZoom = 15.0
+        naverMap.maxZoom = 17.0
+        naverMap.uiSettings.isZoomControlEnabled = false
+        naverMap.extent = LatLngBounds(LatLng(31.43, 122.37), LatLng(44.35, 132.0))
+
         val hasMsg = InfoWindow()
         hasMsg.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
             override fun getText(infoWindow: InfoWindow): CharSequence {
@@ -146,46 +165,54 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             }
         }
 
-        viewModel.users.value.map {
+        val infoWindow = InfoWindow()
 
-            val marker = Marker()
-            marker.position = it.loc
-            marker.iconTintColor = Color.RED
-            marker.map = naverMap
-            marker.captionText = it.name.toString()
-            marker.captionTextSize = 20F
-            if (it.isMsg) {
-                hasMsg.open(marker)
-            }
-            marker.setOnClickListener { _ ->
-                viewModel.userDetailApi(it.id)
-                viewModel.userDetail.value
-
-                val infoWindow = InfoWindow()
-                infoWindow.adapter = object : InfoWindow.DefaultViewAdapter(requireContext()) {
-                    override fun getContentView(p0: InfoWindow): View {
-                        val view: View = View.inflate(context, R.layout.map_profile, null)
-
-                        view.findViewById<ImageView>(R.id.iv_profile)
-                            .load(viewModel.userDetail.value.profile)
-                        view.findViewById<TextView>(R.id.tv_profile_name).text =
-                            viewModel.userDetail.value.name
-                        view.findViewById<TextView>(R.id.tv_profile_msg).text =
-                            viewModel.userDetail.value.msg
-
-                        return view
-                    }
+        map.setOnMapClickListener { _, _ ->
+            viewModel.buttonGone()
+            viewModel.users.value.forEach {
+                it.mapPin?.infoWindow?.close()
+                if (it.isMsg) {
+                    it.mapPin?.let { mapPin -> hasMsg.open(mapPin) }
                 }
-                if (!marker.hasInfoWindow() || marker.infoWindow == hasMsg) {
-                    infoWindow.open(marker)
-                } else {
-                    marker.infoWindow?.close()
-                    if (it.isMsg) {
-                        hasMsg.open(marker)
-                    }
-                }
-                true
             }
+        }
+
+        viewModel.users.value.map { user ->
+
+            val marker = Marker().apply {
+                position = user.loc
+                iconTintColor = Color.RED
+                this.map = naverMap
+                captionText = user.name.toString()
+                captionTextSize = 20F
+                if (user.isMsg) {
+                    hasMsg.open(this)
+                }
+                setOnClickListener { _ ->
+                    viewModel.userDetailApi(user.id)
+                    val adapter = MapProfileAdapter(requireContext(), viewModel.userDetail.value)
+                    infoWindow.adapter = adapter
+
+                    if (!this.hasInfoWindow() || this.infoWindow == hasMsg) {
+                        viewModel.buttonVisible()
+                        viewModel.users.value.forEach {
+                            if (it.isMsg) {
+                                it.mapPin?.let { mapPin -> hasMsg.open(mapPin) }
+                            }
+                        }
+                        infoWindow.open(this)
+                    } else {
+                        viewModel.buttonGone()
+                        this.infoWindow?.close()
+                        if (user.isMsg) {
+                            hasMsg.open(this)
+                        }
+                    }
+
+                    true
+                }
+            }
+            user.mapPin = marker
         }
     }
 }

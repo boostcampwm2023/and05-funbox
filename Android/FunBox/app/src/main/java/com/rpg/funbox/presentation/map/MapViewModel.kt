@@ -1,5 +1,7 @@
 package com.rpg.funbox.presentation.map
 
+import android.graphics.ImageDecoder
+import android.provider.MediaStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rpg.funbox.data.dto.User
@@ -22,15 +24,30 @@ class MapViewModel : ViewModel() {
     private val _users = MutableStateFlow(listOf<User>())
     val users: StateFlow<List<User>> = _users
 
-    private val _userDetail= MutableStateFlow(UserDetail("","",""))
+    private val _userDetail= MutableStateFlow(UserDetail(0,"","",""))
     val userDetail : StateFlow<UserDetail> = _userDetail
 
     private val _mapUiEvent = MutableSharedFlow<MapUiEvent>()
     val mapUiEvent = _mapUiEvent.asSharedFlow()
 
+    private val _visibility= MutableStateFlow(false)
+    val visibility : StateFlow<Boolean> = _visibility
+
     fun startMessageDialog() {
         viewModelScope.launch {
             _mapUiEvent.emit(MapUiEvent.MessageOpen)
+        }
+    }
+
+    fun toGame(){
+        viewModelScope.launch {
+            _mapUiEvent.emit(MapUiEvent.ToGame)
+        }
+    }
+
+    fun getGame(){
+        viewModelScope.launch {
+            _mapUiEvent.emit(MapUiEvent.GetGame)
         }
     }
 
@@ -68,7 +85,15 @@ class MapViewModel : ViewModel() {
 
     fun userDetailApi(id:Int){
         _userDetail.update {
-            UserDetail("안녕하세요","https://drive.google.com/file/d/1P6Va6qkB39gnE-gbfbPLCSxIFwAeM8Ul/view?usp=drive_link", "B")
+            UserDetail( id,"안녕하세요","https://drive.google.com/file/d/1P6Va6qkB39gnE-gbfbPLCSxIFwAeM8Ul/view?usp=drive_link", "B")
         }
+    }
+
+    fun buttonVisible(){
+        _visibility.update { true }
+    }
+
+    fun buttonGone(){
+        _visibility.update { false }
     }
 }
