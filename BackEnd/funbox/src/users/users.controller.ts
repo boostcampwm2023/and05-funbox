@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { User } from './user.entity';

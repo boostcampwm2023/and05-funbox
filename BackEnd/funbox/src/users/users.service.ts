@@ -24,17 +24,20 @@ export class UsersService {
     await user.save();
     return user;
   }
-  
-  async findNearUsers(userLocationDto: UserLocationDto) : Promise<NearUsersDto[]> {
-    const users = await findNearUsersAlgorithm() // [!] 주변 조회 알고리즘 고도화 필요
+
+  async findNearUsers(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    userLocationDto: UserLocationDto,
+  ): Promise<NearUsersDto[]> {
+    const users = await findNearUsersAlgorithm(); // [!] 주변 조회 알고리즘 고도화 필요
     const nearUsersDto = [];
-    users.forEach(user => { 
+    users.forEach((user) => {
       nearUsersDto.push(NearUsersDto.of(user));
     });
     return nearUsersDto;
 
     async function findNearUsersAlgorithm(): Promise<User[]> {
-      return await User.find()
+      return await User.find();
     }
   }
 
