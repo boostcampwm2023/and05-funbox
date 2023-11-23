@@ -7,11 +7,11 @@
 
         <variable
             name="gameListAdapter"
-            type="com.example.funbox.presentation.game.gameselect.GameListAdapter" />
+            type="com.rpg.funbox.presentation.game.gameselect.GameListAdapter" />
 
         <variable
             name="vm"
-            type="com.example.funbox.presentation.game.gameselect.GameSelectViewModel" />
+            type="com.rpg.funbox.presentation.game.gameselect.GameSelectViewModel" />
 
     </data>
 

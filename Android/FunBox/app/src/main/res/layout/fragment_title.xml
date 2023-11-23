@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.example.funbox.presentation.login.title.TitleViewModel" />
+            type="com.rpg.funbox.presentation.login.title.TitleViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

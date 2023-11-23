@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.example.funbox.presentation.game.quiz.QuizViewModel" />
+            type="com.rpg.funbox.presentation.game.quiz.QuizViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

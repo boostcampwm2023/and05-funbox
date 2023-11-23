@@ -7,15 +7,15 @@
 
         <variable
             name="vm"
-            type="com.example.funbox.presentation.game.gameselect.QuestionGameViewModel" />
+            type="com.rpg.funbox.presentation.game.gameselect.QuestionGameViewModel" />
 
         <variable
             name="gameCard"
-            type="com.example.funbox.presentation.game.gameselect.GameSelectUiState.GameCard" />
+            type="com.rpg.funbox.presentation.game.gameselect.GameSelectUiState.GameCard" />
 
         <variable
             name="onClickListener"
-            type="com.example.funbox.presentation.game.gameselect.OnGameClickListener" />
+            type="com.rpg.funbox.presentation.game.gameselect.OnGameClickListener" />
 
     </data>
 

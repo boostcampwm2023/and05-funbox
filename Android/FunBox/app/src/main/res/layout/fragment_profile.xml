@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.example.funbox.presentation.login.profile.ProfileViewModel" />
+            type="com.rpg.funbox.presentation.login.profile.ProfileViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
