@@ -24,31 +24,17 @@ export class UsersService {
     await user.save();
     return user;
   }
-
-  async findNearUsers(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    userLocationDto: UserLocationDto,
-  ): Promise<NearUsersDto[]> {
-    const users = await findNearUsersAlgorithm(); // [!] 주변 조회 알고리즘 고도화 필요
+  
+  async findNearUsers(userLocationDto: UserLocationDto) : Promise<NearUsersDto[]> {
+    const users = await findNearUsersAlgorithm() // [!] 주변 조회 알고리즘 고도화 필요
     const nearUsersDto = [];
-    users.forEach((user) => {
-      nearUsersDto.push(transFromUserToDto(user));
+    users.forEach(user => { 
+      nearUsersDto.push(NearUsersDto.of(user));
     });
     return nearUsersDto;
 
-    function transFromUserToDto(user: User) {
-      //[?] 구조분해할당으로 간지나게 하고싶음...
-      const dto = new NearUsersDto();
-      dto.id = user.id;
-      dto.username = user.username;
-      dto.locX = user.locX;
-      dto.locY = user.locY;
-      dto.isMsgInAnHour = true; // [!] timestamp 관련 로직 필요
-      return dto;
-    }
-
     async function findNearUsersAlgorithm(): Promise<User[]> {
-      return await User.find();
+      return await User.find()
     }
   }
 

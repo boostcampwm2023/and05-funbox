@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity()
+@Unique(['id_oauth'])
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   @ApiProperty({ description: 'id' })
@@ -37,4 +38,10 @@ export class User extends BaseEntity {
   @Column({ type: 'timestamp', nullable: true })
   @ApiProperty({ description: '메시지가 작성된 시간' })
   messaged_at: Date;
+
+  @Column({length: 31, nullable: false})
+  type_login: string;
+
+  @Column({length: 127, nullable: false})
+  id_oauth: string;
 }
