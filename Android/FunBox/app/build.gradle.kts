@@ -10,10 +10,6 @@ plugins {
     id("com.google.gms.google-services")
 }
 
-val keystorePropertiesFile = rootProject.file("key.properties")
-val keystoreProperties = Properties()
-keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-
 android {
     namespace = "com.rpg.funbox"
     compileSdk = 34
@@ -33,15 +29,6 @@ android {
         buildConfigField("String", "NAVER_LOGIN_ID_KEY", getApiKey("NAVER_LOGIN_ID_KEY"))
         buildConfigField("String", "NAVER_LOGIN_SECRET_KEY", getApiKey("NAVER_LOGIN_SECRET_KEY"))
 
-    }
-
-    signingConfigs {
-        create("config") {
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = file(keystoreProperties["storeFile"] as String)
-            storePassword = keystoreProperties["storePassword"] as String
-        }
     }
 
     buildTypes {
@@ -67,6 +54,8 @@ android {
         viewBinding = true
         buildConfig = true
     }
+
+    tasks.register("prepareKotlinBuildScriptModel"){}
 }
 
 fun getApiKey(key: String): String {
