@@ -5,6 +5,7 @@
     android:id="@+id/nvai_graph"
     app:startDestination="@id/QuizFragment">
 
+
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.example.funbox.presentation.map.MapFragment"
@@ -25,6 +26,9 @@
             app:destination="@id/WaitFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
+        <argument
+            android:name="otherID"
+            app:argType="integer"/>
     </fragment>
 
     <fragment

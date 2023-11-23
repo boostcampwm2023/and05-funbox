@@ -1,4 +1,4 @@
-package com.example.funbox
+package com.example.funbox.presentation.map
 
 import android.os.Bundle
 import android.view.LayoutInflater
