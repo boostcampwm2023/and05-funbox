@@ -6,7 +6,7 @@
         <import type="android.view.View"/>
         <variable
             name="vm"
-            type="com.example.funbox.presentation.map.MapViewModel" />
+            type="com.rpg.funbox.presentation.map.MapViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

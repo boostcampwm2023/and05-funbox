@@ -8,7 +8,8 @@
 
         <variable
             name="vm"
-            type="com.example.funbox.presentation.login.nickname.NicknameViewModel" />
+            type="com.rpg.funbox.presentation.login.nickname.NicknameViewModel" />
+
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -60,7 +61,7 @@
                 android:layout_marginBottom="240dp"
                 android:background="@{(vm.nicknameUiState.isNextBtnEnable == true) ? @drawable/success_button : @drawable/fail_button}"
                 android:enabled="@{vm.nicknameUiState.isNextBtnEnable}"
-                android:onClick="@{() -> vm.goToProfileFragment()}"
+                android:onClick="@{() -> vm.submitNickname()}"
                 android:text="@string/next"
                 android:textColor="@{(vm.nicknameUiState.isNextBtnEnable == true) ? @color/white : @color/black}"
                 android:textSize="24sp"
