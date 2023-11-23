@@ -42,6 +42,11 @@
         android:id="@+id/QuizFragment"
         android:name="com.example.funbox.presentation.game.quiz.QuizFragment"
         tools:layout="QuizFragment">
+        <action
+            android:id="@+id/action_QuizFragment_to_mapFragment"
+            app:destination="@id/mapFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
     </fragment>
     <fragment
         android:id="@+id/settingFragment"

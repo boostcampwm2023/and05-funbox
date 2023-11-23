@@ -7,11 +7,14 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.activity.viewModels
 import com.example.funbox.R
 import com.example.funbox.databinding.ActivityMainBinding
+import com.example.funbox.presentation.game.quiz.QuizViewModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private val quizViewModel: QuizViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
