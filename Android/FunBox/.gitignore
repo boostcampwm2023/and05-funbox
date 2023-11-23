@@ -1,5 +1,8 @@
 *.iml
 .gradle
+/release/app-release.aab
+/key.jks
+/key.properties
 /local.properties
 /.idea/caches
 /.idea/libraries
