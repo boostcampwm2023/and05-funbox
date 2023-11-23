@@ -9,35 +9,37 @@ import { UserResponseDto } from './dto/user-response.dto';
 @Controller('users')
 @ApiTags('유저 API')
 export class UsersController {
-    constructor(private usersService: UsersService) {}
+  constructor(private usersService: UsersService) {}
 
-    @Post('/create')
-    @ApiCreatedResponse({ type: User })
-    createUser(): Promise<User> {
-        return this.usersService.createUsertest();
-    }
+  @Post('/create')
+  @ApiCreatedResponse({ type: User })
+  createUser(): Promise<User> {
+    return this.usersService.createUsertest();
+  }
 
-    @Post('location')
-    @ApiOkResponse({ type: [NearUsersDto] })
-    async updateUserLocationAndReturnNearUsers(@Body() userLocationDto: UserLocationDto): Promise<NearUsersDto[]> {
-        await this.usersService.updateUserLocation(userLocationDto);
-        return await this.usersService.findNearUsers(userLocationDto);
-    }
-  
-    @Get('/:id')
-    @ApiOkResponse({ type: UserResponseDto })
-    async getUserById(@Param('id') id: number): Promise<UserResponseDto> {
-        const user = await this.usersService.getUserById(id)
-        return UserResponseDto.of(user);
-    }
+  @Post('location')
+  @ApiOkResponse({ type: [NearUsersDto] })
+  async updateUserLocationAndReturnNearUsers(
+    @Body() userLocationDto: UserLocationDto,
+  ): Promise<NearUsersDto[]> {
+    await this.usersService.updateUserLocation(userLocationDto);
+    return await this.usersService.findNearUsers(userLocationDto);
+  }
 
-    @Patch("/message")
-    @ApiOkResponse({ type: UserResponseDto })
-    async updateUserMessage(
-        @Body('message') message: string
-    ): Promise<UserResponseDto> {
-        const id = 1; // TODO: auth 모듈을 통해 user id 추출
-        const user = await this.usersService.updateUserMessage(id, message)
-        return UserResponseDto.of(user);
-    }
+  @Get('/:id')
+  @ApiOkResponse({ type: UserResponseDto })
+  async getUserById(@Param('id') id: number): Promise<UserResponseDto> {
+    const user = await this.usersService.getUserById(id);
+    return UserResponseDto.of(user);
+  }
+
+  @Patch('/message')
+  @ApiOkResponse({ type: UserResponseDto })
+  async updateUserMessage(
+    @Body('message') message: string,
+  ): Promise<UserResponseDto> {
+    const id = 1; // TODO: auth 모듈을 통해 user id 추출
+    const user = await this.usersService.updateUserMessage(id, message);
+    return UserResponseDto.of(user);
+  }
 }
