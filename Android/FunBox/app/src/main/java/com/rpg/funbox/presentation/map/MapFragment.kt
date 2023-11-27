@@ -136,7 +136,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         this.naverMap = map
         map.locationSource = locationSource
         map.uiSettings.isLocationButtonEnabled = true
-        map.locationTrackingMode = LocationTrackingMode.Face
 
         naverMap.addOnLocationChangeListener { location ->
             val cameraUpdate = CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))

@@ -32,8 +32,8 @@ class MapProfile @JvmOverloads constructor(
 
     @RequiresApi(Build.VERSION_CODES.P)
     fun setProfile(uri: String) {
-        val bitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, Uri.parse("https://firebasestorage.googleapis.com/v0/b/chattingservice-59c1f.appspot.com/o/%EC%B9%B4%EB%A6%AC%EB%82%98.jpg?alt=media&token=5e74df56-b9ba-4e8d-9b33-37fe7772296c")))
-        binding.ivProfile.load(bitmap)
+//        val bitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, Uri.parse("https://firebasestorage.googleapis.com/v0/b/chattingservice-59c1f.appspot.com/o/%EC%B9%B4%EB%A6%AC%EB%82%98.jpg?alt=media&token=5e74df56-b9ba-4e8d-9b33-37fe7772296c")))
+//        binding.ivProfile.load(bitmap)
     }
 
     fun setName(text: String) {

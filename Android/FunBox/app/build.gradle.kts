@@ -55,6 +55,9 @@ android {
         buildConfig = true
     }
 
+    tasks.register<Wrapper>("wrapper") {
+        gradleVersion = "5.6.4"
+    }
     tasks.register("prepareKotlinBuildScriptModel"){}
 }
 
