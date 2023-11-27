@@ -55,4 +55,10 @@ export class UsersService {
     user.messaged_at = new Date();
     return await user.save();
   }
+
+  async updateUserName(id: number, username: string): Promise<User> {
+    const user = await this.getUserById(id);
+    user.username = username;
+    return await user.save();
+  }
 }

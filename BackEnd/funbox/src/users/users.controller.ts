@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
@@ -46,10 +47,22 @@ export class UsersController {
   @Patch('/message')
   @ApiOkResponse({ type: UserResponseDto })
   async updateUserMessage(
+    @Req() req,
     @Body('message') message: string,
   ): Promise<UserResponseDto> {
-    const id = 1; // TODO: auth 모듈을 통해 user id 추출
+    const id = req.user.id;
     const user = await this.usersService.updateUserMessage(id, message);
     return UserResponseDto.of(user);
   }
+
+  @Post('/username')
+  @ApiOkResponse({ type: UserResponseDto })
+  async updateUserName(
+    @Req() req,
+    @Body('userName') userName: string,
+  ): Promise<UserResponseDto> {
+    const user = await this.usersService.updateUserName(req.user.id, userName);
+    return UserResponseDto.of(user);
+  }
+
 }
