@@ -24,6 +24,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
+import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.util.FusedLocationSource
 
@@ -183,8 +184,14 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     override fun onMapReady(map: NaverMap) {
         this.naverMap = map
         map.locationSource = locationSource
-        map.uiSettings.isLocationButtonEnabled = true
-        map.locationTrackingMode = LocationTrackingMode.Follow
+        map.uiSettings.isLocationButtonEnabled = false
+        map.locationTrackingMode = LocationTrackingMode.Face
+
+        naverMap.addOnLocationChangeListener { location ->
+            val cameraUpdate = CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))
+            naverMap.moveCamera(cameraUpdate)
+        }
+
         naverMap.minZoom = 13.0
         naverMap.maxZoom = 17.0
         naverMap.uiSettings.isZoomControlEnabled = false
