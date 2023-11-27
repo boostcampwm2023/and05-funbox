@@ -66,8 +66,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         super.onCreate(savedInstanceState)
         if (!hasPermission()) {
             ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, LOCATION_PERMISSION_REQUEST_CODE)
-        } else {
-            initMapView()
         }
     }
 
@@ -75,7 +73,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        setLocationListener()
+        //setLocationListener()
 
         collectLatestFlow(viewModel.mapUiEvent) { handleUiEvent(it) }
 
@@ -84,7 +82,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }
 
         viewModel.mapApi()
-        //initMapView()
+        initMapView()
     }
 
     override fun onStart() {
@@ -104,22 +102,22 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
-    private fun setLocationListener() {
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            handler.postDelayed(locationRunnable, 5000)
-        } else {
-            // 권한이 없으면 권한 요청
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                123
-            )
-        }
-    }
+//    private fun setLocationListener() {
+//        if (ContextCompat.checkSelfPermission(
+//                requireContext(),
+//                Manifest.permission.ACCESS_FINE_LOCATION
+//            ) == PackageManager.PERMISSION_GRANTED
+//        ) {
+//            handler.postDelayed(locationRunnable, 5000)
+//        } else {
+//            // 권한이 없으면 권한 요청
+//            ActivityCompat.requestPermissions(
+//                requireActivity(),
+//                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+//                123
+//            )
+//        }
+//    }
 
     private val locationRunnable = object : Runnable {
         override fun run() {
