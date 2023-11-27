@@ -1,9 +1,10 @@
 package com.rpg.funbox.data.repository
 
+import com.rpg.funbox.app.MainApplication
+import com.rpg.funbox.data.JwtDecoder
 import com.rpg.funbox.data.RetrofitInstance
 import com.rpg.funbox.data.dto.NaverAccessTokenRequest
-import com.rpg.funbox.data.dto.NaverLoginRequest
-import com.rpg.funbox.data.dto.User
+import com.rpg.funbox.data.dto.UserAuthDto
 import com.rpg.funbox.data.network.service.NaverLoginApi
 
 class NaverLoginRepositoryImpl : NaverLoginRepository {
@@ -12,38 +13,25 @@ class NaverLoginRepositoryImpl : NaverLoginRepository {
         RetrofitInstance.retrofit.create(NaverLoginApi::class.java)
     }
 
-    override suspend fun postNaverProfileUserId(userId: String): User? {
-        val response = naverLoginApi.tryNaverLogin(NaverLoginRequest(userId))
-        when (response.status) {
+    override suspend fun postNaverAccessToken(token: String): UserAuthDto? {
+        val response = naverLoginApi.submitNaverAccessToken(NaverAccessTokenRequest(token))
+        when (response.code()) {
             in successStatusCodeRange -> {
-                return response
+                return response.body()?.let {  tokenResponse ->
+                    MainApplication.mySharedPreferences.setJWT("jwt", tokenResponse.accessToken)
+                    JwtDecoder.getUser(tokenResponse.accessToken)
+                }
             }
 
             UNAUTHORIZED_STATUS -> {
-                return null
+                return UserAuthDto(0, 0, 0, null)
             }
 
-            in serverErrorStatusCodeRange -> {
-                return null
-            }
+            in serverErrorStatusCodeRange -> {}
 
             else -> {}
         }
-
         return null
-    }
-
-    override suspend fun postNaverAccessToken(token: String): User? {
-        val response = naverLoginApi.submitNaverAccessToken(NaverAccessTokenRequest(token))
-        return when (response.name) {
-            null -> {
-                response
-            }
-
-            else -> {
-                null
-            }
-        }
     }
 
     companion object {

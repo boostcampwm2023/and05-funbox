@@ -1,10 +1,8 @@
 package com.rpg.funbox.data.repository
 
-import com.rpg.funbox.data.dto.User
+import com.rpg.funbox.data.dto.UserAuthDto
 
 interface NaverLoginRepository {
 
-    suspend fun postNaverProfileUserId(userId: String): User?
-
-    suspend fun postNaverAccessToken(token: String): User?
+    suspend fun postNaverAccessToken(token: String): UserAuthDto?
 }
