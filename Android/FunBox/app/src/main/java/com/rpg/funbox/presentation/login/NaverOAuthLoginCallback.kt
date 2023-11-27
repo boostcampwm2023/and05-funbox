@@ -7,9 +7,21 @@ import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
 import timber.log.Timber
 
-class NaverOAuthLoginCallback(private val profileCallback: NidProfileCallback<NidProfileResponse>) :
-    OAuthLoginCallback {
+class NaverOAuthLoginCallback() : OAuthLoginCallback {
 
+    private val profileCallback = object : NidProfileCallback<NidProfileResponse> {
+        override fun onSuccess(result: NidProfileResponse) {
+            Timber.d("회원 이름: ${result.profile?.id}")
+        }
+
+        override fun onFailure(httpStatus: Int, message: String) {
+            accessToken = null
+        }
+
+        override fun onError(errorCode: Int, message: String) {
+            onFailure(httpStatus = errorCode, message = message)
+        }
+    }
     var accessToken: String? = null
 
     override fun onSuccess() {
