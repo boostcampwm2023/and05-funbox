@@ -6,7 +6,7 @@ import android.content.SharedPreferences
 class MySharedPreferences {
 
     private val preferences: SharedPreferences =
-        MyApplication.myContext().getSharedPreferences("prefs_name", Context.MODE_PRIVATE)
+        MainApplication.myContext().getSharedPreferences("prefs_name", Context.MODE_PRIVATE)
 
     fun getJWT(key: String, defValue: String): String {
         return preferences.getString(key, defValue).toString()
