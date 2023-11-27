@@ -2,6 +2,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './user.entity';
 import { UserLocationDto } from './dto/user-location.dto';
 import { NearUsersDto } from './dto/near-users.dto';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class UsersService {
@@ -66,5 +69,24 @@ export class UsersService {
     const user = await this.getUserById(id);
     user.profile_url = profileUrl;
     return await user.save();
+  }
+
+  async saveFile(file: Express.Multer.File, id: number): Promise<string> {
+    const hashedpath = crypto
+      .createHash('sha256')
+      .update(id + file.originalname)
+      .digest('hex');
+    const filePath = path.join(
+      './test/' + hashedpath + '.' + file.originalname.split('.')[1],
+    );
+    return new Promise((resolve, reject) => {
+      fs.writeFile(filePath, file.buffer, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(filePath);
+        }
+      });
+    });
   }
 }

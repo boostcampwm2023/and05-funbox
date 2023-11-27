@@ -2,11 +2,14 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Param,
   Patch,
   Post,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
 import { UsersService } from './users.service';
@@ -15,6 +18,8 @@ import { UserLocationDto } from './dto/user-location.dto';
 import { NearUsersDto } from './dto/near-users.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express';
 
 @Controller('users')
 @ApiTags('유저 API')
@@ -76,5 +81,17 @@ export class UsersController {
       profileUrl,
     );
     return UserResponseDto.of(user);
+  }
+
+  @Post('/uploadtest')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req) {
+    if (!file) {
+      throw new NotFoundException('File not found');
+    }
+
+    const filePath = await this.usersService.saveFile(file, req.user.id);
+
+    return { filePath };
   }
 }
