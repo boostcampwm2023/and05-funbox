@@ -65,4 +65,16 @@ export class UsersController {
     return UserResponseDto.of(user);
   }
 
+  @Post('/profile')
+  @ApiOkResponse({ type: UserResponseDto })
+  async updateUserProfile(
+    @Req() req,
+    @Body('profileUrl') profileUrl: string,
+  ): Promise<UserResponseDto> {
+    const user = await this.usersService.updateUserProfileUrl(
+      req.user.id,
+      profileUrl,
+    );
+    return UserResponseDto.of(user);
+  }
 }

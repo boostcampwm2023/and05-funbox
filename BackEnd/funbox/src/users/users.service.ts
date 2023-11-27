@@ -61,4 +61,10 @@ export class UsersService {
     user.username = username;
     return await user.save();
   }
+
+  async updateUserProfileUrl(id: number, profileUrl: string): Promise<User> {
+    const user = await this.getUserById(id);
+    user.profile_url = profileUrl;
+    return await user.save();
+  }
 }
