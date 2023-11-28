@@ -24,6 +24,10 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
+import com.naver.maps.map.CameraUpdate
+import com.naver.maps.map.LocationTrackingMode
+import com.naver.maps.map.overlay.OverlayImage
+import com.naver.maps.map.util.FusedLocationSource
 
 class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnMapReadyCallback {
 
@@ -34,7 +38,12 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     private lateinit var naverMap: NaverMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val handler = Handler()
-
+    private lateinit var locationSource: FusedLocationSource
+    private val LOCATION_PERMISSION_REQUEST_CODE = 5000
+    private val PERMISSIONS = arrayOf(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    )
     private fun handleUiEvent(event: MapUiEvent) = when (event) {
         is MapUiEvent.MessageOpen -> {
             MessageDialog().show(parentFragmentManager, "messageDialog")
@@ -55,11 +64,17 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?){
+        super.onCreate(savedInstanceState)
+        if (!hasPermission()) {
+            ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, LOCATION_PERMISSION_REQUEST_CODE)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        setLocationListener()
 
         collectLatestFlow(viewModel.mapUiEvent) { handleUiEvent(it) }
 
@@ -85,57 +100,20 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             }
 
         mapFragment.getMapAsync(this)
+        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
-    private fun setLocationListener() {
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            handler.postDelayed(locationRunnable, 5000)
-        } else {
-            // 권한이 없으면 권한 요청
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                123
-            )
-        }
-    }
-
-    private val locationRunnable = object : Runnable {
-        override fun run() {
-            // 주기적으로 위치 업데이트 요청
-            requestLocationUpdates()
-            handler.postDelayed(this, 5000) // 다음 위치 업데이트는 5초 뒤에
-        }
-    }
-
-    private fun requestLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return
-        }
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location: Location? ->
-                // Got last known location
-                location?.let {
-                    val latitude = it.latitude
-                    val longitude = it.longitude
-                    viewModel.setXY(latitude, longitude)
-
-                    sendXYtoApi(latitude, longitude)
-
-                }
+    private fun hasPermission(): Boolean {
+        for (permission in PERMISSIONS) {
+            if (ContextCompat.checkSelfPermission(requireContext(), permission)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                return false
             }
+        }
+        return true
     }
+
 
     private fun sendXYtoApi(latitude: Double, longitude: Double) {
         //LoadUserService.create().search(latitude,longitude).execute()
@@ -157,6 +135,19 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     override fun onMapReady(map: NaverMap) {
         this.naverMap = map
+        map.locationSource = locationSource
+        map.locationTrackingMode = LocationTrackingMode.Face
+        map.uiSettings.isLocationButtonEnabled = true
+
+        val locationOverlay = naverMap.locationOverlay
+        locationOverlay.isVisible = true
+        locationOverlay.icon = OverlayImage.fromResource(R.drawable.my_location)
+
+        naverMap.addOnLocationChangeListener { location ->
+            val cameraUpdate = CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))
+            naverMap.moveCamera(cameraUpdate)
+            viewModel.setXY(location.latitude,location.longitude)
+        }
 
         naverMap.minZoom = 13.0
         naverMap.maxZoom = 17.0
