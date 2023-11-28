@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
-import { NearUsersDto } from 'src/users/dto/near-users.dto';
 import { UsersService } from 'src/users/users.service';
+import { SocketUserDto } from './dto/socket-user.dto';
 
 @Injectable()
 export class SocketService {
@@ -38,14 +38,11 @@ export class SocketService {
     }
   }
 
-  async getNearUsers(): Promise<NearUsersDto[]> {
+  async getNearUsers(): Promise<SocketUserDto[]> {
     return Promise.all(
       Array.from(this.userIdToClient.values())
-        .filter((client) => client.data.location) // TODO: 주변 위치로 필터링
-        .map(async (client) => {
-          const user = await this.userService.getUserById(client.data.userId);
-          return NearUsersDto.of(user);
-        }),
+        .filter((client) => client.data.locX && client.data.locY) // TODO: 주변 위치로 필터링
+        .map(async (client) => SocketUserDto.of(client)),
     );
   }
 

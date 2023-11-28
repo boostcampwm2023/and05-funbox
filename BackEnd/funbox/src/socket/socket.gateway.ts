@@ -9,7 +9,8 @@ import {
 import { Server, Socket } from 'socket.io';
 import { SocketService } from './socket.service';
 import { ParseIntPipe } from '@nestjs/common';
-import { UserLocationDto } from 'src/users/dto/user-location.dto';
+import { UpdateLocationDto } from './dto/update-location.dto';
+import { SocketUserDto } from './dto/socket-user.dto';
 
 @WebSocketGateway({
   namespace: 'socket',
@@ -26,11 +27,12 @@ export class SocketGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('updateLocation')
-  updateLocation(client: Socket, userLocationDto: UserLocationDto): void {
-    const id = client.data.userId;
-    const { locX, locY } = userLocationDto;
-    client.data.location = { locX, locY };
-    this.server.emit('location', JSON.stringify({ id, locX, locY }));
+  updateLocation(client: Socket, updateLocationDto: UpdateLocationDto): void {
+    const { locX, locY } = updateLocationDto;
+    client.data.locX = locX;
+    client.data.locY = locY;
+
+    this.server.emit('location', JSON.stringify(SocketUserDto.of(client)));
   }
 
   @SubscribeMessage('applyQuizGame')
