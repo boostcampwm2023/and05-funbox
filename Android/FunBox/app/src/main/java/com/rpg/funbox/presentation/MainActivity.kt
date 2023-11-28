@@ -28,9 +28,11 @@ import com.rpg.funbox.presentation.setting.SettingViewModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+
     private val quizViewModel: QuizViewModel by viewModels()
     private val mapViewModel: MapViewModel by viewModels()
     private val settingViewModel: SettingViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)

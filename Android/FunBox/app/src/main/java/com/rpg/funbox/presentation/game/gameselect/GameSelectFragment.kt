@@ -39,7 +39,7 @@ class GameSelectFragment : BaseFragment<FragmentGameSelectBinding>(R.layout.frag
 
         is GameSelectUiEvent.GameSelectSuccess -> {
             Timber.d("Question Count: ${viewModel2.quizQuestionCount.value}")
-            findNavController().navigate(R.id.action_GameSelectFragment_to_WaitFragment)
+            // findNavController().navigate(R.id.action_GameSelectFragment_to_WaitFragment)
         }
 
         is GameSelectUiEvent.GameListSubmit -> {

@@ -21,7 +21,7 @@ class NicknameFragment : BaseFragment<FragmentNicknameBinding>(R.layout.fragment
 
     private fun handleUiEvent(event: NicknameUiEvent) = when (event) {
         is NicknameUiEvent.NicknameSubmit -> {
-
+            findNavController().navigate(R.id.action_NicknameFragment_to_ProfileFragment)
         }
 
         is NicknameUiEvent.NicknameSuccess -> {

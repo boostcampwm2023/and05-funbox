@@ -15,6 +15,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_dialog_rectangle"
+        android:backgroundTint="@null"
+        android:elevation="10dp"
         tools:context=".presentation.game.quiz.AnswerCheckFragment">
 
         <TextView
@@ -24,7 +26,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:text="@string/answer_example"
+            android:text="@{vm.latestAnswer}"
             android:textSize="20sp"
             app:layout_constraintBottom_toTopOf="@id/tv_msg_answer_check"
             app:layout_constraintEnd_toEndOf="parent"

@@ -5,7 +5,6 @@
     android:id="@+id/nvai_graph"
     app:startDestination="@id/mapFragment">
 
-
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.rpg.funbox.presentation.map.MapFragment"
@@ -24,37 +23,11 @@
         android:id="@+id/GameSelectFragment"
         android:name="com.rpg.funbox.presentation.game.gameselect.GameSelectFragment"
         tools:layout="GameSelectFragment">
-        <action
-            android:id="@+id/action_GameSelectFragment_to_WaitFragment"
-            app:destination="@id/WaitFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
         <argument
             android:name="otherID"
-            app:argType="integer"/>
+            app:argType="integer" />
     </fragment>
 
-    <fragment
-        android:id="@+id/WaitFragment"
-        android:name="com.rpg.funbox.presentation.game.wait.WaitFragment"
-        tools:layout="WaitFragment">
-        <action
-            android:id="@+id/action_WaitFragment_to_QuizFragment"
-            app:destination="@id/QuizFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/QuizFragment"
-        android:name="com.rpg.funbox.presentation.game.quiz.QuizFragment"
-        tools:layout="QuizFragment">
-        <action
-            android:id="@+id/action_QuizFragment_to_mapFragment"
-            app:destination="@id/mapFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
-    </fragment>
     <fragment
         android:id="@+id/settingFragment"
         android:name="com.rpg.funbox.presentation.setting.SettingFragment"

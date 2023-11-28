@@ -84,6 +84,14 @@ class MapViewModel : ViewModel() {
                     LatLng(37.5600000, 126.9700000),
                     "B",
                     true
+                ),
+
+                User(
+                    200,
+                    3,
+                    LatLng(37.2435914,127.0730043),
+                    "C",
+                    true
                 )
             )
         }

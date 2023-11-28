@@ -5,9 +5,12 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="vm"
             type="com.rpg.funbox.presentation.game.quiz.QuizViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -16,12 +19,13 @@
         tools:context=".presentation.game.quiz.QuizFragment">
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/question_answer_board_quiz"
+            android:id="@+id/question_board_quiz"
             android:layout_width="0dp"
             android:layout_height="150dp"
-            android:layout_marginTop="-20dp"
+            android:layout_marginTop="-32dp"
+            android:visibility="@{vm.quizUiState.isUserQuizState ? View.VISIBLE : View.GONE}"
             app:cardBackgroundColor="@color/edittext_color"
-            app:cardCornerRadius="20dp"
+            app:cardCornerRadius="16dp"
             app:cardElevation="30dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -33,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="48dp"
                 android:text="@string/msg_question_quiz"
                 android:textStyle="bold" />
 
@@ -52,16 +56,17 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/example_question_answer_board_quiz"
+            android:id="@+id/answer_board_quiz"
             android:layout_width="0dp"
             android:layout_height="150dp"
-            android:layout_marginBottom="-20dp"
+            android:layout_marginTop="-32dp"
+            android:visibility="@{vm.quizUiState.isUserQuizState ? View.GONE : View.VISIBLE}"
             app:cardBackgroundColor="@color/edittext_color"
-            app:cardCornerRadius="20dp"
+            app:cardCornerRadius="16dp"
             app:cardElevation="30dp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -73,6 +78,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="32dp"
+                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_weight="8"
                     android:autofillHints="@null"
@@ -91,6 +97,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_marginTop="12dp"
                     android:layout_marginEnd="32dp"
                     android:layout_weight="2"
                     android:background="@{(vm.quizUiState.isAnswerSubmitBtnEnable == true) ? @drawable/success_button : @drawable/fail_button}"
@@ -111,7 +118,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.naver.maps.map.MapView
-            android:id="@+id/map_view_game"
+            android:id="@+id/map_view_quiz"
             android:name="com.naver.maps.map.MapFragment"
             android:layout_width="0dp"
             android:layout_height="0dp"

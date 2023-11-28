@@ -1,33 +1,39 @@
 package com.rpg.funbox.presentation.map
 
-import com.rpg.funbox.R
-import android.animation.ObjectAnimator
-import android.graphics.Color
 import android.Manifest
+import android.animation.ObjectAnimator
 import android.content.pm.PackageManager
-import android.location.Location
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.View
-import com.rpg.funbox.databinding.FragmentMapBinding
-import com.rpg.funbox.presentation.BaseFragment
-import com.naver.maps.map.MapFragment
-import com.naver.maps.map.NaverMap
-import com.naver.maps.map.OnMapReadyCallback
-import com.naver.maps.map.overlay.InfoWindow
-import com.naver.maps.map.overlay.Marker
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
+import com.naver.maps.map.MapFragment
+import com.naver.maps.map.NaverMap
+import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.InfoWindow
+import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
+import com.rpg.funbox.R
+import com.rpg.funbox.databinding.FragmentMapBinding
+import com.rpg.funbox.presentation.BaseFragment
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnMapReadyCallback {
 
@@ -61,6 +67,13 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
         is MapUiEvent.ToSetting ->{
             findNavController().navigate(R.id.action_mapFragment_to_settingFragment)
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?){
+        super.onCreate(savedInstanceState)
+        if (!hasPermission()) {
+            ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, LOCATION_PERMISSION_REQUEST_CODE)
         }
     }
 
@@ -176,7 +189,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }
 
         viewModel.users.value.map { user ->
-
+            var adapter  = MapProfileAdapter(requireContext(),viewModel.userDetail.value,null)
             val marker = Marker().apply {
                 position = user.loc
                 iconTintColor = Color.RED
@@ -188,8 +201,43 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 }
                 setOnClickListener { _ ->
                     viewModel.userDetailApi(user.id)
-                    val adapter = MapProfileAdapter(requireContext(), viewModel.userDetail.value)
                     infoWindow.adapter = adapter
+
+
+
+                runBlocking {
+                    val test = viewModel.userDetail.value.profile
+                    val image : Bitmap = try {
+                        withContext(Dispatchers.IO) {
+                            Glide.with(requireContext())
+                                .asBitmap()
+                                .load(test)
+                                .apply(RequestOptions().override(100, 100))
+                                .submit()
+                                .get()
+                        }
+                    }catch (e: Exception){
+                        withContext(Dispatchers.IO) {
+                            Glide.with(requireContext())
+                                .asBitmap()
+                                .load(R.drawable.close_24)
+                                .apply(RequestOptions().override(100, 100))
+                                .submit()
+                                .get()
+                        }
+                    }
+
+                    adapter = MapProfileAdapter(requireContext(), viewModel.userDetail.value, image)
+                }
+
+
+                    requireActivity().runOnUiThread {
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            infoWindow.adapter = adapter
+                            infoWindow.open(this)
+                        },500)
+                    }
+
 
                     if (!this.hasInfoWindow() || this.infoWindow == hasMsg) {
                         viewModel.buttonVisible()
@@ -209,7 +257,10 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
                     true
                 }
+
             }
+
+
             user.mapPin = marker
         }
     }
