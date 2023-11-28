@@ -141,7 +141,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
         val locationOverlay = naverMap.locationOverlay
         locationOverlay.isVisible = true
-        locationOverlay.icon = OverlayImage.fromResource(R.drawable.my_location)
+        locationOverlay.iconHeight = 120
+        locationOverlay.iconWidth = 120
+        locationOverlay.icon = OverlayImage.fromResource(R.drawable.navi_icon)
 
         naverMap.addOnLocationChangeListener { location ->
             val cameraUpdate = CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))
