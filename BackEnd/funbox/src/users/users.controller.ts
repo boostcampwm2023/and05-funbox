@@ -91,7 +91,7 @@ export class UsersController {
     }
 
     const filePath = await this.usersService.saveFile(file, req.user.id);
-
+    this.usersService.uploadS3(filePath);
     return { filePath };
   }
 }

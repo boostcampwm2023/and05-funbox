@@ -89,4 +89,36 @@ export class UsersService {
       });
     });
   }
+
+  async uploadS3(filepath) {
+    const AWS = require('aws-sdk');
+    const fs = require('fs');
+    const endpoint = new AWS.Endpoint('https://kr.object.ncloudstorage.com');
+    const region = 'kr-standard';
+    const access_key = 'NGlaoUiOjImoIKwokYPk';
+    const secret_key = '5oeFecEZ5U8IED8FmfrHVE6dOHCeMHrXOZeDMzeH';
+
+    const S3 = new AWS.S3({
+      endpoint: endpoint,
+      region: region,
+      credentials: {
+        accessKeyId: access_key,
+        secretAccessKey: secret_key,
+      },
+    });
+
+    const bucket_name = 'funbox-profiles';
+    const local_file_path = filepath;
+
+    (async () => {
+      const object_name = local_file_path;
+      // upload file
+      await S3.putObject({
+        Bucket: bucket_name,
+        Key: object_name,
+
+        Body: fs.createReadStream(local_file_path),
+      }).promise();
+    })();
+  }
 }
