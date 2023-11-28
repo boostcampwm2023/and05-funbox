@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator
 import android.graphics.Color
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -198,15 +199,24 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
                     GlobalScope.launch {
                         runBlocking {
-                            val test =
-                                "https://firebasestorage.googleapis.com/v0/b/chattingservice-59c1f.appspot.com/o/%EC%B9%B4%EB%A6%AC%EB%82%98.jpg?alt=media&token=5e74df56-b9ba-4e8d-9b33-37fe7772296c"
-                            // test = viewModel.userDetail.value.profile
-                            val image = Glide.with(requireContext())
-                                .asBitmap()
-                                .load(test)
-                                .apply(RequestOptions().override(100, 100))
-                                .submit()
-                                .get()
+                            val test = viewModel.userDetail.value.profile
+                            var image : Bitmap
+                            try {
+                                image = Glide.with(requireContext())
+                                    .asBitmap()
+                                    .load(test)
+                                    .apply(RequestOptions().override(100, 100))
+                                    .submit()
+                                    .get()
+                            }catch (e: Exception){
+                                image = Glide.with(requireContext())
+                                    .asBitmap()
+                                    .load(R.drawable.close_24)
+                                    .apply(RequestOptions().override(100, 100))
+                                    .submit()
+                                    .get()
+                            }
+
 
                             adapter = MapProfileAdapter(requireContext(), viewModel.userDetail.value, image)
                         }
