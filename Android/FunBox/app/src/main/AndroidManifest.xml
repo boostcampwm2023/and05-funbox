@@ -26,23 +26,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FunBox"
         tools:targetApi="31">
+        <activity
+            android:name=".presentation.game.GameActivity"
+            android:exported="false" />
+
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="@string/map_api_key" />
+
         <activity
             android:name=".presentation.MainActivity"
-            android:exported="true">
-        </activity>
+            android:exported="true"></activity>
         <activity
             android:name=".presentation.login.TitleActivity"
             android:configChanges="keyboardHidden|orientation"
-            android:windowSoftInputMode="adjustResize"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".presentation.login.SplashActivity"
             android:exported="true"
             android:theme="@style/SplashTheme">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

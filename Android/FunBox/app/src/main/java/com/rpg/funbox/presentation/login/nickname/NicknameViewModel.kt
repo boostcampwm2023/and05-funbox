@@ -39,7 +39,7 @@ class NicknameViewModel : ViewModel() {
 
     fun submitNickname() {
         viewModelScope.launch {
-
+            _nicknameUiEvent.emit(NicknameUiEvent.NicknameSuccess)
         }
     }
 
