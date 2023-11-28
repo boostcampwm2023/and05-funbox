@@ -26,10 +26,12 @@ export class UsersService {
     user.username = 'test';
     user.created_at = new Date();
     user.profile_url = '132123';
-    user.locX = 123;
-    user.locY = 123;
+    user.locX = 123.4567;
+    user.locY = 123.4567;
     user.message = 'hihi';
     user.messaged_at = new Date();
+    user.type_login = 'NAVER';
+    user.id_oauth = Math.random().toString(36).substring(2, 12);
     return await user.save();
   }
 
