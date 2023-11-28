@@ -19,12 +19,11 @@
 
         <ImageButton
             android:id="@+id/ib_side"
-            android:layout_width="28dp"
-            android:layout_height="80dp"
-            android:layout_marginStart="-6dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:backgroundTint="#DAFFFFFF"
-            android:src="@drawable/navigate_next_24"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:src="@drawable/menu_24"
+
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
