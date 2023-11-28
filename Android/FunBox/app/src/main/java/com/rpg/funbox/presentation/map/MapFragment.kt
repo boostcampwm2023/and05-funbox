@@ -5,9 +5,9 @@ import android.animation.ObjectAnimator
 import android.graphics.Color
 import android.Manifest
 import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.View
 import com.rpg.funbox.databinding.FragmentMapBinding
 import com.rpg.funbox.presentation.BaseFragment
@@ -20,6 +20,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.naver.maps.geometry.LatLng
@@ -28,6 +30,11 @@ import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.newFixedThreadPoolContext
+import kotlinx.coroutines.runBlocking
+import timber.log.Timber
 
 class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnMapReadyCallback {
 
@@ -174,7 +181,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }
 
         viewModel.users.value.map { user ->
-
+            var adapter  = MapProfileAdapter(requireContext(),viewModel.userDetail.value,null)
             val marker = Marker().apply {
                 position = user.loc
                 iconTintColor = Color.RED
@@ -186,8 +193,32 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 }
                 setOnClickListener { _ ->
                     viewModel.userDetailApi(user.id)
-                    val adapter = MapProfileAdapter(requireContext(), viewModel.userDetail.value)
                     infoWindow.adapter = adapter
+
+
+                    GlobalScope.launch {
+                        runBlocking {
+                            val test =
+                                "https://firebasestorage.googleapis.com/v0/b/chattingservice-59c1f.appspot.com/o/%EC%B9%B4%EB%A6%AC%EB%82%98.jpg?alt=media&token=5e74df56-b9ba-4e8d-9b33-37fe7772296c"
+                            // test = viewModel.userDetail.value.profile
+                            val image = Glide.with(requireContext())
+                                .asBitmap()
+                                .load(test)
+                                .apply(RequestOptions().override(100, 100))
+                                .submit()
+                                .get()
+
+                            adapter = MapProfileAdapter(requireContext(), viewModel.userDetail.value, image)
+                        }
+                    }
+
+                    requireActivity().runOnUiThread {
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            infoWindow.adapter = adapter
+                            infoWindow.open(this)
+                        },500)
+                    }
+
 
                     if (!this.hasInfoWindow() || this.infoWindow == hasMsg) {
                         viewModel.buttonVisible()
@@ -207,7 +238,10 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
                     true
                 }
+
             }
+
+
             user.mapPin = marker
         }
     }

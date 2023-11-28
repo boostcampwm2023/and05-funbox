@@ -105,6 +105,8 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("com.github.bumptech.glide:glide:4.12.0") // 최신 버전을 사용하십시오.
+    kapt("com.github.bumptech.glide:compiler:4.12.0")
 
 }
 
