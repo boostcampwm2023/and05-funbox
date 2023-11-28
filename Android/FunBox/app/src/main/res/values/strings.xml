@@ -12,6 +12,8 @@
     <string name="fragment_title_label">타이틀 화면</string>
     <string name="fragment_nickname_label">닉네임 입력</string>
     <string name="fragment_profile_label">프로필 설정</string>
+    <string name="fragment_wait_label">퀴즈 게임 대기</string>
+    <string name="fragment_quiz_label">퀴즈 게임</string>
     <string name="network_error_message">네트워크에 문제가 있습니다.</string>
     <string name="permission_message_toast">권한 허용이 필요합니다.</string>
     <string name="social_login_info_naver_client_name">네이버 아이디 로그인</string>

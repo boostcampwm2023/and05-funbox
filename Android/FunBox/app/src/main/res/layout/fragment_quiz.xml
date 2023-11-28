@@ -5,9 +5,12 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="vm"
             type="com.rpg.funbox.presentation.game.quiz.QuizViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -20,13 +23,13 @@
             android:layout_width="0dp"
             android:layout_height="150dp"
             android:layout_marginTop="-32dp"
+            android:visibility="@{vm.quizUiState.isUserQuizState ? View.VISIBLE : View.GONE}"
             app:cardBackgroundColor="@color/edittext_color"
             app:cardCornerRadius="16dp"
             app:cardElevation="30dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:quiz_card_visible="@{vm.quizUiState}">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/msg_question_quiz"
@@ -57,7 +60,7 @@
             android:layout_width="0dp"
             android:layout_height="150dp"
             android:layout_marginTop="-32dp"
-            app:answer_card_visible="@{vm.quizUiState}"
+            android:visibility="@{vm.quizUiState.isUserQuizState ? View.GONE : View.VISIBLE}"
             app:cardBackgroundColor="@color/edittext_color"
             app:cardCornerRadius="16dp"
             app:cardElevation="30dp"
