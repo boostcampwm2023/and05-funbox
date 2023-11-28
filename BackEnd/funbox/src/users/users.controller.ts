@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
@@ -72,26 +73,38 @@ export class UsersController {
 
   @Post('/profile')
   @ApiOkResponse({ type: UserResponseDto })
+  @UseInterceptors(FileInterceptor('file'))
   async updateUserProfile(
     @Req() req,
-    @Body('profileUrl') profileUrl: string,
+    @UploadedFile() file: Express.Multer.File,
   ): Promise<UserResponseDto> {
-    const user = await this.usersService.updateUserProfileUrl(
-      req.user.id,
-      profileUrl,
-    );
-    return UserResponseDto.of(user);
-  }
-
-  @Post('/uploadtest')
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File, @Req() req) {
     if (!file) {
       throw new NotFoundException('File not found');
     }
+    const user = await this.usersService.getUserById(req.user.id);
 
-    const filePath = await this.usersService.saveFile(file, req.user.id);
-    this.usersService.uploadS3(filePath);
-    return { filePath };
+    if (user.profile_url !== null) {
+      await this.usersService.deleteS3(user.profile_url);
+    }
+    const filePath = await this.usersService.uploadS3(req.user.id, file);
+
+    user.profile_url = filePath;
+    await user.save();
+    return UserResponseDto.of(user);
+  }
+
+  @Delete('/profile')
+  @ApiOkResponse({ type: UserResponseDto })
+  async deleteUserProfile(@Req() req): Promise<UserResponseDto> {
+    const user = await this.usersService.getUserById(req.user.id);
+
+    if (user.profile_url === null) {
+      return UserResponseDto.of(user);
+    }
+    await this.usersService.deleteS3(user.profile_url);
+
+    user.profile_url = null;
+    await user.save();
+    return UserResponseDto.of(user);
   }
 }

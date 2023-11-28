@@ -1,5 +1,5 @@
 const accessToken =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NzgsInVzZXJuYW1lIjpudWxsLCJpYXQiOjE3MDEwODAyOTAsImV4cCI6MTcwMTMzOTQ5MH0.W4iJQtlHwjqR5YOgOlLyQxCd-JtKsFrEVh8ptUOP1Fs';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NzksInVzZXJuYW1lIjpudWxsLCJpYXQiOjE3MDExMzIwODMsImV4cCI6MTcwMTM5MTI4M30.fsqeV5uje_bBazlu58H9vp7U7RxeR3Jr5QBvZ-DRbHI';
 
 // fetch('http://localhost:3000/users/profile', {
 //   method: 'POST',
@@ -32,7 +32,7 @@ const fileStream = fs.createReadStream(filePath);
 form.append('file', fileStream, { knownLength: fileSizeInBytes });
 form.append('accessToken', accessToken);
 
-fetch('http://localhost:3000/users/uploadtest', {
+fetch('http://localhost:3000/users/profile', {
   method: 'POST',
   headers: {
     Authorization: `Bearer ${accessToken}`,
@@ -44,5 +44,20 @@ fetch('http://localhost:3000/users/uploadtest', {
     return res.json();
   })
   .then((data) => {
+    console.log('------------유저 프로필 갱신');
     console.log(data);
   });
+
+// fetch('http://localhost:3000/users/profile', {
+//   method: 'DELETE',
+//   headers: {
+//     Authorization: `Bearer ${accessToken}`,
+//   },
+// })
+//   .then((res) => {
+//     return res.json();
+//   })
+//   .then((data) => {
+//     console.log('------------유저 프로필 삭제');
+//     console.log(data);
+//   });
