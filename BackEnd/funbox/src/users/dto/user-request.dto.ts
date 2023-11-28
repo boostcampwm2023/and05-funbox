@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '../user.entity';
 
-export class UserResponseDto {
+export class UserRequestDto {
   @ApiProperty({
     description: '이름',
     example: '15자 이내의 string',
@@ -19,12 +18,4 @@ export class UserResponseDto {
     example: '31자 이내의 string',
   })
   message: string;
-
-  static of(user: User): UserResponseDto {
-    return {
-      username: user.username,
-      profileUrl: user.profile_url,
-      message: user.message,
-    };
-  }
 }

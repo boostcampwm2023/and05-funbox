@@ -6,25 +6,15 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { User } from 'src/users/user.entity';
-import { UserAuthDto } from './dto/user-auth.dto';
+
 import * as crypto from 'crypto';
 import { JwtService } from '@nestjs/jwt';
+import { AuthResponseDto } from './dto/auth-response.dto';
+import { UserAuthDto } from './dto/user-auth.dto';
 
 @Injectable()
 export class AuthService {
   constructor(private jwtService: JwtService) {}
-
-  async tokenValidation(accessToken: string): Promise<UserAuthDto> {
-    try {
-      const decode = await this.jwtService.verifyAsync(accessToken, {
-        secret: process.env.JWT_SECRET,
-      });
-      const { id, username } = decode;
-      return { id, username };
-    } catch (error) {
-      throw new UnauthorizedException('Invalid access token');
-    }
-  }
 
   async getNaverUserId(accessToken: string): Promise<string> {
     const url = 'https://openapi.naver.com/v1/nid/me';
@@ -36,13 +26,13 @@ export class AuthService {
     });
     const userInfo = await response.json();
     if (userInfo.message !== 'success') {
-      throw new UnauthorizedException('not valide naver token!');
+      throw new UnauthorizedException('invalid NAVER access token');
     }
     const userId = userInfo.response.id;
     return userId;
   }
 
-  async createNullUser(idOauth: string): Promise<{ accessToken: string }> {
+  async createNullUser(idOauth: string): Promise<AuthResponseDto> {
     const user = new User();
     this.setUserNull(user, idOauth);
 
@@ -57,7 +47,8 @@ export class AuthService {
       }
     }
 
-    return this.accessToken(user);
+    const jwtString = this.jwtService.sign(UserAuthDto.of(user));
+    return AuthResponseDto.of(jwtString);
   }
 
   setUserNull(user: User, idOauth: string): User {
@@ -77,14 +68,14 @@ export class AuthService {
   }
 
   hashedId(idOauth: string): string {
-    const salt = 'teamrpg';
+    const salt = process.env.SALT_OAUTHID;
     return crypto
       .createHash('sha256')
       .update(idOauth + salt)
       .digest('hex');
   }
 
-  async findIdOauth(idOauth: string): Promise<{ accessToken: string }> {
+  async findIdOauth(idOauth: string): Promise<AuthResponseDto> {
     const user = await User.findOne({
       where: { id_oauth: this.hashedId(idOauth) },
     });
@@ -93,11 +84,7 @@ export class AuthService {
       throw new NotFoundException(`Can't find User with idOauth`);
     }
 
-    return this.accessToken(user);
-  }
-
-  accessToken(user: User): { accessToken: string } {
-    const accessToken = this.jwtService.sign(UserAuthDto.of(user));
-    return { accessToken };
+    const jwtString = this.jwtService.sign(UserAuthDto.of(user));
+    return AuthResponseDto.of(jwtString);
   }
 }
