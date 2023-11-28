@@ -2,7 +2,7 @@ package com.rpg.funbox.presentation.login.title
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rpg.funbox.data.dto.User
+import com.rpg.funbox.data.dto.UserAuthDto
 import com.rpg.funbox.data.repository.NaverLoginRepository
 import com.rpg.funbox.data.repository.NaverLoginRepositoryImpl
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -15,7 +15,7 @@ class TitleViewModel : ViewModel() {
 
     private val naverLoginRepository: NaverLoginRepository = NaverLoginRepositoryImpl()
 
-    private val _user = MutableStateFlow<User?>(null)
+    private val _user = MutableStateFlow<UserAuthDto?>(null)
     val user = _user.asStateFlow()
 
     private val _titleUiEvent = MutableSharedFlow<TitleUiEvent>()
@@ -30,26 +30,11 @@ class TitleViewModel : ViewModel() {
         }
     }
 
-    fun submitUserId(userId: String) {
-        viewModelScope.launch {
-            _user.value = naverLoginRepository.postNaverProfileUserId(userId)
-            when (_user.value) {
-                null -> {
-                    _titleUiEvent.emit(TitleUiEvent.NaverAccessTokenSubmit)
-                }
-
-                else -> {
-                    _titleUiEvent.emit(TitleUiEvent.NaverLoginSuccess)
-                }
-            }
-        }
-    }
-
     fun submitAccessToken(token: String) {
         viewModelScope.launch {
             _user.value = naverLoginRepository.postNaverAccessToken(token)
             _user.value?.let { user ->
-                when (user.name) {
+                when (user.username) {
                     null -> {
                         _titleUiEvent.emit(TitleUiEvent.SignUpStart)
                     }

@@ -11,20 +11,12 @@ import com.rpg.funbox.databinding.FragmentTitleBinding
 import com.rpg.funbox.presentation.BaseFragment
 import com.rpg.funbox.presentation.MainActivity
 import com.rpg.funbox.presentation.login.NaverOAuthLoginCallback
-import com.rpg.funbox.presentation.login.NaverProfileCallback
 import com.navercorp.nid.NaverIdLoginSDK
-import com.navercorp.nid.oauth.NidOAuthLogin
-import com.navercorp.nid.oauth.OAuthLoginCallback
-import com.navercorp.nid.profile.NidProfileCallback
-import com.navercorp.nid.profile.data.NidProfileResponse
-import timber.log.Timber
 
 class TitleFragment : BaseFragment<FragmentTitleBinding>(R.layout.fragment_title) {
 
     private val viewModel: TitleViewModel by activityViewModels()
-    private val naverProfileCallback: NaverProfileCallback = NaverProfileCallback()
-    private val naverOAuthLoginCallback: NaverOAuthLoginCallback =
-        NaverOAuthLoginCallback(naverProfileCallback)
+    private val naverOAuthLoginCallback: NaverOAuthLoginCallback = NaverOAuthLoginCallback()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,65 +35,10 @@ class TitleFragment : BaseFragment<FragmentTitleBinding>(R.layout.fragment_title
         )
     }
 
-    private fun getNaverProfile(): NidProfileCallback<NidProfileResponse> {
-        val profileCallback = object : NidProfileCallback<NidProfileResponse> {
-            override fun onSuccess(result: NidProfileResponse) {
-                Timber.d("회원 이름: ${result.profile?.id}")
-            }
-
-            override fun onFailure(httpStatus: Int, message: String) {
-                showErrorMessage()
-            }
-
-            override fun onError(errorCode: Int, message: String) {
-                onFailure(httpStatus = errorCode, message = message)
-            }
-        }
-
-        return profileCallback
-    }
-
-    private fun getNaverOAuth(profileCallback: NidProfileCallback<NidProfileResponse>): OAuthLoginCallback {
-        val oauthLoginCallback = object : OAuthLoginCallback {
-            override fun onSuccess() {
-                NidOAuthLogin().callProfileApi(profileCallback)
-                viewModel.successNaverLogin()
-                NaverIdLoginSDK.getAccessToken()?.let { token -> Timber.d("NAVER Token: $token") }
-            }
-
-            override fun onFailure(httpStatus: Int, message: String) {
-                showErrorMessage()
-            }
-
-            override fun onError(errorCode: Int, message: String) {
-                onFailure(httpStatus = errorCode, message = message)
-            }
-        }
-
-        return oauthLoginCallback
-    }
-
-    private fun startNaverLogin(oauthLoginCallback: OAuthLoginCallback) {
-        NaverIdLoginSDK.authenticate(requireContext(), oauthLoginCallback)
-    }
-
-    private fun showErrorMessage() {
-        val errorCode = NaverIdLoginSDK.getLastErrorCode().code
-        val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
-        Timber.d("${errorCode}: $errorDescription")
-        Toast.makeText(
-            requireContext(), "${errorCode}: $errorDescription", Toast.LENGTH_SHORT
-        ).show()
-    }
-
     private fun handleUiEvent(event: TitleUiEvent) = when (event) {
         is TitleUiEvent.NaverLoginStart -> {
-            naverProfileCallback.profileUserId?.let { userId ->
-                viewModel.submitUserId(userId)
-            }
-        }
-
-        is TitleUiEvent.NaverAccessTokenSubmit -> {
+            // findNavController().navigate(R.id.action_TitleFragment_to_NicknameFragment)
+            NaverIdLoginSDK.authenticate(requireContext(), naverOAuthLoginCallback)
             naverOAuthLoginCallback.accessToken?.let { token ->
                 viewModel.submitAccessToken(token)
             }
