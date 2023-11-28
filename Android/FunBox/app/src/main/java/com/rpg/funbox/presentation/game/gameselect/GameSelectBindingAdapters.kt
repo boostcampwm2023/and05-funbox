@@ -23,7 +23,7 @@ fun TextView.bindGameTitle(gameCard: GameSelectUiState.GameCard) {
     }
 }
 
-@BindingAdapter("entries")
+@BindingAdapter("app:entries")
 fun Spinner.setEntries(entries: List<Int>?) {
     entries?.run {
         val arrayAdapter = ArrayAdapter(context, R.layout.quiz_question_count_spinner, entries)
