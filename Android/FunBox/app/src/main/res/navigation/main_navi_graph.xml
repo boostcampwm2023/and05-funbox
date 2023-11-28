@@ -31,5 +31,11 @@
     <fragment
         android:id="@+id/settingFragment"
         android:name="com.rpg.funbox.presentation.setting.SettingFragment"
-        android:label="SettingFragment" />
+        android:label="SettingFragment" >
+        <action
+            android:id="@+id/action_settingFragment_to_mapFragment"
+            app:destination="@id/mapFragment"
+            app:popUpTo="@id/mapFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

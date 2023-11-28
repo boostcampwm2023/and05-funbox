@@ -14,21 +14,32 @@ import android.widget.TextView
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatButton
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.FragmentProfileBinding
 import com.rpg.funbox.databinding.FragmentSettingBinding
 import com.rpg.funbox.presentation.BaseFragment
 import com.rpg.funbox.presentation.MainActivity
+import com.rpg.funbox.presentation.map.MapUiEvent
 
 class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_setting) {
 
-    private val viewModel: SettingViewModel by viewModels()
+    private val viewModel: SettingViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.fm = this
 
+        collectLatestFlow(viewModel.settingUiEvent) { handleUiEvent(it) }
+
+    }
+
+    private fun handleUiEvent(event: SettingUiEvent) = when (event) {
+        is SettingUiEvent.ToMap -> {
+            findNavController().navigate(R.id.action_settingFragment_to_mapFragment)
+        }
     }
 
     fun clickNickNameSetting(){
