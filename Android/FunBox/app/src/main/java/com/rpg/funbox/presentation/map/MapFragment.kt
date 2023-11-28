@@ -58,6 +58,17 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         is MapUiEvent.GetGame -> {
             GetGameDialog().show(parentFragmentManager, "getGame")
         }
+
+        is MapUiEvent.ToSetting ->{
+            findNavController().navigate(R.id.action_mapFragment_to_settingFragment)
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?){
+        super.onCreate(savedInstanceState)
+        if (!hasPermission()) {
+            ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, LOCATION_PERMISSION_REQUEST_CODE)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?){

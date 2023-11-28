@@ -51,6 +51,12 @@ class MapViewModel : ViewModel() {
         }
     }
 
+    fun toSetting(){
+        viewModelScope.launch {
+            _mapUiEvent.emit(MapUiEvent.ToSetting)
+        }
+    }
+
     fun setXY(x:Double,y:Double){
         locX.update {
             x
