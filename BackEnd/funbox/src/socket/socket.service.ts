@@ -31,4 +31,16 @@ export class SocketService {
       client.disconnect();
     }
   }
+
+  makeGameRoom(client: Socket, opponentId: number) {
+    const opponentClient = this.userIdToClient.get(opponentId);
+    if (!opponentClient) {
+      client.emit('error', '접속 중인 유저가 아닙니다.');
+      return;
+    }
+    opponentClient.emit('message', `[게임 신청] 상대: ${client.data.username}`);
+    const randomRoomId = Math.random().toString(36).substring(2, 12);
+    client.join(randomRoomId);
+    opponentClient.join(randomRoomId);
+  }
 }

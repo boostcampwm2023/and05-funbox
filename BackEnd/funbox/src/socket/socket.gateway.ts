@@ -1,10 +1,14 @@
 import {
+  ConnectedSocket,
+  MessageBody,
   OnGatewayConnection,
+  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { SocketService } from './socket.service';
+import { ParseIntPipe } from '@nestjs/common';
 
 @WebSocketGateway({
   namespace: 'socket',
@@ -18,5 +22,13 @@ export class SocketGateway implements OnGatewayConnection {
 
   handleConnection(client: Socket): void {
     this.socketService.handleConnection(client);
+  }
+
+  @SubscribeMessage('applyQuizGame')
+  applyQuizGame(
+    @ConnectedSocket() client: Socket,
+    @MessageBody(ParseIntPipe) opponentId: number,
+  ): void {
+    this.socketService.makeGameRoom(client, opponentId);
   }
 }
