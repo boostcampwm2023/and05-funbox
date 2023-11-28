@@ -22,4 +22,17 @@ export class AuthController {
       return await this.authService.createNullUser(naverUserId);
     }
   }
+
+  @Post('/notoken/test')
+  async getFakeNaverUserAndFindUserDbIfNotMakeNullUser(
+    @Body('naveFakeId') naverFakeId: string,
+  ) {
+    const naverUserId = naverFakeId;
+
+    try {
+      return await this.authService.findIdOauth(naverUserId);
+    } catch {
+      return await this.authService.createNullUser(naverUserId);
+    }
+  }
 }
