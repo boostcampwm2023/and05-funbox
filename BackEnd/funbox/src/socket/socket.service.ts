@@ -1,13 +1,18 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
+import { NearUsersDto } from 'src/users/dto/near-users.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class SocketService {
   private userIdToClient: Map<number, Socket> = new Map();
   private logger: Logger = new Logger('SocketService');
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UsersService,
+  ) {}
 
   async handleConnection(client: Socket) {
     try {
@@ -21,6 +26,7 @@ export class SocketService {
       this.userIdToClient.set(id, client);
       this.logger.log(`Connected: ${info}`);
       client.emit('message', `Connected: ${info}`);
+      client.emit('location', JSON.stringify(await this.getNearUsers()));
 
       client.on('disconnect', () => {
         this.userIdToClient.delete(id);
@@ -30,6 +36,17 @@ export class SocketService {
       client.emit('error', error.message);
       client.disconnect();
     }
+  }
+
+  async getNearUsers(): Promise<NearUsersDto[]> {
+    return Promise.all(
+      Array.from(this.userIdToClient.values())
+        .filter((client) => client.data.location) // TODO: 주변 위치로 필터링
+        .map(async (client) => {
+          const user = await this.userService.getUserById(client.data.userId);
+          return NearUsersDto.of(user);
+        }),
+    );
   }
 
   makeGameRoom(client: Socket, opponentId: number) {

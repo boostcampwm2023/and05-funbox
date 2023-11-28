@@ -19,6 +19,7 @@ export class NearUsersDto {
 
   static of(user: User): NearUsersDto {
     const { id, username, locX, locY } = user;
-    return { id, username, locX, locY, isMsgInAnHour: true };
+    const isMsgInAnHour = user.messaged_at.getTime() > Date.now() - 3600;
+    return { id, username, locX, locY, isMsgInAnHour };
   }
 }
