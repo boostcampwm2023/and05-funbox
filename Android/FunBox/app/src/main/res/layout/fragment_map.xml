@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:onClick="@{()->vm.toSetting()}"
-            android:src="@drawable/settings_24"
+            android:src="@drawable/autorenew_24"
             app:layout_constraintBottom_toBottomOf="@id/floating_action_button"
             app:layout_constraintEnd_toEndOf="@id/floating_action_button"
             app:layout_constraintStart_toStartOf="@id/floating_action_button"

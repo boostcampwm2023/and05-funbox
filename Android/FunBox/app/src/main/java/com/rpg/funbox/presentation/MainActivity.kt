@@ -1,13 +1,17 @@
 package com.rpg.funbox.presentation
 
+import android.content.Context
 import android.graphics.Rect
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.activity.viewModels
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.ActivityMainBinding
 import com.rpg.funbox.presentation.game.quiz.QuizViewModel
@@ -17,8 +21,9 @@ class MainActivity : AppCompatActivity() {
     private val quizViewModel: QuizViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.ibSide.setOnClickListener { binding.drawerLayout.openDrawer(GravityCompat.START) }
     }
 
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
