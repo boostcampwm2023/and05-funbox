@@ -12,13 +12,21 @@ import timber.log.Timber
 
 class QuizViewModel : ViewModel() {
 
-    private val latestAnswer = MutableStateFlow<String>("")
+    private val _location = MutableStateFlow<Pair<Double, Double>?>(null)
+    val location = _location.asStateFlow()
+
+    private val _latestAnswer = MutableStateFlow<String>("")
+    val latestAnswer = _latestAnswer.asStateFlow()
 
     private val _quizUiEvent = MutableSharedFlow<QuizUiEvent>()
     val quizUiEvent = _quizUiEvent.asSharedFlow()
 
     private val _quizUiState = MutableStateFlow<QuizUiState>(QuizUiState())
     val quizUiState = _quizUiState.asStateFlow()
+
+    fun setLocation(x: Double, y: Double) {
+        _location.value = Pair(x, y)
+    }
 
     fun validateAnswer(answer: CharSequence) {
         if (answer.isBlank()) {
@@ -30,7 +38,7 @@ class QuizViewModel : ViewModel() {
                 uiState.copy(answerValidState = true)
             }
         }
-        latestAnswer.value = answer.toString()
+        _latestAnswer.value = answer.toString()
     }
 
     fun submitAnswer() {
