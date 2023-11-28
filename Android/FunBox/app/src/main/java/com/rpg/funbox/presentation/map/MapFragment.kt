@@ -1,22 +1,14 @@
 package com.rpg.funbox.presentation.map
 
-import com.rpg.funbox.R
-import android.animation.ObjectAnimator
-import android.graphics.Color
 import android.Manifest
+import android.animation.ObjectAnimator
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import com.rpg.funbox.databinding.FragmentMapBinding
-import com.rpg.funbox.presentation.BaseFragment
-import com.naver.maps.map.MapFragment
-import com.naver.maps.map.NaverMap
-import com.naver.maps.map.OnMapReadyCallback
-import com.naver.maps.map.overlay.InfoWindow
-import com.naver.maps.map.overlay.Marker
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
@@ -29,13 +21,19 @@ import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
+import com.naver.maps.map.MapFragment
+import com.naver.maps.map.NaverMap
+import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.InfoWindow
+import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.newFixedThreadPoolContext
+import com.rpg.funbox.R
+import com.rpg.funbox.databinding.FragmentMapBinding
+import com.rpg.funbox.presentation.BaseFragment
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import timber.log.Timber
+import kotlinx.coroutines.withContext
 
 class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnMapReadyCallback {
 
@@ -197,28 +195,32 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                     infoWindow.adapter = adapter
 
 
-                    GlobalScope.launch {
-                        runBlocking {
-                            val test = viewModel.userDetail.value.profile
-                            var image : Bitmap = try {
-                                Glide.with(requireContext())
-                                    .asBitmap()
-                                    .load(test)
-                                    .apply(RequestOptions().override(100, 100))
-                                    .submit()
-                                    .get()
-                            }catch (e: Exception){
-                                Glide.with(requireContext())
-                                    .asBitmap()
-                                    .load(R.drawable.close_24)
-                                    .apply(RequestOptions().override(100, 100))
-                                    .submit()
-                                    .get()
-                            }
 
-                            adapter = MapProfileAdapter(requireContext(), viewModel.userDetail.value, image)
+                runBlocking {
+                    val test = viewModel.userDetail.value.profile
+                    val image : Bitmap = try {
+                        withContext(Dispatchers.IO) {
+                            Glide.with(requireContext())
+                                .asBitmap()
+                                .load(test)
+                                .apply(RequestOptions().override(100, 100))
+                                .submit()
+                                .get()
+                        }
+                    }catch (e: Exception){
+                        withContext(Dispatchers.IO) {
+                            Glide.with(requireContext())
+                                .asBitmap()
+                                .load(R.drawable.close_24)
+                                .apply(RequestOptions().override(100, 100))
+                                .submit()
+                                .get()
                         }
                     }
+
+                    adapter = MapProfileAdapter(requireContext(), viewModel.userDetail.value, image)
+                }
+
 
                     requireActivity().runOnUiThread {
                         Handler(Looper.getMainLooper()).postDelayed({
