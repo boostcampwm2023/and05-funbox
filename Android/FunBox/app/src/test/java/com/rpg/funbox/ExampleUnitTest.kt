@@ -1,4 +1,4 @@
-package com.example.funbox
+package com.rpg.funbox
 
 import org.junit.Test
 

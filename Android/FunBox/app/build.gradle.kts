@@ -109,9 +109,10 @@ dependencies {
 
     implementation("com.google.firebase:firebase-appdistribution-api-ktx:16.0.0-beta10")
 
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    implementation("com.google.android.gms:play-services-location:20.0.0")
 
 }
 

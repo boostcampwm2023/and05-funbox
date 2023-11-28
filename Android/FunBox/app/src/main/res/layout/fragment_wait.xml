@@ -44,7 +44,7 @@
                 android:background="@drawable/rounded_corner_rect_shadow"
                 android:contentDescription="@string/user_profile_wait_description"
                 android:elevation="10dp"
-                app:setImage="@{vm.waitUiState}" />
+                tools:setImage="@{vm.waitUiState}" />
 
             <TextView
                 android:id="@+id/user_id_wait"
@@ -85,7 +85,7 @@
                 android:background="@drawable/rounded_corner_rect_shadow"
                 android:contentDescription="@string/side_profile_wait_description"
                 android:elevation="10dp"
-                app:setImage="@{vm.waitUiState}" />
+                tools:setImage="@{vm.waitUiState}" />
 
             <TextView
                 android:id="@+id/side_id_wait"
