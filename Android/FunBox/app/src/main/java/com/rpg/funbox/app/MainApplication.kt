@@ -4,7 +4,7 @@ import android.app.Application
 import android.content.Context
 import timber.log.Timber
 
-class MyApplication : Application() {
+class MainApplication : Application() {
 
     init {
         instance = this
@@ -19,7 +19,7 @@ class MyApplication : Application() {
 
     companion object {
         lateinit var mySharedPreferences: MySharedPreferences
-        var instance: MyApplication? = null
+        var instance: MainApplication? = null
 
         fun myContext(): Context {
             return instance!!.applicationContext
