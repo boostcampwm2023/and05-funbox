@@ -200,23 +200,21 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                     GlobalScope.launch {
                         runBlocking {
                             val test = viewModel.userDetail.value.profile
-                            var image : Bitmap
-                            try {
-                                image = Glide.with(requireContext())
+                            var image : Bitmap = try {
+                                Glide.with(requireContext())
                                     .asBitmap()
                                     .load(test)
                                     .apply(RequestOptions().override(100, 100))
                                     .submit()
                                     .get()
                             }catch (e: Exception){
-                                image = Glide.with(requireContext())
+                                Glide.with(requireContext())
                                     .asBitmap()
                                     .load(R.drawable.close_24)
                                     .apply(RequestOptions().override(100, 100))
                                     .submit()
                                     .get()
                             }
-
 
                             adapter = MapProfileAdapter(requireContext(), viewModel.userDetail.value, image)
                         }
