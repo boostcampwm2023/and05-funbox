@@ -12,38 +12,42 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOkResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiParam,
+} from '@nestjs/swagger';
 import { UsersService } from './users.service';
-import { User } from './user.entity';
 import { UserLocationDto } from './dto/user-location.dto';
 import { NearUsersDto } from './dto/near-users.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
+import { UserRequestDto } from './dto/user-request.dto';
 
 @Controller('users')
-@ApiTags('유저 API')
+@ApiTags('2. 유저 API')
+@ApiBearerAuth()
 @UseGuards(AuthGuard())
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @Post('/create')
-  @ApiCreatedResponse({ type: User })
-  createUser(): Promise<User> {
-    return this.usersService.createUsertest();
-  }
-
-  @Post('location')
+  @Post('/location')
   @ApiOkResponse({ type: [NearUsersDto] })
+  @ApiBody({ type: UserLocationDto })
   async updateUserLocationAndReturnNearUsers(
+    @Req() req,
     @Body() userLocationDto: UserLocationDto,
   ): Promise<NearUsersDto[]> {
-    await this.usersService.updateUserLocation(userLocationDto);
+    await this.usersService.updateUserLocation(req.user.id, userLocationDto);
     return await this.usersService.findNearUsers(userLocationDto);
   }
 
   @Get('/:id')
+  @ApiParam({ name: 'id', description: '타겟 user id' })
   @ApiOkResponse({ type: UserResponseDto })
   async getUserById(@Param('id') id: number): Promise<UserResponseDto> {
     const user = await this.usersService.getUserById(id);
@@ -52,6 +56,7 @@ export class UsersController {
 
   @Patch('/message')
   @ApiOkResponse({ type: UserResponseDto })
+  @ApiBody({ type: UserRequestDto })
   async updateUserMessage(
     @Req() req,
     @Body('message') message: string,
@@ -61,11 +66,12 @@ export class UsersController {
     return UserResponseDto.of(user);
   }
 
-  @Post('/username')
+  @Patch('/username')
   @ApiOkResponse({ type: UserResponseDto })
+  @ApiBody({ type: UserRequestDto })
   async updateUserName(
     @Req() req,
-    @Body('userName') userName: string,
+    @Body('username') userName: string,
   ): Promise<UserResponseDto> {
     const user = await this.usersService.updateUserName(req.user.id, userName);
     return UserResponseDto.of(user);
@@ -73,6 +79,12 @@ export class UsersController {
 
   @Post('/profile')
   @ApiOkResponse({ type: UserResponseDto })
+  @ApiBody({
+    schema: {
+      type: 'formData',
+      description: '폼데이터 형식의 파일 전송이 필요함 name="file"',
+      example: 'file=blob',
+  }})
   @UseInterceptors(FileInterceptor('file'))
   async updateUserProfile(
     @Req() req,

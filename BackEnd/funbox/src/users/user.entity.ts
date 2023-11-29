@@ -11,11 +11,15 @@ import {
 @Unique(['id_oauth'])
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
-  @ApiProperty({ description: 'id' })
+  @ApiProperty({
+    description: 'id',
+  })
   id: number;
 
   @Column({ length: 15, nullable: true })
-  @ApiProperty({ description: '이름' })
+  @ApiProperty({
+    description: '이름',
+  })
   username: string;
 
   @Column({ type: 'timestamp', nullable: false })
@@ -24,7 +28,7 @@ export class User extends BaseEntity {
 
   @Column({ length: 255, nullable: true })
   @ApiProperty({
-    example: 'https://picsum.photos/200',
+    example: 'sldkfjglkcvjboweirjglskdfjsdfkgjlsdfkg.png',
     description: '프로필 사진 URL',
   })
   profile_url: string;

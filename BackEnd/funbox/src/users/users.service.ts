@@ -21,26 +21,15 @@ const bucket_name = 'funbox-profiles';
 
 @Injectable()
 export class UsersService {
-  async createUsertest(): Promise<User> {
-    const user = new User();
-    user.username = 'test';
-    user.created_at = new Date();
-    user.profile_url = '132123';
-    user.locX = 123.4567;
-    user.locY = 123.4567;
-    user.message = 'hihi';
-    user.messaged_at = new Date();
-    user.type_login = 'NAVER';
-    user.id_oauth = Math.random().toString(36).substring(2, 12);
-    return await user.save();
-  }
-
-  async updateUserLocation(userLocationDto: UserLocationDto): Promise<User> {
-    const user = await User.findOne({ where: { id: 1 } }); // [!]OAuth 구현 후, id:1 부분 변경 필요
+  async updateUserLocation(
+    id: number,
+    userLocationDto: UserLocationDto,
+  ): Promise<void> {
+    const user = await User.findOne({ where: { id: id } });
     user.locX = userLocationDto.locX;
     user.locY = userLocationDto.locY;
     await user.save();
-    return user;
+    return;
   }
 
   async findNearUsers(

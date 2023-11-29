@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { UserAuthDto } from './dto/user-auth.dto';
 import { User } from 'src/users/user.entity';
+import { UserAuthDto } from './dto/user-auth.dto';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

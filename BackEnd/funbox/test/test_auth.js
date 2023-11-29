@@ -1,75 +1,91 @@
 const accessToken =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NzgsInVzZXJuYW1lIjoiaGkiLCJpYXQiOjE3MDExMjY1MzIsImV4cCI6MTcwMTM4NTczMn0.EWXC15LxEd3yslxGO7CC112QndSF4_oQZJAKjp6QvPU';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NzksInVzZXJuYW1lIjpudWxsLCJpYXQiOjE3MDExNjAzMjgsImV4cCI6MTcwMTQxOTUyOH0.yUtathhr5XhV3JqKyxAk42liMD1NDw4p2-QCw1dulL4x';
 const naverToken =
   'AAAAO64T70oTGtBGdxsTjyCHUqy6/8r5j8vwPnXmOSUj+icAzpR6CZX5e8rmOWVnzWcR4Z/YRH3L9bpKorRt/Y+xgko=';
 
 fetch('http://localhost:3000/auth', {
-  method: 'POST',
+  method: 'GET',
   headers: {
-    'Content-Type': 'application/json',
     Authorization: `Bearer ${accessToken}`,
   },
-  body: JSON.stringify({ accessToken: accessToken }),
 })
   .then((res) => {
+    console.log('hi');
     return res.json();
   })
   .then((data) => {
     console.log('------------------');
-    console.log('1.1. 유효토큰 있음');
+    console.log('0.0. 토큰 체크 : 유효토큰 있음');
     console.log(data);
   });
 
-fetch('http://localhost:3000/auth', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${accessToken}`,
-  },
-  body: JSON.stringify({ accessToken: accessToken + '1' }),
-})
-  .then((res) => {
-    return res.json();
-  })
-  .then((data) => {
-    console.log('------------------');
-    console.log('1.2. 유효토큰 없음');
-    console.log(data);
-  });
+// fetch('http://localhost:3000/auth', {
+//   method: 'POST',
+//   headers: {
+//     'Content-Type': 'application/json',
+//     Authorization: `Bearer ${accessToken}`,
+//   },
+//   body: JSON.stringify({ accessToken: accessToken }),
+// })
+//   .then((res) => {
+//     return res.json();
+//   })
+//   .then((data) => {
+//     console.log('------------------');
+//     console.log('1.1. 유효토큰 있음');
+//     console.log(data);
+//   });
 
-fetch('http://localhost:3000/auth/notoken', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${accessToken}`,
-  },
-  body: JSON.stringify({ naverAccessToken: naverToken }),
-})
-  .then((res) => {
-    return res.json();
-  })
-  .then((data) => {
-    console.log('------------------');
-    console.log('2.1. 유효한 네이버 토큰');
-    console.log(data);
-  });
+// fetch('http://localhost:3000/auth', {
+//   method: 'POST',
+//   headers: {
+//     'Content-Type': 'application/json',
+//     Authorization: `Bearer ${accessToken}`,
+//   },
+//   body: JSON.stringify({ accessToken: accessToken + '1' }),
+// })
+//   .then((res) => {
+//     return res.json();
+//   })
+//   .then((data) => {
+//     console.log('------------------');
+//     console.log('1.2. 유효토큰 없음');
+//     console.log(data);
+//   });
 
-fetch('http://localhost:3000/auth/notoken', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${accessToken}`,
-  },
-  body: JSON.stringify({ naverAccessToken: naverToken + '1' }),
-})
-  .then((res) => {
-    return res.json();
-  })
-  .then((data) => {
-    console.log('------------------');
-    console.log('2.2. 유효하지 않은 네이버 토큰');
-    console.log(data);
-  });
+// fetch('http://localhost:3000/auth/notoken', {
+//   method: 'POST',
+//   headers: {
+//     'Content-Type': 'application/json',
+//     Authorization: `Bearer ${accessToken}`,
+//   },
+//   body: JSON.stringify({ naverAccessToken: naverToken }),
+// })
+//   .then((res) => {
+//     return res.json();
+//   })
+//   .then((data) => {
+//     console.log('------------------');
+//     console.log('2.1. 유효한 네이버 토큰');
+//     console.log(data);
+//   });
+
+// fetch('http://localhost:3000/auth/notoken', {
+//   method: 'POST',
+//   headers: {
+//     'Content-Type': 'application/json',
+//     Authorization: `Bearer ${accessToken}`,
+//   },
+//   body: JSON.stringify({ naverAccessToken: naverToken + '1' }),
+// })
+//   .then((res) => {
+//     return res.json();
+//   })
+//   .then((data) => {
+//     console.log('------------------');
+//     console.log('2.2. 유효하지 않은 네이버 토큰');
+//     console.log(data);
+//   });
 
 // async function test(){
 //     const naverToken2 = "AAAAO64T70oTGtBGdxsTjyCHUqy6/8r5j8vwPnXmOSUj+icAzpR6CZX5e8rmOWVnzWcR4Z/YRH3L9bpKorRt/Y+xgko="
