@@ -45,6 +45,7 @@
             android:layout_margin="16dp"
             android:contentDescription="@string/description"
             android:src="@drawable/add_24"
+            android:onClick="@{() -> vm.setToggle()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

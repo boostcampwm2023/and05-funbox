@@ -39,6 +39,12 @@ class MapViewModel : ViewModel() {
         }
     }
 
+    fun setToggle() {
+        viewModelScope.launch {
+            _mapUiEvent.emit(MapUiEvent.Toggle)
+        }
+    }
+
     fun toGame(){
         viewModelScope.launch {
             _mapUiEvent.emit(MapUiEvent.ToGame)
