@@ -8,14 +8,21 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { SocketService } from './socket.service';
-import { ParseIntPipe } from '@nestjs/common';
+import {
+  ParseIntPipe,
+  UseFilters,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { UpdateLocationDto } from './dto/update-location.dto';
 import { SocketUserDto } from './dto/socket-user.dto';
+import { WsExceptionFilter } from './filters/ws-exception.filter';
 
 @WebSocketGateway({
   namespace: 'socket',
   cors: { origin: '*' },
 })
+@UseFilters(WsExceptionFilter)
 export class SocketGateway implements OnGatewayConnection {
   @WebSocketServer()
   private server: Server;
@@ -27,6 +34,7 @@ export class SocketGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('updateLocation')
+  @UsePipes(ValidationPipe)
   updateLocation(client: Socket, updateLocationDto: UpdateLocationDto): void {
     const { locX, locY } = updateLocationDto;
     client.data.locX = locX;

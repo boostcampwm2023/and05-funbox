@@ -25,7 +25,7 @@ export class SocketService {
       const info = JSON.stringify({ id, username, clientId: client.id });
       this.userIdToClient.set(id, client);
       this.logger.log(`Connected: ${info}`);
-      client.emit('message', `Connected: ${info}`);
+      client.emit('connected', info);
       client.emit('location', JSON.stringify(await this.getNearUsers()));
 
       client.on('disconnect', () => {
@@ -33,7 +33,7 @@ export class SocketService {
         this.logger.log(`Disconnected: ${info}`);
       });
     } catch (error) {
-      client.emit('error', error.message);
+      client.emit('error', error.response);
       client.disconnect();
     }
   }
