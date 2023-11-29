@@ -6,23 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.rpg.funbox.R
 import com.rpg.funbox.databinding.DialogMessageBinding
+import com.rpg.funbox.presentation.BaseDialogFragment
 
-class MessageDialog: DialogFragment() {
-
-    private var _binding: DialogMessageBinding? = null
-    private val binding get() = _binding!!
+class MessageDialog: BaseDialogFragment<DialogMessageBinding>(R.layout.dialog_message) {
 
     private val viewModel: MapViewModel by activityViewModels()
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = DialogMessageBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -30,13 +20,5 @@ class MessageDialog: DialogFragment() {
             dismiss()
         }
     }
-
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-
 
 }
