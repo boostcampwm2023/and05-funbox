@@ -5,16 +5,17 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.FragmentProfileBinding
 import com.rpg.funbox.presentation.BaseFragment
 import com.rpg.funbox.presentation.MainActivity
 import com.rpg.funbox.presentation.login.AccessPermission
+import com.rpg.funbox.presentation.login.title.TitleViewModel
 
 class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_profile) {
 
-    private val viewModel: ProfileViewModel by viewModels()
+    private val viewModel: TitleViewModel by activityViewModels()
     private val profileImagePicker =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             this.viewModel.selectProfile(uri)
@@ -42,7 +43,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_p
             requestMultiPermissions.launch(AccessPermission.profilePermissionList)
         }
 
-        is ProfileUiEvent.ProfileSuccess -> {
+        is ProfileUiEvent.ProfileSubmit -> {
             startActivity(Intent(requireActivity(), MainActivity::class.java))
         }
 

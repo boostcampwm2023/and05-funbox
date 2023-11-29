@@ -10,10 +10,12 @@ import android.widget.EditText
 import androidx.activity.viewModels
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.ActivityTitleBinding
+import com.rpg.funbox.presentation.login.title.TitleViewModel
 
 class TitleActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTitleBinding
+    private val viewModel: TitleViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
