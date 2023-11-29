@@ -16,6 +16,18 @@ import { UserAuthDto } from './dto/user-auth.dto';
 export class AuthService {
   constructor(private jwtService: JwtService) {}
 
+  async tokenValidation(accessToken: string): Promise<UserAuthDto> {
+    try {
+      const decode = await this.jwtService.verifyAsync(accessToken, {
+        secret: process.env.JWT_SECRET,
+      });
+      const { id, username } = decode;
+      return { id, username };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid access token');
+    }
+  }
+
   async getNaverUserId(accessToken: string): Promise<string> {
     const url = 'https://openapi.naver.com/v1/nid/me';
     const response = await fetch(url, {
