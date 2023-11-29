@@ -30,7 +30,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.fm = this
+        binding.vm = viewModel
 
         collectLatestFlow(viewModel.settingUiEvent) { handleUiEvent(it) }
 
@@ -39,6 +39,16 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
     private fun handleUiEvent(event: SettingUiEvent) = when (event) {
         is SettingUiEvent.ToMap -> {
             findNavController().navigate(R.id.action_settingFragment_to_mapFragment)
+        }
+        is SettingUiEvent.SetName -> {
+            clickNickNameSetting()
+        }
+        is SettingUiEvent.SetProfile -> {
+            clickProfileSetting()
+        }
+
+        is SettingUiEvent.Draw -> {
+            clickWithDraw()
         }
     }
 

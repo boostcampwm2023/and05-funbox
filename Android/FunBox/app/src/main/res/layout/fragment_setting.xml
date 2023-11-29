@@ -5,8 +5,8 @@
 
     <data>
         <variable
-            name="fm"
-            type="com.rpg.funbox.presentation.setting.SettingFragment" />
+            name="vm"
+            type="com.rpg.funbox.presentation.setting.SettingViewModel" />
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
@@ -20,7 +20,7 @@
         android:background="@drawable/bg_green_rectangle"
         android:elevation="1000dp"
         android:text="닉네임 변경"
-        android:onClick="@{() -> fm.clickNickNameSetting()}"
+        android:onClick="@{() -> vm.setName()}"
         android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -39,7 +39,7 @@
         android:background="@drawable/bg_green_rectangle"
         android:elevation="1000dp"
         android:text="프로필 변경"
-        android:onClick="@{() -> fm.clickProfileSetting()}"
+        android:onClick="@{() -> vm.setProfile()}"
         android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -76,7 +76,7 @@
         android:background="@drawable/bg_red_rectangle"
         android:elevation="1000dp"
         android:text="회원 탈퇴하기"
-        android:onClick="@{() -> fm.clickWithDraw()}"
+        android:onClick="@{() -> vm.draw()}"
         android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="bold"

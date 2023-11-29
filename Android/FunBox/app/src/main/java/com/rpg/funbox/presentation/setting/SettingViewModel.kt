@@ -16,4 +16,20 @@ class SettingViewModel : ViewModel() {
             _settingUiEvent.emit(SettingUiEvent.ToMap)
         }
     }
+
+    fun draw(){
+        viewModelScope.launch {
+            _settingUiEvent.emit(SettingUiEvent.Draw)
+        }
+    }
+    fun setName(){
+        viewModelScope.launch {
+            _settingUiEvent.emit(SettingUiEvent.SetName)
+        }
+    }
+    fun setProfile(){
+        viewModelScope.launch {
+            _settingUiEvent.emit(SettingUiEvent.SetProfile)
+        }
+    }
 }
