@@ -21,8 +21,8 @@ export class AuthService {
       const decode = await this.jwtService.verifyAsync(accessToken, {
         secret: process.env.JWT_SECRET,
       });
-      const { id, username } = decode;
-      return { id, username };
+      const { id } = decode;
+      return { id };
     } catch (error) {
       throw new UnauthorizedException('Invalid access token');
     }

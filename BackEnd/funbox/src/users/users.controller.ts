@@ -46,6 +46,13 @@ export class UsersController {
     return await this.usersService.findNearUsers(userLocationDto);
   }
 
+  @Get()
+  @ApiOkResponse({ type: UserResponseDto })
+  async getUserSelf(@Req() req): Promise<UserResponseDto> {
+    const user = await this.usersService.getUserById(req.user.id);
+    return UserResponseDto.of(user);
+  }
+
   @Get('/:id')
   @ApiParam({ name: 'id', description: '타겟 user id' })
   @ApiOkResponse({ type: UserResponseDto })

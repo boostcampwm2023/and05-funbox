@@ -16,9 +16,10 @@ export class SocketService {
 
   async handleConnection(client: Socket) {
     try {
-      const { id, username } = await this.authService.tokenValidation(
+      const { id } = await this.authService.tokenValidation(
         client.handshake.headers.authorization.replace(/^Bearer /, ''),
       );
+      const { username } = await this.userService.getUserById(id);
       client.data.userId = id;
       client.data.username = username;
 
