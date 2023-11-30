@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
             binding.drawerLayout.closeDrawers()
             return@setNavigationItemSelectedListener false
         }
+
     }
 
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {

@@ -41,7 +41,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
             findNavController().navigate(R.id.action_settingFragment_to_mapFragment)
         }
         is SettingUiEvent.SetName -> {
-            clickNickNameSetting()
+            SetNameDialog().show(parentFragmentManager, "setName")
         }
         is SettingUiEvent.SetProfile -> {
             clickProfileSetting()
@@ -52,7 +52,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
         }
     }
 
-    fun clickNickNameSetting(){
+    private fun clickNickNameSetting(){
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_message)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -66,7 +66,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
     }
 
 
-    fun clickProfileSetting(){
+    private fun clickProfileSetting(){
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_profile_change)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -80,7 +80,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
     }
 
 
-    fun clickWithDraw(){
+    private fun clickWithDraw(){
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_red_with_text)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))

@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -32,11 +33,15 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.FragmentMapBinding
 import com.rpg.funbox.presentation.BaseFragment
-import com.rpg.funbox.presentation.MainActivity
 import com.rpg.funbox.presentation.game.GameActivity
+import io.socket.client.IO
+import io.socket.client.Socket.EVENT_CONNECT_ERROR
+import io.socket.engineio.client.EngineIOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import timber.log.Timber
+
 
 class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnMapReadyCallback {
 
@@ -92,11 +97,28 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-
+        //socketConnect()
         collectLatestFlow(viewModel.mapUiEvent) { handleUiEvent(it) }
 
         viewModel.mapApi()
         initMapView()
+    }
+
+    private fun socketConnect() {
+        val socket = IO.socket("URL")
+        socket.connect()
+        socket.on(io.socket.client.Socket.EVENT_CONNECT) {
+            // 소켓 서버에 연결이 성공하면 호출됨
+            Timber.i("Socket", "Connect")
+        }.on(io.socket.client.Socket.EVENT_DISCONNECT) { args ->
+            // 소켓 서버 연결이 끊어질 경우에 호출됨
+            Timber.i("Socket", "Disconnet: ${args[0]}")
+        }.on(EVENT_CONNECT_ERROR) { args ->
+            // 소켓 서버 연결 시 오류가 발생할 경우에 호출됨
+            if (args[0] is EngineIOException) {
+                Timber.i("Socket", "Connect Error")
+            }
+        }
     }
 
     override fun onStart() {

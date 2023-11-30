@@ -18,22 +18,7 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        startActivity(Intent(this@SplashActivity, MainActivity::class.java))
 
-        lifecycleScope.launch {
-            viewModel.getUsersLocations()
-            viewModel.splashUiEvent.collectLatest { splashUiEvent ->
-                when (splashUiEvent) {
-                    is SplashUiEvent.Unauthorized -> {
-                        startActivity(Intent(this@SplashActivity, TitleActivity::class.java))
-                        this@SplashActivity.finish()
-                    }
-
-                    is SplashUiEvent.GetUsersLocationsSuccess -> {
-                        startActivity(Intent(this@SplashActivity, MainActivity::class.java))
-                        this@SplashActivity.finish()
-                    }
-                }
-            }
-        }
     }
 }
