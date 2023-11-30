@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './user.entity';
 import { UserLocationDto } from './dto/user-location.dto';
 import { NearUsersDto } from './dto/near-users.dto';
+import { Not } from 'typeorm';
 import * as crypto from 'crypto';
 
 const AWS = require('aws-sdk');
@@ -32,7 +33,7 @@ export class UsersService {
     return;
   }
 
-  async findNearUsers( id ): Promise<NearUsersDto[]> {
+  async findNearUsers(id: number): Promise<NearUsersDto[]> {
     const users = await findNearUsersAlgorithm(id);
     const nearUsersDto = [];
     users.forEach((user) => {
@@ -41,7 +42,7 @@ export class UsersService {
     return nearUsersDto;
 
     async function findNearUsersAlgorithm(idSelf: number): Promise<User[]> {
-      return await User.find({ where: { id: idSelf } });
+      return await User.findBy({ id: Not(idSelf) });
     }
   }
 
