@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.rpg.funbox.presentation.login.nickname.NicknameViewModel" />
+            type="com.rpg.funbox.presentation.login.title.TitleViewModel" />
 
     </data>
 

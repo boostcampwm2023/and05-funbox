@@ -7,7 +7,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 object RetrofitInstance {
 
-    private const val FUNBOX_BASE_URL = ""
+    private const val FUNBOX_BASE_URL = "http://175.45.193.191:3000"
     private val moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
         .build()
