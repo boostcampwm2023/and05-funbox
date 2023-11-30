@@ -35,6 +35,11 @@ export class SocketService {
       client.on('disconnect', () => {
         this.userIdToClient.delete(id);
         this.logger.log(`Disconnected: ${info}`);
+        const roomId = client.data.roomId;
+        if (roomId) {
+          this.rooms.get(roomId).quit();
+          this.rooms.delete(roomId);
+        }
       });
     } catch (error) {
       client.emit('error', error.response);
@@ -59,7 +64,7 @@ export class SocketService {
       const userId = client.data.userId;
       const roomId = Math.random().toString(36).substring(2, 12);
       opponentClient.emit('gameApply', JSON.stringify({ userId, roomId }));
-      this.rooms.set(roomId, new Room(client, opponentClient));
+      this.rooms.set(roomId, new Room(roomId, client, opponentClient));
     }
   }
 
@@ -90,6 +95,7 @@ export class SocketService {
       room.nextQuiz();
     } else {
       room.showScore();
+      room.quit();
       this.rooms.delete(roomId);
     }
   }

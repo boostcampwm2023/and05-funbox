@@ -1,16 +1,20 @@
 import { Socket } from 'socket.io';
 
 export class Room {
+  id: string;
   owner: Socket;
   opponent: Socket;
   quizzes: string[];
   round: number = 0;
 
-  constructor(owner: Socket, opponent: Socket) {
+  constructor(id: string, owner: Socket, opponent: Socket) {
+    this.id = id;
     this.owner = owner;
     this.owner.data.score = 0;
+    this.owner.data.roomId = id;
     this.opponent = opponent;
     this.opponent.data.score = 0;
+    this.opponent.data.roomId = id;
     this.quizzes = getQuizzes(2);
   }
 
@@ -49,6 +53,13 @@ export class Room {
     ]);
     this.owner.emit('score', data);
     this.opponent.emit('score', data);
+  }
+
+  quit() {
+    this.owner.emit('lostConnection');
+    this.opponent.emit('lostConnection');
+    delete this.owner.data.roomId;
+    delete this.opponent.data.roomId;
   }
 }
 
