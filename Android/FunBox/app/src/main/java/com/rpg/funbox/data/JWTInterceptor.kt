@@ -13,7 +13,7 @@ object JWTInterceptor : Interceptor {
         val accessToken: String = MainApplication.mySharedPreferences.getJWT("jwt", "")
         Timber.d("JWTInterceptor: $accessToken")
         val newRequest = request().newBuilder()
-            .addHeader("authorization", accessToken)
+            .addHeader("Authorization", "Bearer $accessToken")
             .build()
         proceed(newRequest)
     }
