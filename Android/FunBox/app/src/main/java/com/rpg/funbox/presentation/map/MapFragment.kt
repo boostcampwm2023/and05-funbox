@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
@@ -36,6 +37,9 @@ import com.rpg.funbox.databinding.FragmentMapBinding
 import com.rpg.funbox.presentation.BaseFragment
 import com.rpg.funbox.presentation.checkPermission
 import com.rpg.funbox.presentation.login.AccessPermission
+import io.socket.client.IO
+import io.socket.client.Socket.EVENT_CONNECT_ERROR
+import io.socket.engineio.client.EngineIOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -100,7 +104,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-
+      
+        socketConnect()
+        
         collectLatestFlow(viewModel.mapUiEvent) { handleUiEvent(it) }
 
         binding.floatingActionButton.setOnClickListener {
@@ -123,6 +129,23 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 Timber.d("Now: ${LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)}, Locations: $tmp")
                 viewModel.setUsersLocations(tmp.latitude, tmp.longitude)
                 initMapView()
+            }
+        }
+    }
+
+    private fun socketConnect() {
+        val socket = IO.socket("URL")
+        socket.connect()
+        socket.on(io.socket.client.Socket.EVENT_CONNECT) {
+            // 소켓 서버에 연결이 성공하면 호출됨
+            Timber.i("Socket", "Connect")
+        }.on(io.socket.client.Socket.EVENT_DISCONNECT) { args ->
+            // 소켓 서버 연결이 끊어질 경우에 호출됨
+            Timber.i("Socket", "Disconnet: ${args[0]}")
+        }.on(EVENT_CONNECT_ERROR) { args ->
+            // 소켓 서버 연결 시 오류가 발생할 경우에 호출됨
+            if (args[0] is EngineIOException) {
+                Timber.i("Socket", "Connect Error")
             }
         }
     }
