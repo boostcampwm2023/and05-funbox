@@ -43,7 +43,7 @@ export class UsersController {
     @Body() userLocationDto: UserLocationDto,
   ): Promise<NearUsersDto[]> {
     await this.usersService.updateUserLocation(req.user.id, userLocationDto);
-    return await this.usersService.findNearUsers(userLocationDto);
+    return await this.usersService.findNearUsers(req.user.id);
   }
 
   @Get()
@@ -102,8 +102,6 @@ export class UsersController {
       throw new NotFoundException('File not found');
     }
     const user = await this.usersService.getUserById(req.user.id);
-
-    console.log(user);
 
     if (user.profile_url !== null) {
       await this.usersService.deleteS3(user.profile_url);

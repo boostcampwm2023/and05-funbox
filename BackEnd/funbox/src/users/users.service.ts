@@ -32,28 +32,25 @@ export class UsersService {
     return;
   }
 
-  async findNearUsers(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    userLocationDto: UserLocationDto,
-  ): Promise<NearUsersDto[]> {
-    const users = await findNearUsersAlgorithm(); // [!] 주변 조회 알고리즘 고도화 필요
+  async findNearUsers( id ): Promise<NearUsersDto[]> {
+    const users = await findNearUsersAlgorithm(id);
     const nearUsersDto = [];
     users.forEach((user) => {
       nearUsersDto.push(NearUsersDto.of(user));
     });
     return nearUsersDto;
 
-    async function findNearUsersAlgorithm(): Promise<User[]> {
-      return await User.find();
+    async function findNearUsersAlgorithm(idSelf: number): Promise<User[]> {
+      return await User.find({ where: { id: idSelf } });
     }
   }
 
   async getUserById(id: number): Promise<User> {
-    const found = await User.findOneBy({ id: id });
-    if (!found) {
+    const user = await User.findOneBy({ id: id });
+    if (!user) {
       throw new NotFoundException(`Can't find User with id ${id}`);
     }
-    return found;
+    return user;
   }
 
   async updateUserMessage(id: number, message: string): Promise<User> {

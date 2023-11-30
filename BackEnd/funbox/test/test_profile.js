@@ -29,7 +29,6 @@ const stats = fs.statSync(filePath);
 const fileSizeInBytes = stats.size;
 const fileStream = fs.createReadStream(filePath);
 form.append('file', fileStream, { knownLength: fileSizeInBytes });
-form.append('accessToken', accessToken);
 
 fetch('http://175.45.193.191:3000/users/profile', {
   method: 'POST',
