@@ -35,7 +35,7 @@ export class AuthController {
   })
   @ApiOkResponse({ type: AuthResponseDto })
   async getFakeNaverUserAndFindUserDbIfNotMakeNullUser(
-    @Body('naveFakeId') naverFakeId: string,
+    @Body('naverFakeId') naverFakeId: string,
   ) {
     const naverUserId = naverFakeId;
 
