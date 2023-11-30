@@ -5,4 +5,6 @@ sealed class SettingUiEvent {
     data object SetName: SettingUiEvent()
     data object SetProfile: SettingUiEvent()
     data object Draw: SettingUiEvent()
+
+    data object CloseName: SettingUiEvent()
 }

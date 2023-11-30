@@ -96,7 +96,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.063"
-        app:srcCompat="@drawable/profile_none" />
+        app:srcCompat="@{vm.user.profileUrl}" />
 
     <TextView
         android:id="@+id/nameTextView"
@@ -104,7 +104,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="41dp"
-        android:text="이름"
+        android:text="@{vm.user.userName}"
         android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold"

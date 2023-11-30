@@ -50,21 +50,8 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
         is SettingUiEvent.Draw -> {
             clickWithDraw()
         }
+        is SettingUiEvent.CloseName ->{}
     }
-
-    private fun clickNickNameSetting(){
-        val dialog = Dialog(requireContext())
-        dialog.setContentView(R.layout.dialog_message)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog.show()
-        val editText = dialog.findViewById<EditText>(R.id.dialogEditText)
-        val button = dialog.findViewById<Button>(R.id.positiveButton)
-        button.setOnClickListener {
-            //api
-            dialog.dismiss()
-        }
-    }
-
 
     private fun clickProfileSetting(){
         val dialog = Dialog(requireContext())
