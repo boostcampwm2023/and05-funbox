@@ -64,10 +64,8 @@ export class AuthService {
   }
 
   setUserNull(user: User, idOauth: string): User {
-    const now = new Date();
-
     user.username = null;
-    user.created_at = now;
+    user.created_at = new Date();
     user.profile_url = null;
     user.locX = null;
     user.locY = null;

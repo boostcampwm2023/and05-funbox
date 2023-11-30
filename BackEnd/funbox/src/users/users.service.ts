@@ -29,6 +29,7 @@ export class UsersService {
     const user = await User.findOne({ where: { id: id } });
     user.locX = userLocationDto.locX;
     user.locY = userLocationDto.locY;
+    user.last_polling_at = new Date();
     await user.save();
     return;
   }

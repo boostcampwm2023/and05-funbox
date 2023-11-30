@@ -54,4 +54,7 @@ export class User extends BaseEntity {
 
   @Column({ length: 127, nullable: false })
   id_oauth: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  last_polling_at: Date;
 }
