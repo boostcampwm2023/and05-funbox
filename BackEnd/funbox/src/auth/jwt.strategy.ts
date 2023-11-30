@@ -14,9 +14,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload) {
-    const { id, username } = payload;
+    const { id } = payload;
     const userAuthDto = UserAuthDto.of(
-      await User.findOne({ where: { id: id, username: username } }),
+      await User.findOne({ where: { id: id } }),
     );
     if (!userAuthDto) {
       throw new NotFoundException('there is not that user');
