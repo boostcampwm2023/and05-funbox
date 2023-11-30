@@ -32,7 +32,7 @@ class NaverLoginRepositoryImpl : NaverLoginRepository {
                 if (body != null) {
                     Timber.d("JWT: ${body.accessToken}")
                 }
-                return UserAuthDto(0, null, 0, 0)
+                return UserAuthDto(0, 0, 0)
             }
 
             in serverErrorStatusCodeRange -> {}
