@@ -91,7 +91,8 @@ export class UsersController {
       type: 'formData',
       description: '폼데이터 형식의 파일 전송이 필요함 name="file"',
       example: 'file=blob',
-  }})
+    },
+  })
   @UseInterceptors(FileInterceptor('file'))
   async updateUserProfile(
     @Req() req,
@@ -101,6 +102,8 @@ export class UsersController {
       throw new NotFoundException('File not found');
     }
     const user = await this.usersService.getUserById(req.user.id);
+
+    console.log(user);
 
     if (user.profile_url !== null) {
       await this.usersService.deleteS3(user.profile_url);
@@ -116,7 +119,6 @@ export class UsersController {
   @ApiOkResponse({ type: UserResponseDto })
   async deleteUserProfile(@Req() req): Promise<UserResponseDto> {
     const user = await this.usersService.getUserById(req.user.id);
-    console.log(user);
 
     if (user.profile_url === null) {
       return UserResponseDto.of(user);

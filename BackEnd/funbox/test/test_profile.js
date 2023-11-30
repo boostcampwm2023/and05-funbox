@@ -1,5 +1,5 @@
 const accessToken =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTUsInVzZXJuYW1lIjpudWxsLCJpYXQiOjE3MDEzMTYwOTQsImV4cCI6MTcwMTU3NTI5NH0.GyG67jF3UxwfLzUNL51_OH9vdepRKTIJf7v55BqQVHM';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjIsImlhdCI6MTcwMTMxOTU5NywiZXhwIjoxNzAxNTc4Nzk3fQ.N_BV5POKThG8cdQwVBh2WEgRFZrF-vPUTwsBcgxOzIg';
 // fetch('http://localhost:3000/users/profile', {
 //   method: 'POST',
 //   headers: {
