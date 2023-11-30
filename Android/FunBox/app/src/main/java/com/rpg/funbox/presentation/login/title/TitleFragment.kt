@@ -34,6 +34,7 @@ class TitleFragment : BaseFragment<FragmentTitleBinding>(R.layout.fragment_title
             getString(R.string.naver_login_secret_key),
             getString(R.string.social_login_info_naver_client_name)
         )
+        // NaverIdLoginSDK.logout()
     }
 
     private fun loginAuthenticate() {
