@@ -31,6 +31,7 @@ import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.rpg.funbox.R
+import com.rpg.funbox.data.OkHttpClientInstance
 import com.rpg.funbox.databinding.FragmentMapBinding
 import com.rpg.funbox.presentation.BaseFragment
 import com.rpg.funbox.presentation.game.GameActivity
@@ -41,6 +42,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.net.ServerSocket
 
 
 class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnMapReadyCallback {
@@ -97,15 +99,21 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        //socketConnect()
+        socketConnect()
         collectLatestFlow(viewModel.mapUiEvent) { handleUiEvent(it) }
 
         viewModel.mapApi()
         initMapView()
     }
 
+    private fun socketConnect2(){
+        OkHttpClientInstance.okHttpClient
+
+        val stomp = StompClient(url, intervalMillis, client)
+
+    }
     private fun socketConnect() {
-        val socket = IO.socket("URL")
+        val socket = IO.socket("http://175.45.193.191:3000/socket")
         socket.connect()
         socket.on(io.socket.client.Socket.EVENT_CONNECT) {
             // 소켓 서버에 연결이 성공하면 호출됨

@@ -11,7 +11,7 @@ object JWTInterceptor : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response = with(chain) {
         //val accessToken: String = MainApplication.mySharedPreferences.getJWT("jwt", "")
-        val accessToken: String = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjIsImlhdCI6MTcwMTMxOTUxMCwiZXhwIjoxNzAxNTc4NzEwfQ.85eKD8BR6ShDZQmgchA-z3WxW-FpO38n1WEkv9w1H-8"
+        val accessToken: String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjIsImlhdCI6MTcwMTMyOTE3MSwiZXhwIjoxNzAxNTg4MzcxfQ.dLgAzFMgKxMlZeIBlzRtLZmzeEE2JgvMdw_e2NhRrYI"
         Timber.d("JWTInterceptor: $accessToken")
         val newRequest = request().newBuilder()
             .addHeader("Authorization", "Bearer $accessToken")

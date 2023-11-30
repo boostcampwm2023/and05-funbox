@@ -65,7 +65,7 @@ class TitleViewModel : ViewModel() {
     fun submitAccessToken(token: String) {
         viewModelScope.launch {
             _userAuthDto.value = naverLoginRepository.postNaverAccessToken(token)
-            when (userRepository.getUserInfo()) {
+            when (userRepository.getUserInfo()?.userName) {
                 null -> {
                     _titleUiEvent.emit(TitleUiEvent.SignUpStart)
                 }

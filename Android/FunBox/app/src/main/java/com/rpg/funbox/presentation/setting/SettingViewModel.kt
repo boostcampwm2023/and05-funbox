@@ -36,14 +36,15 @@ class SettingViewModel : ViewModel() {
     }
 
     fun setUserInfo(){
-        //받아오기
-        val response = UserInfoResponse("abc","def", "g")
         viewModelScope.launch {
-            _user.update {
-                it.copy(
-                    userName = response.userName,
-                    profileUrl = response.profileUrl
-                )
+            val response = userRepository.getUserInfo()
+            response?.let { response ->
+                _user.update {
+                    it.copy(
+                        userName = response.userName,
+                        profileUrl = response.profileUrl
+                    )
+                }
             }
         }
     }
@@ -74,6 +75,7 @@ class SettingViewModel : ViewModel() {
             Log.d("!!!",_newName.value)
             if (userRepository.patchUserName(userName = _newName.value)) {
                 Log.d("!!!","a")
+                setUserInfo()
             }
         }
         closeName()
