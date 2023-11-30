@@ -52,7 +52,7 @@
             android:layout_marginTop="32dp"
             android:layout_marginEnd="120dp"
             android:background="@{(vm.profileUiState.isBtnProfileEnable == true) ? @drawable/success_button : @drawable/fail_button}"
-            android:onClick="@{() -> vm.submitSelectProfile()}"
+            android:onClick="@{() -> vm.submitProfile()}"
             android:text="@string/submit"
             android:textColor="@{(vm.profileUiState.isBtnProfileEnable == true) ? @color/white : @color/black}"
             android:textSize="24sp"

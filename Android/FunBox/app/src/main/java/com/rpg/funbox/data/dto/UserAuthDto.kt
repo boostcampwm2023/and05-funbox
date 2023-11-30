@@ -6,9 +6,6 @@ data class UserAuthDto(
     @Json(name = "id")
     val id: Int,
 
-    @Json(name = "username")
-    val userName: String?,
-
     @Json(name = "iat")
     val iat: Int,
 
