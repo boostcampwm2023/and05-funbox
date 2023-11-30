@@ -22,8 +22,9 @@ export class NearUsersDto {
     let isMsgInAnHour: boolean;
     if (user.messaged_at === null) {
       isMsgInAnHour = false;
+    } else {
+      isMsgInAnHour = user.messaged_at.getTime() > Date.now() - 3600;
     }
-    isMsgInAnHour = user.messaged_at.getTime() > Date.now() - 3600;
     return { id, username, locX, locY, isMsgInAnHour };
   }
 }

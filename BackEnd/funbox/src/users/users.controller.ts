@@ -116,6 +116,7 @@ export class UsersController {
   @ApiOkResponse({ type: UserResponseDto })
   async deleteUserProfile(@Req() req): Promise<UserResponseDto> {
     const user = await this.usersService.getUserById(req.user.id);
+    console.log(user);
 
     if (user.profile_url === null) {
       return UserResponseDto.of(user);
