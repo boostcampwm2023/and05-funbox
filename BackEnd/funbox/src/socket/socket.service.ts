@@ -1,12 +1,15 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 import { SocketUserDto } from './dto/socket-user.dto';
+import { GameApplyAnswer } from './enum/game-apply-answer.enum';
+import { Room } from './room';
 
 @Injectable()
 export class SocketService {
   private userIdToClient: Map<number, Socket> = new Map();
+  private rooms: Map<string, Room> = new Map();
   private logger: Logger = new Logger('SocketService');
 
   constructor(
@@ -46,15 +49,47 @@ export class SocketService {
     );
   }
 
-  makeGameRoom(client: Socket, opponentId: number) {
+  gameApply(client: Socket, opponentId: number) {
     const opponentClient = this.userIdToClient.get(opponentId);
     if (!opponentClient) {
-      client.emit('error', '접속 중인 유저가 아닙니다.');
-      return;
+      const data = JSON.stringify({ answer: GameApplyAnswer.OFFLINE });
+      client.emit('gameApplyAnswer', data);
+    } else {
+      const userId = client.data.userId;
+      const roomId = Math.random().toString(36).substring(2, 12);
+      opponentClient.emit('gameApply', JSON.stringify({ userId, roomId }));
+      this.rooms.set(roomId, new Room(client, opponentClient));
     }
-    opponentClient.emit('message', `[게임 신청] 상대: ${client.data.username}`);
-    const randomRoomId = Math.random().toString(36).substring(2, 12);
-    client.join(randomRoomId);
-    opponentClient.join(randomRoomId);
+  }
+
+  gameApplyAnswer(roomId: string, answer: GameApplyAnswer) {
+    const room = this.rooms.get(roomId);
+    if (!room) {
+      throw new NotFoundException();
+    }
+    const ownerClient = room.owner;
+    ownerClient.emit('gameApplyAnswer', JSON.stringify({ answer }));
+
+    if (answer === GameApplyAnswer.REJECT) {
+      this.rooms.delete(roomId);
+    } else {
+      this.rooms.get(roomId).nextQuiz();
+    }
+  }
+
+  quizAnswer(roomId: string, answer: string) {
+    const room = this.rooms.get(roomId);
+    room.deliverAnswer(answer);
+  }
+
+  verifyAnswer(roomId: string, isCorrect: boolean) {
+    const room = this.rooms.get(roomId);
+    room.verifyAnswer(isCorrect);
+    if (room.round < room.quizzes.length) {
+      room.nextQuiz();
+    } else {
+      room.showScore();
+      this.rooms.delete(roomId);
+    }
   }
 }
