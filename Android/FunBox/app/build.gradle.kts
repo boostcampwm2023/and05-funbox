@@ -115,8 +115,6 @@ dependencies {
         exclude("org.json", "json")
     }
 
-    // stomp
-    implementation("https://github.com/FaithDeveloper/stomp-kotlin")
 
 }
 

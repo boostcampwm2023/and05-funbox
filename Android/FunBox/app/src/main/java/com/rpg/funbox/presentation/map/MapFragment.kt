@@ -107,9 +107,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     }
 
     private fun socketConnect2(){
-        OkHttpClientInstance.okHttpClient
+        //OkHttpClientInstance.okHttpClient
 
-        val stomp = StompClient(url, intervalMillis, client)
+        //val stomp = StompClient(url, intervalMillis, client)
 
     }
     private fun socketConnect() {
