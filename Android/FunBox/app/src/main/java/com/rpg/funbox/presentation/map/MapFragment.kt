@@ -32,14 +32,31 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.FragmentMapBinding
 import com.rpg.funbox.presentation.BaseFragment
-import io.socket.client.IO
-import io.socket.client.Socket.EVENT_CONNECT_ERROR
-import io.socket.engineio.client.EngineIOException
+import dev.icerock.moko.socket.Socket
+import dev.icerock.moko.socket.SocketEvent
+import dev.icerock.moko.socket.SocketOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.Response
+import org.json.JSONObject
 import timber.log.Timber
+import java.net.URI
+import java.util.Collections.singletonList
+import java.util.Collections.singletonMap
 
+class HeaderInterceptor : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response = chain.run {
+        proceed(
+            request()
+                .newBuilder()
+                .addHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzUsImlhdCI6MTcwMTM5Mjg0MiwiZXhwIjoxNzAxNjUyMDQyfQ.VMGe66yPyxcu1rpJs4EoSyHxXF8sTTsQVKmzU1FG8Js")
+                .build()
+        )
+    }
+}
 
 class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnMapReadyCallback {
 
@@ -99,20 +116,74 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     }
 
     private fun socketConnect() {
-        val socket = IO.socket("URL")
-        socket.connect()
-        socket.on(io.socket.client.Socket.EVENT_CONNECT) {
-            // 소켓 서버에 연결이 성공하면 호출됨
-            Timber.i("Socket", "Connect")
-        }.on(io.socket.client.Socket.EVENT_DISCONNECT) { args ->
-            // 소켓 서버 연결이 끊어질 경우에 호출됨
-            Timber.i("Socket", "Disconnet: ${args[0]}")
-        }.on(EVENT_CONNECT_ERROR) { args ->
-            // 소켓 서버 연결 시 오류가 발생할 경우에 호출됨
-            if (args[0] is EngineIOException) {
-                Timber.i("Socket", "Connect Error")
+        val socket = Socket(
+            endpoint = "http://175.45.193.191:3000/socket/",
+            config = SocketOptions(
+                queryParams = mapOf("Authorization" to "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzUsImlhdCI6MTcwMTM5Mjg0MiwiZXhwIjoxNzAxNjUyMDQyfQ.VMGe66yPyxcu1rpJs4EoSyHxXF8sTTsQVKmzU1FG8Js"),
+                transport = SocketOptions.Transport.WEBSOCKET
+            )
+        ){
+            on(SocketEvent.Connect) {
+                Log.d("XXXXXXXXXXXXXXXXXXconnect","connect")
+            }
+
+            on(SocketEvent.Connecting) {
+                Log.d("XXXXXXXXXXXXXXXXXXconnectting","connectting")
+            }
+
+            on(SocketEvent.Disconnect) {
+                Log.d("XXXXXXXXXXXXXXXXXXdisconnect","disconnect")
+            }
+
+            on(SocketEvent.Error) {
+                Log.d("XXXXXXXXXXXXXXXXXXERR","$it")
+            }
+
+            on(SocketEvent.Reconnect) {
+                println("reconnect")
+            }
+
+            on(SocketEvent.ReconnectAttempt) {
+                println("reconnect attempt $it")
+            }
+
+            on(SocketEvent.Ping) {
+                println("ping")
+            }
+
+            on(SocketEvent.Pong) {
+                println("pong")
             }
         }
+        socket.connect()
+//        val httpClient = OkHttpClient.Builder().addNetworkInterceptor(HeaderInterceptor()).build()
+//        val options = IO.Options()
+//        options.query= "Authorization=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzUsImlhdCI6MTcwMTM5Mjg0MiwiZXhwIjoxNzAxNjUyMDQyfQ.VMGe66yPyxcu1rpJs4EoSyHxXF8sTTsQVKmzU1FG8Js"
+////        val headers = JSONObject()
+////        headers.put("Authorization", "YourAccessToken") // 여기에 실제 토큰을 넣어주세요
+//        options.extraHeaders = singletonMap("Authorization",singletonList("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzUsImlhdCI6MTcwMTM5Mjg0MiwiZXhwIjoxNzAxNjUyMDQyfQ.VMGe66yPyxcu1rpJs4EoSyHxXF8sTTsQVKmzU1FG8Js"))
+//        options.auth = singletonMap("Authorization","Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzUsImlhdCI6MTcwMTM5Mjg0MiwiZXhwIjoxNzAxNjUyMDQyfQ.VMGe66yPyxcu1rpJs4EoSyHxXF8sTTsQVKmzU1FG8Js")
+//        options.webSocketFactory = httpClient
+//        options.callFactory = httpClient
+//        val socket = IO.socket(URI.create("http://175.45.193.191:3000/socket"),options)
+//        socket.
+//        socket.connect()
+//
+//
+//        socket.on(io.socket.client.Socket.EVENT_CONNECT) {
+//            // 소켓 서버에 연결이 성공하면 호출됨
+//            Log.i("Socket", "Connect")
+//        }.on(io.socket.client.Socket.EVENT_DISCONNECT) { args ->
+//            // 소켓 서버 연결이 끊어질 경우에 호출됨
+//            Log.i("Socket", "Disconnet: ${args[0]}")
+//        }.on(EVENT_CONNECT_ERROR) { args ->
+//            // 소켓 서버 연결 시 오류가 발생할 경우에 호출됨
+//            Log.d("XXXXXXXXXXXXXXXXXXXXXXXXXX","")
+//
+//            if (args[0] is EngineIOException) {
+//                Log.i("Socket", "Connect Error")
+//            }
+//        }
     }
 
     override fun onStart() {
