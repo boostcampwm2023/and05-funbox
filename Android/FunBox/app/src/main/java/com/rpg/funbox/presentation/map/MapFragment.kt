@@ -2,6 +2,7 @@ package com.rpg.funbox.presentation.map
 
 import android.Manifest
 import android.animation.ObjectAnimator
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -33,10 +34,15 @@ import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.rpg.funbox.R
+import com.rpg.funbox.data.OkHttpClientInstance
 import com.rpg.funbox.databinding.FragmentMapBinding
 import com.rpg.funbox.presentation.BaseFragment
+
+import com.rpg.funbox.presentation.game.GameActivity
+
 import com.rpg.funbox.presentation.checkPermission
 import com.rpg.funbox.presentation.login.AccessPermission
+
 import io.socket.client.IO
 import io.socket.client.Socket.EVENT_CONNECT_ERROR
 import io.socket.engineio.client.EngineIOException
@@ -46,10 +52,15 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+
+import java.net.ServerSocket
+
+
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Timer
 import kotlin.concurrent.scheduleAtFixedRate
+
 
 class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnMapReadyCallback {
 
@@ -59,7 +70,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     private lateinit var naverMap: NaverMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private val handler = Handler()
     private lateinit var locationSource: FusedLocationSource
     private val LOCATION_PERMISSION_REQUEST_CODE = 5000
     private val PERMISSIONS = arrayOf(
@@ -70,15 +80,16 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     private val requestMultiPermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {}
 
+
     private fun handleUiEvent(event: MapUiEvent) = when (event) {
         is MapUiEvent.MessageOpen -> {
             MessageDialog().show(parentFragmentManager, "messageDialog")
         }
 
         is MapUiEvent.ToGame -> {
-            val action =
-                MapFragmentDirections.actionMapFragmentToGameSelectFragment(viewModel.userDetail.value.id)
-            findNavController().navigate(action)
+            val intent = Intent(context, GameActivity::class.java)
+            intent.putExtra("otherId", viewModel.userDetail.value.id)
+            startActivity(intent)
         }
 
         is MapUiEvent.GetGame -> {
@@ -88,10 +99,15 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         is MapUiEvent.ToSetting -> {
             findNavController().navigate(R.id.action_mapFragment_to_settingFragment)
         }
+
+        is MapUiEvent.Toggle -> {
+            toggleFab()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 //        if (!hasPermission()) {
 //            ActivityCompat.requestPermissions(
 //                requireActivity(),
@@ -99,6 +115,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 //                LOCATION_PERMISSION_REQUEST_CODE
 //            )
 //        }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -131,10 +148,17 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 initMapView()
             }
         }
+
     }
 
+    private fun socketConnect2(){
+        //OkHttpClientInstance.okHttpClient
+
+        //val stomp = StompClient(url, intervalMillis, client)
+
+    }
     private fun socketConnect() {
-        val socket = IO.socket("URL")
+        val socket = IO.socket("http://175.45.193.191:3000/socket")
         socket.connect()
         socket.on(io.socket.client.Socket.EVENT_CONNECT) {
             // 소켓 서버에 연결이 성공하면 호출됨
@@ -199,27 +223,29 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     @UiThread
     override fun onMapReady(map: NaverMap) {
-        this.naverMap = map
-        map.locationSource = locationSource
-        map.locationTrackingMode = LocationTrackingMode.Face
-        map.uiSettings.isLocationButtonEnabled = true
-
-        val locationOverlay = naverMap.locationOverlay
-        locationOverlay.isVisible = true
-        locationOverlay.iconHeight = 120
-        locationOverlay.iconWidth = 120
-        locationOverlay.icon = OverlayImage.fromResource(R.drawable.navi_icon)
-
-        naverMap.addOnLocationChangeListener { location ->
-            val cameraUpdate = CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))
-            naverMap.moveCamera(cameraUpdate)
-            // viewModel.setUsersLocations(location.latitude, location.longitude)
+        this.naverMap = map.apply {
+            locationSource = locationSource
+            locationTrackingMode = LocationTrackingMode.Face
+            uiSettings.isLocationButtonEnabled = true
+            minZoom = 13.0
+            maxZoom = 17.0
+            uiSettings.isZoomControlEnabled = false
+            extent = LatLngBounds(LatLng(31.43, 122.37), LatLng(44.35, 132.0))
+            addOnLocationChangeListener { location ->
+                val cameraUpdate =
+                    CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))
+                naverMap.moveCamera(cameraUpdate)
+                viewModel.setXY(location.latitude, location.longitude)
+                // viewModel.setUsersLocations(location.latitude, location.longitude)
+            }
         }
 
-        naverMap.minZoom = 5.0
-        naverMap.maxZoom = 20.0
-        naverMap.uiSettings.isZoomControlEnabled = true
-        naverMap.extent = LatLngBounds(LatLng(31.43, 122.37), LatLng(44.35, 132.0))
+        naverMap.locationOverlay.apply {
+            isVisible = true
+            iconHeight = 120
+            iconWidth = 120
+            icon = OverlayImage.fromResource(R.drawable.navi_icon)
+        }
 
         val hasMsg = InfoWindow()
         hasMsg.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
@@ -255,8 +281,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 setOnClickListener { _ ->
                     viewModel.userDetailApi(user.id)
                     infoWindow.adapter = adapter
-
-
 
                     runBlocking {
                         val test = viewModel.userDetail.value.profile
@@ -313,7 +337,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 }
 
             }
-
 
             user.mapPin = marker
         }

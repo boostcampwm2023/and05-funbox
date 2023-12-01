@@ -2,6 +2,7 @@ package com.rpg.funbox.data.repository
 
 import com.rpg.funbox.data.RetrofitInstance
 import com.rpg.funbox.data.dto.UserInfoRequest
+import com.rpg.funbox.data.dto.UserInfoResponse
 import com.rpg.funbox.data.network.service.SignUpApi
 import okhttp3.MultipartBody
 import timber.log.Timber
@@ -12,11 +13,11 @@ class UserRepositoryImpl : UserRepository {
         RetrofitInstance.retrofit.create(SignUpApi::class.java)
     }
 
-    override suspend fun getUserInfo(): String? {
+    override suspend fun getUserInfo(): UserInfoResponse? {
         val response = signUpApi.fetchUserInfo()
         when (response.code()) {
             in successStatusCodeRange -> {
-                return response.body()?.username
+                return response.body()
             }
 
             else -> {}
@@ -26,7 +27,7 @@ class UserRepositoryImpl : UserRepository {
     }
 
     override suspend fun patchUserName(userName: String): Boolean {
-        val response = signUpApi.submitUserName(UserInfoRequest(username = userName, null, null))
+        val response = signUpApi.submitUserName(UserInfoRequest(userName = userName, null, null))
         Timber.d("Post User Name: ${response.code()}")
         when (response.code()) {
             in successStatusCodeRange -> {

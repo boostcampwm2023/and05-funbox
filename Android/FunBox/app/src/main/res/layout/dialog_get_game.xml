@@ -1,89 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="300dp"
-        android:layout_height="400dp"
-        android:background="@drawable/bg_dialog_rectangle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/tv_get_game_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="게임 신청 도착"
-            android:textSize="30sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/iv_get_game_profile"
-            app:layout_constraintEnd_toEndOf="parent"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="300dp"
+            android:layout_height="400dp"
+            android:background="@drawable/bg_dialog_rectangle"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/iv_get_game_profile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/tv_get_game_name"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_get_game_title"
-            android:src="@drawable/profile_add" />
+            <TextView
+                android:id="@+id/tv_get_game_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="게임 신청 도착"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@id/iv_get_game_profile"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tv_get_game_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="이름"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/tv_get_game_msg"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/iv_get_game_profile" />
+            <ImageView
+                android:id="@+id/iv_get_game_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@id/tv_get_game_name"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_get_game_title"
+                android:src="@drawable/profile_add" />
 
-        <TextView
-            android:id="@+id/tv_get_game_msg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="메시지"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toTopOf="@id/btn_no"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_get_game_name" />
+            <TextView
+                android:id="@+id/tv_get_game_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="이름"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@id/tv_get_game_msg"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/iv_get_game_profile" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_ok"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_green_rectangle"
-            android:text="수락"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btn_no"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_get_game_msg" />
+            <TextView
+                android:id="@+id/tv_get_game_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="메시지"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toTopOf="@id/btn_no"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_get_game_name" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_no"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_red_rectangle"
-            android:text="거절"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btn_ok"
-            app:layout_constraintTop_toBottomOf="@id/tv_get_game_msg" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_ok"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_green_rectangle"
+                android:text="수락"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btn_no"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_get_game_msg" />
 
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_no"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_red_rectangle"
+                android:text="거절"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btn_ok"
+                app:layout_constraintTop_toBottomOf="@id/tv_get_game_msg" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
