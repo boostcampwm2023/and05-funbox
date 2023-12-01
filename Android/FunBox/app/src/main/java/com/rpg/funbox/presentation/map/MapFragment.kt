@@ -11,14 +11,17 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
-import androidx.core.app.ActivityCompat
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.UiThread
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraUpdate
@@ -34,15 +37,29 @@ import com.rpg.funbox.R
 import com.rpg.funbox.data.OkHttpClientInstance
 import com.rpg.funbox.databinding.FragmentMapBinding
 import com.rpg.funbox.presentation.BaseFragment
+
 import com.rpg.funbox.presentation.game.GameActivity
+
+import com.rpg.funbox.presentation.checkPermission
+import com.rpg.funbox.presentation.login.AccessPermission
+
 import io.socket.client.IO
 import io.socket.client.Socket.EVENT_CONNECT_ERROR
 import io.socket.engineio.client.EngineIOException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+
 import java.net.ServerSocket
+
+
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Timer
+import kotlin.concurrent.scheduleAtFixedRate
 
 
 class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnMapReadyCallback {
@@ -59,6 +76,10 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
+
+    private val requestMultiPermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {}
+
 
     private fun handleUiEvent(event: MapUiEvent) = when (event) {
         is MapUiEvent.MessageOpen -> {
@@ -86,24 +107,48 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!hasPermission()) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                PERMISSIONS,
-                LOCATION_PERMISSION_REQUEST_CODE
-            )
-        }
+
+//        if (!hasPermission()) {
+//            ActivityCompat.requestPermissions(
+//                requireActivity(),
+//                PERMISSIONS,
+//                LOCATION_PERMISSION_REQUEST_CODE
+//            )
+//        }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+      
         socketConnect()
+        
         collectLatestFlow(viewModel.mapUiEvent) { handleUiEvent(it) }
 
-        viewModel.mapApi()
-        initMapView()
+        binding.floatingActionButton.setOnClickListener {
+            toggleFab()
+        }
+
+        // viewModel.mapApi()
+        requestMultiPermissions.launch(AccessPermission.locationPermissionList)
+        if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        } else {
+            requireActivity().finish()
+        }
+
+        Timer().scheduleAtFixedRate(0, 3000) {
+            lifecycleScope.launch {
+                val tmp = runBlocking {
+                    fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
+                }
+                Timber.d("Now: ${LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)}, Locations: $tmp")
+                viewModel.setUsersLocations(tmp.latitude, tmp.longitude)
+                initMapView()
+            }
+        }
+
     }
 
     private fun socketConnect2(){
@@ -176,6 +221,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         isFabOpen = !isFabOpen
     }
 
+    @UiThread
     override fun onMapReady(map: NaverMap) {
         this.naverMap = map.apply {
             locationSource = locationSource
@@ -190,6 +236,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                     CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))
                 naverMap.moveCamera(cameraUpdate)
                 viewModel.setXY(location.latitude, location.longitude)
+                // viewModel.setUsersLocations(location.latitude, location.longitude)
             }
         }
 
@@ -222,8 +269,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         viewModel.users.value.map { user ->
             var adapter = MapProfileAdapter(requireContext(), viewModel.userDetail.value, null)
             val marker = Marker().apply {
+                Timber.d("User: ${user.id}")
                 position = user.loc
-                iconTintColor = Color.RED
+                iconTintColor = Color.YELLOW
                 this.map = naverMap
                 captionText = user.name.toString()
                 captionTextSize = 20F

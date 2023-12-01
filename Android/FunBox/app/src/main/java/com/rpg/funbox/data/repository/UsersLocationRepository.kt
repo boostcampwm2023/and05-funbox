@@ -4,5 +4,5 @@ import com.rpg.funbox.data.dto.UserLocation
 
 interface UsersLocationRepository {
 
-    suspend fun getUsersLocation(): List<UserLocation>?
+    suspend fun getUsersLocation(locX: Double, locY: Double): List<UserLocation>?
 }

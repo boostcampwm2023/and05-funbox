@@ -4,7 +4,6 @@ import com.rpg.funbox.data.RetrofitInstance
 import com.rpg.funbox.data.dto.UserLocation
 import com.rpg.funbox.data.dto.UsersLocationRequest
 import com.rpg.funbox.data.network.service.UsersLocationApi
-import timber.log.Timber
 
 class UsersLocationRepositoryImpl : UsersLocationRepository {
 
@@ -12,17 +11,15 @@ class UsersLocationRepositoryImpl : UsersLocationRepository {
         RetrofitInstance.retrofit.create(UsersLocationApi::class.java)
     }
 
-    override suspend fun getUsersLocation(): List<UserLocation>? {
-        val response = usersLocationApi.fetchUsersLocation(UsersLocationRequest(0.0, 0.0))
+    override suspend fun getUsersLocation(locX: Double, locY: Double): List<UserLocation>? {
+        val response = usersLocationApi.fetchUsersLocation(UsersLocationRequest(locX = locX, locY = locY))
 
         when (response.code()) {
             in successStatusCodeRange -> {
-                Timber.d("${response.body()}")
+                return response.body()
             }
 
-            UNAUTHORIZED_STATUS -> {
-                Timber.d("${response.code()}")
-            }
+            UNAUTHORIZED_STATUS -> {}
 
             in serverErrorStatusCodeRange -> {}
 
