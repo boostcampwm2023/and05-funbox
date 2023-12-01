@@ -20,6 +20,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
+import timber.log.Timber
 
 class TitleViewModel : ViewModel() {
 
@@ -33,6 +35,8 @@ class TitleViewModel : ViewModel() {
 
     private val _profileImageUri = MutableStateFlow<Uri?>(null)
     val profileImageUri = _profileImageUri.asStateFlow()
+
+    private val profileUrl = MutableStateFlow<MultipartBody.Part?>(null)
 
     private val _titleUiEvent = MutableSharedFlow<TitleUiEvent>()
     val titleUiEvent = _titleUiEvent.asSharedFlow()
@@ -61,15 +65,13 @@ class TitleViewModel : ViewModel() {
     fun submitAccessToken(token: String) {
         viewModelScope.launch {
             _userAuthDto.value = naverLoginRepository.postNaverAccessToken(token)
-            _userAuthDto.value?.let { user ->
-                when (user.userName) {
-                    null -> {
-                        _titleUiEvent.emit(TitleUiEvent.SignUpStart)
-                    }
+            when (userRepository.getUserInfo()) {
+                null -> {
+                    _titleUiEvent.emit(TitleUiEvent.SignUpStart)
+                }
 
-                    else -> {
-                        _titleUiEvent.emit(TitleUiEvent.NaverLoginSuccess)
-                    }
+                else -> {
+                    _titleUiEvent.emit(TitleUiEvent.NaverLoginSuccess)
                 }
             }
         }
@@ -91,6 +93,7 @@ class TitleViewModel : ViewModel() {
 
     fun submitNickname() {
         viewModelScope.launch {
+            Timber.d("User Name: ${userName.value}")
             if (userRepository.patchUserName(userName = userName.value)) {
                 _nicknameUiEvent.emit(NicknameUiEvent.NicknameSubmit)
             }
@@ -103,7 +106,7 @@ class TitleViewModel : ViewModel() {
         }
     }
 
-    fun selectProfile(uri: Uri?) {
+    fun selectProfile(uri: Uri?, body: MultipartBody.Part) {
         if (uri == null) {
             _profileUiState.update { uiState ->
                 uiState.copy(profileValidState = ProfileValidState.None)
@@ -111,15 +114,16 @@ class TitleViewModel : ViewModel() {
         }
         else {
             _profileImageUri.value = uri
+            profileUrl.value = body
             _profileUiState.update { uiState ->
                 uiState.copy(profileValidState = ProfileValidState.Valid)
             }
         }
     }
 
-    fun submitSelectProfile() {
+    fun submitProfile() {
         viewModelScope.launch {
-            when (userRepository.postUserInfo(userName = userName.value, profileUrl = _profileImageUri.value.toString())) {
+            when (profileUrl.value?.let { userRepository.postUserProfile(it) }) {
                 true -> {
                     _profileUiEvent.emit(ProfileUiEvent.ProfileSubmit)
                 }
@@ -127,6 +131,8 @@ class TitleViewModel : ViewModel() {
                 false -> {
                     _profileUiEvent.emit(ProfileUiEvent.NetworkErrorEvent())
                 }
+
+                else -> {}
             }
         }
     }

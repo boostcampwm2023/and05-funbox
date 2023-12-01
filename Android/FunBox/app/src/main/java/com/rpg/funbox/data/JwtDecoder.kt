@@ -16,14 +16,8 @@ object JwtDecoder {
             String(Base64.decode(payloadJwt, Base64.DEFAULT), StandardCharsets.UTF_8)
         val jsonObject = JsonParser.parseString(decodedPayload).asJsonObject
 
-        var userName: String? = null
-        if (!jsonObject.get("username").isJsonNull) {
-            userName = jsonObject.get("username").asString
-        }
-
         return UserAuthDto(
             jsonObject.get("id").asInt,
-            userName,
             jsonObject.get("iat").asInt,
             jsonObject.get("exp").asInt
         )

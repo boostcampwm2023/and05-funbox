@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 
 data class UserInfoResponse(
     @field:Json(name = "username")
-    val userName: String,
+    val username: String?,
 
     @field:Json(name = "profileUrl")
     val profileUrl: String?,
