@@ -54,9 +54,12 @@ export class Room {
     this.opponent.emit('score', data);
   }
 
-  quit() {
+  lostConnection() {
     this.owner.emit('lostConnection');
     this.opponent.emit('lostConnection');
+  }
+
+  quit() {
     delete this.owner.data.roomId;
     delete this.opponent.data.roomId;
   }

@@ -37,7 +37,9 @@ export class SocketService {
         this.logger.log(`Disconnected: ${info}`);
         const roomId = client.data.roomId;
         if (roomId) {
-          this.rooms.get(roomId).quit();
+          const room = this.rooms.get(roomId);
+          room.lostConnection();
+          room.quit();
           this.rooms.delete(roomId);
         }
       });
