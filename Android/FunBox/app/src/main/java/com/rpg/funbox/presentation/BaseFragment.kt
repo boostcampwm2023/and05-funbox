@@ -51,4 +51,5 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
     fun showSnackBar(messageId: Int) {
         Snackbar.make(this.requireView(), messageId, Snackbar.LENGTH_LONG).show()
     }
+
 }

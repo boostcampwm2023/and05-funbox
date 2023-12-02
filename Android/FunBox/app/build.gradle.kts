@@ -111,9 +111,9 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("dev.icerock.moko:socket-io:0.4.0")
-//    implementation ("io.socket:socket.io-client:2.0.1") {
-//        // excluding org.json which is provided by Android
-//        exclude("org.json", "json")
-//    }
+    implementation ("io.socket:socket.io-client:2.0.0") {
+        // excluding org.json which is provided by Android
+        exclude("org.json", "json")
+    }
 }
 

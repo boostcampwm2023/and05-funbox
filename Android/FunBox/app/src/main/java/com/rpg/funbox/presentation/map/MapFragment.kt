@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.gson.Gson
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraUpdate
@@ -32,27 +33,27 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.FragmentMapBinding
 import com.rpg.funbox.presentation.BaseFragment
-import dev.icerock.moko.socket.Socket
-import dev.icerock.moko.socket.SocketEvent
-import dev.icerock.moko.socket.SocketOptions
+import io.socket.client.Socket
+import io.socket.engineio.client.EngineIOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import okhttp3.Interceptor
-import okhttp3.OkHttpClient
 import okhttp3.Response
 import org.json.JSONObject
-import timber.log.Timber
-import java.net.URI
-import java.util.Collections.singletonList
-import java.util.Collections.singletonMap
+
+
+
 
 class HeaderInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response = chain.run {
         proceed(
             request()
                 .newBuilder()
-                .addHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzUsImlhdCI6MTcwMTM5Mjg0MiwiZXhwIjoxNzAxNjUyMDQyfQ.VMGe66yPyxcu1rpJs4EoSyHxXF8sTTsQVKmzU1FG8Js")
+                .addHeader(
+                    "Authorization",
+                    "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzUsImlhdCI6MTcwMTM5Mjg0MiwiZXhwIjoxNzAxNjUyMDQyfQ.VMGe66yPyxcu1rpJs4EoSyHxXF8sTTsQVKmzU1FG8Js"
+                )
                 .build()
         )
     }
@@ -63,7 +64,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     private var isFabOpen = false
 
     private val viewModel: MapViewModel by activityViewModels()
-
+    lateinit var mSocket: Socket
     private lateinit var naverMap: NaverMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val handler = Handler()
@@ -73,6 +74,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
+
     private fun handleUiEvent(event: MapUiEvent) = when (event) {
         is MapUiEvent.MessageOpen -> {
             MessageDialog().show(parentFragmentManager, "messageDialog")
@@ -88,15 +90,19 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             GetGameDialog().show(parentFragmentManager, "getGame")
         }
 
-        is MapUiEvent.ToSetting ->{
+        is MapUiEvent.ToSetting -> {
             findNavController().navigate(R.id.action_mapFragment_to_settingFragment)
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?){
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!hasPermission()) {
-            ActivityCompat.requestPermissions(requireActivity(), PERMISSIONS, LOCATION_PERMISSION_REQUEST_CODE)
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                PERMISSIONS,
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
         }
     }
 
@@ -116,74 +122,111 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     }
 
     private fun socketConnect() {
-        val socket = Socket(
-            endpoint = "http://175.45.193.191:3000/socket/",
-            config = SocketOptions(
-                queryParams = mapOf("Authorization" to "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzUsImlhdCI6MTcwMTM5Mjg0MiwiZXhwIjoxNzAxNjUyMDQyfQ.VMGe66yPyxcu1rpJs4EoSyHxXF8sTTsQVKmzU1FG8Js"),
-                transport = SocketOptions.Transport.WEBSOCKET
-            )
-        ){
-            on(SocketEvent.Connect) {
-                Log.d("XXXXXXXXXXXXXXXXXXconnect","connect")
-            }
-
-            on(SocketEvent.Connecting) {
-                Log.d("XXXXXXXXXXXXXXXXXXconnectting","connectting")
-            }
-
-            on(SocketEvent.Disconnect) {
-                Log.d("XXXXXXXXXXXXXXXXXXdisconnect","disconnect")
-            }
-
-            on(SocketEvent.Error) {
-                Log.d("XXXXXXXXXXXXXXXXXXERR","$it")
-            }
-
-            on(SocketEvent.Reconnect) {
-                println("reconnect")
-            }
-
-            on(SocketEvent.ReconnectAttempt) {
-                println("reconnect attempt $it")
-            }
-
-            on(SocketEvent.Ping) {
-                println("ping")
-            }
-
-            on(SocketEvent.Pong) {
-                println("pong")
+        mSocket = SocketApplication.get()
+        mSocket.connect()
+        mSocket.on(Socket.EVENT_CONNECT) {
+            // 소켓 서버에 연결이 성공하면 호출됨
+            Log.d("Connect", "SOCKET CONNECT")
+            applyGame()
+        }.on(Socket.EVENT_DISCONNECT) { args ->
+            // 소켓 서버 연결이 끊어질 경우에 호출됨
+            Log.d("Connect", "SOCKET DISCONNECT")
+        }.on(Socket.EVENT_CONNECT_ERROR) { args ->
+            // 소켓 서버 연결 시 오류가 발생할 경우에 호출됨
+            if (args[0] is EngineIOException) {
+                Log.d("Disconect", "SOCKET ERROR")
             }
         }
-        socket.connect()
-//        val httpClient = OkHttpClient.Builder().addNetworkInterceptor(HeaderInterceptor()).build()
-//        val options = IO.Options()
-//        options.query= "Authorization=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzUsImlhdCI6MTcwMTM5Mjg0MiwiZXhwIjoxNzAxNjUyMDQyfQ.VMGe66yPyxcu1rpJs4EoSyHxXF8sTTsQVKmzU1FG8Js"
-////        val headers = JSONObject()
-////        headers.put("Authorization", "YourAccessToken") // 여기에 실제 토큰을 넣어주세요
-//        options.extraHeaders = singletonMap("Authorization",singletonList("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzUsImlhdCI6MTcwMTM5Mjg0MiwiZXhwIjoxNzAxNjUyMDQyfQ.VMGe66yPyxcu1rpJs4EoSyHxXF8sTTsQVKmzU1FG8Js"))
-//        options.auth = singletonMap("Authorization","Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzUsImlhdCI6MTcwMTM5Mjg0MiwiZXhwIjoxNzAxNjUyMDQyfQ.VMGe66yPyxcu1rpJs4EoSyHxXF8sTTsQVKmzU1FG8Js")
-//        options.webSocketFactory = httpClient
-//        options.callFactory = httpClient
-//        val socket = IO.socket(URI.create("http://175.45.193.191:3000/socket"),options)
-//        socket.
-//        socket.connect()
-//
-//
-//        socket.on(io.socket.client.Socket.EVENT_CONNECT) {
-//            // 소켓 서버에 연결이 성공하면 호출됨
-//            Log.i("Socket", "Connect")
-//        }.on(io.socket.client.Socket.EVENT_DISCONNECT) { args ->
-//            // 소켓 서버 연결이 끊어질 경우에 호출됨
-//            Log.i("Socket", "Disconnet: ${args[0]}")
-//        }.on(EVENT_CONNECT_ERROR) { args ->
-//            // 소켓 서버 연결 시 오류가 발생할 경우에 호출됨
-//            Log.d("XXXXXXXXXXXXXXXXXXXXXXXXXX","")
-//
-//            if (args[0] is EngineIOException) {
-//                Log.i("Socket", "Connect Error")
-//            }
-//        }
+            .on("gameApply"){
+                val applyGameServerData  = Gson().fromJson(it[0].toString(), ApplyGameFromServerData::class.java)
+                applyGameServerData.userId
+                // 수락, 거절 다이얼로그 띄워야함.
+                val accept = true
+                // 수락시
+                if (accept){
+                    acceptGame(applyGameServerData.roomId)
+                }
+                else{
+                    rejectGame(applyGameServerData.roomId)
+                }
+
+
+                Log.d("XXXXXXXXXXXXXXXGAMEAPPLY",applyGameServerData.toString())
+            }
+            .on("location"){
+                Log.d("LOCATION",it[0].toString())
+            }
+            .on("gameApplyAnswer"){
+                val json = Gson().fromJson(it[0].toString(), GameApplyAnswerFromServerData::class.java)
+                Log.d("gameApplyAnswer",json.answer)
+                when (json.answer){
+                    "OFFLINE"->{
+
+                    }
+                    "ACCEPT"->{
+
+                    }
+                    "REJECT"->{
+
+                    }
+                }
+            }
+            .on("quiz"){
+                val json = Gson().fromJson(it[0].toString(), QuizFromServer::class.java)
+                Log.d("퀴즈",json.quiz)
+                Log.d("타겟",json.target.toString())
+                // UI에서 퀴즈 띄워주기
+                val answer = "답입니다."
+                sendQuizAnswer(json.roomId,answer)
+            }
+            .on("quizAnswer"){
+                val json = Gson().fromJson(it[0].toString(), QuizAnswerFromServer::class.java)
+                Log.d("quizAnswer",json.answer)
+
+                // UI에서 맞는지 체크
+                val isCorrect = true
+                verifyAnswer(json.roomId,isCorrect)
+
+            }
+            .on("score"){
+                val json = Gson().fromJson(it[0].toString(), ScoreFromServer::class.java)
+                Log.d("score",json.first().toString())
+                Log.d("score",json.last().toString())
+            }
+            .on("lostConnection"){
+                Log.d("lostConnection",it.toString())
+            }
+            .on("error"){
+                Log.e("ERROR",it[0].toString())
+            }
+
+
+
+    }
+
+    private fun verifyAnswer(roomId: String, isCorrect: Boolean) {
+        val json = Gson().toJson(VerifyAnswerToServer(isCorrect,roomId))
+        mSocket.emit("verifyAnswer",JSONObject(json))
+    }
+
+    private fun sendQuizAnswer(roomId: String, answer: String) {
+        val json = Gson().toJson(QuizAnswerToServer(answer,roomId))
+        mSocket.emit("quizAnswer",JSONObject(json))
+    }
+
+    private fun acceptGame(roomId: String) {
+        val json = Gson().toJson(GameApplyAnswerToServerData(roomId,"ACCEPT"))
+        mSocket.emit("gameApplyAnswer",JSONObject(json))
+    }
+
+    private fun rejectGame(roomId: String) {
+        val json = Gson().toJson(GameApplyAnswerToServerData(roomId,"REJECT"))
+        mSocket.emit("gameApplyAnswer",JSONObject(json))
+    }
+
+    private fun applyGame() {
+        val json = Gson().toJson(ApplyGameToServerData(37))
+        mSocket.emit("gameApply",JSONObject(json))
     }
 
     override fun onStart() {
@@ -248,7 +291,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         naverMap.addOnLocationChangeListener { location ->
             val cameraUpdate = CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))
             naverMap.moveCamera(cameraUpdate)
-            viewModel.setXY(location.latitude,location.longitude)
+            viewModel.setXY(location.latitude, location.longitude)
         }
 
         naverMap.minZoom = 13.0
@@ -276,7 +319,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }
 
         viewModel.users.value.map { user ->
-            var adapter  = MapProfileAdapter(requireContext(),viewModel.userDetail.value,null)
+            var adapter = MapProfileAdapter(requireContext(), viewModel.userDetail.value, null)
             val marker = Marker().apply {
                 position = user.loc
                 iconTintColor = Color.RED
@@ -292,37 +335,38 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
 
 
-                runBlocking {
-                    val test = viewModel.userDetail.value.profile
-                    val image : Bitmap = try {
-                        withContext(Dispatchers.IO) {
-                            Glide.with(requireContext())
-                                .asBitmap()
-                                .load(test)
-                                .apply(RequestOptions().override(100, 100))
-                                .submit()
-                                .get()
+                    runBlocking {
+                        val test = viewModel.userDetail.value.profile
+                        val image: Bitmap = try {
+                            withContext(Dispatchers.IO) {
+                                Glide.with(requireContext())
+                                    .asBitmap()
+                                    .load(test)
+                                    .apply(RequestOptions().override(100, 100))
+                                    .submit()
+                                    .get()
+                            }
+                        } catch (e: Exception) {
+                            withContext(Dispatchers.IO) {
+                                Glide.with(requireContext())
+                                    .asBitmap()
+                                    .load(R.drawable.close_24)
+                                    .apply(RequestOptions().override(100, 100))
+                                    .submit()
+                                    .get()
+                            }
                         }
-                    }catch (e: Exception){
-                        withContext(Dispatchers.IO) {
-                            Glide.with(requireContext())
-                                .asBitmap()
-                                .load(R.drawable.close_24)
-                                .apply(RequestOptions().override(100, 100))
-                                .submit()
-                                .get()
-                        }
-                    }
 
-                    adapter = MapProfileAdapter(requireContext(), viewModel.userDetail.value, image)
-                }
+                        adapter =
+                            MapProfileAdapter(requireContext(), viewModel.userDetail.value, image)
+                    }
 
 
                     requireActivity().runOnUiThread {
                         Handler(Looper.getMainLooper()).postDelayed({
                             infoWindow.adapter = adapter
                             infoWindow.open(this)
-                        },500)
+                        }, 500)
                     }
 
 
