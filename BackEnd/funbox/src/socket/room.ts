@@ -21,14 +21,13 @@ export class Room {
   nextQuiz() {
     const quiz = this.quizzes[this.round++];
     const target = this.round % 2 == 0 ? this.owner : this.opponent;
-    const data = JSON.stringify({ quiz, target: target.data.userId });
-    this.owner.emit('quiz', data);
-    this.opponent.emit('quiz', data);
+    const data = JSON.stringify({ roomId: this.id, quiz });
+    target.emit('quiz', data);
   }
 
   deliverAnswer(answer: string) {
     const verifier = this.round % 2 == 0 ? this.opponent : this.owner;
-    verifier.emit('quizAnswer', JSON.stringify({ answer }));
+    verifier.emit('quizAnswer', JSON.stringify({ roomId: this.id, answer }));
   }
 
   verifyAnswer(isCorrect: boolean) {
