@@ -176,7 +176,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 Log.d("퀴즈",json.quiz)
                 Log.d("타겟",json.target.toString())
 
-                if (json.target == 35){//내id)
+                if (json.target != 35){//내id)
                     // UI에서 퀴즈 띄워주기
                 }
                 else{
