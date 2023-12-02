@@ -21,8 +21,13 @@ export class Room {
   nextQuiz() {
     const quiz = this.quizzes[this.round++];
     const target = this.round % 2 == 0 ? this.owner : this.opponent;
-    const data = JSON.stringify({ roomId: this.id, quiz });
-    target.emit('quiz', data);
+    const data = JSON.stringify({
+      roomId: this.id,
+      quiz,
+      target: target.data.userId,
+    });
+    this.owner.emit('quiz', data);
+    this.opponent.emit('quiz', data);
   }
 
   deliverAnswer(answer: string) {
