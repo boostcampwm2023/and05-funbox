@@ -175,9 +175,15 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 val json = Gson().fromJson(it[0].toString(), QuizFromServer::class.java)
                 Log.d("퀴즈",json.quiz)
                 Log.d("타겟",json.target.toString())
-                // UI에서 퀴즈 띄워주기
-                val answer = "답입니다."
-                sendQuizAnswer(json.roomId,answer)
+
+                if (json.target == 35){//내id)
+                    // UI에서 퀴즈 띄워주기
+                }
+                else{
+                    // 답입력창 띄워주기
+                    val answer = "답입니다."
+                    sendQuizAnswer(json.roomId,answer)
+                }
             }
             .on("quizAnswer"){
                 val json = Gson().fromJson(it[0].toString(), QuizAnswerFromServer::class.java)
