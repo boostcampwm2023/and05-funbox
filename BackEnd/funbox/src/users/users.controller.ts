@@ -127,4 +127,9 @@ export class UsersController {
     await user.save();
     return UserResponseDto.of(user);
   }
+
+  @Delete()
+  async deleteUser(@Req() req): Promise<void> {
+    return await this.usersService.deleteUser(req.user.id);
+  }
 }

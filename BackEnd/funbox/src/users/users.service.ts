@@ -85,12 +85,16 @@ export class UsersService {
         Bucket: bucket_name,
         Key: object_name,
         Body: file.buffer,
+        ACL: 'read-public',
       }).promise();
     })();
     return object_name;
   }
 
   async deleteS3(filepath) {
+    if (filepath === null) {
+      return;
+    }
     await (async () => {
       const object_name = filepath;
       await S3.deleteObject({
@@ -98,5 +102,12 @@ export class UsersService {
         Key: object_name,
       }).promise();
     })();
+  }
+
+  async deleteUser(id: number): Promise<void> {
+    const user = await this.getUserById(id);
+    await this.deleteS3(user.profile_url);
+    await User.delete(id);
+    return;
   }
 }
