@@ -65,6 +65,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationSource: FusedLocationSource
     private val LOCATION_PERMISSION_REQUEST_CODE = 5000
+    private lateinit var applyGameServerData: ApplyGameFromServerData
     private val PERMISSIONS = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
@@ -137,21 +138,10 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             }
         }
             .on("gameApply"){
-                val applyGameServerData  = Gson().fromJson(it[0].toString(), ApplyGameFromServerData::class.java)
+                applyGameServerData  = Gson().fromJson(it[0].toString(), ApplyGameFromServerData::class.java)
                 applyGameServerData.userId
-                // 수락, 거절 다이얼로그 띄워야함.
 
-                val accept = true
-                // 수락시
-                if (accept){
-                    acceptGame(applyGameServerData.roomId)
-                }
-                else{
-                    rejectGame(applyGameServerData.roomId)
-                }
-
-
-                Log.d("XXXXXXXXXXXXXXXGAMEAPPLY",applyGameServerData.toString())
+                viewModel.getGame()
             }
             .on("location"){
                 Log.d("LOCATION",it[0].toString())
@@ -422,8 +412,12 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
         is MapUiEvent.ToGame -> {
             val intent = Intent(context, GameActivity::class.java)
-            intent.putExtra("otherId", viewModel.userDetail.value.id)
+            acceptGame(applyGameServerData.roomId)
             startActivity(intent)
+        }
+
+        is MapUiEvent.RejectGame -> {
+            rejectGame(applyGameServerData.roomId)
         }
 
         is MapUiEvent.GetGame -> {

@@ -5,6 +5,8 @@ sealed class MapUiEvent {
     data object MessageOpen : MapUiEvent()
     data object ToGame : MapUiEvent()
 
+    data object RejectGame : MapUiEvent()
+
     data object GetGame: MapUiEvent()
 
     data object ToSetting: MapUiEvent()

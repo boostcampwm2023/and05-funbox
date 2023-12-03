@@ -58,6 +58,12 @@ class MapViewModel : ViewModel() {
         }
     }
 
+    fun rejectGame(){
+        viewModelScope.launch {
+            _mapUiEvent.emit(MapUiEvent.RejectGame)
+        }
+    }
+
     fun getGame() {
         viewModelScope.launch {
             _mapUiEvent.emit(MapUiEvent.GetGame)
