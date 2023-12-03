@@ -27,6 +27,7 @@
         android:theme="@style/Theme.FunBox"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
         <activity
             android:name=".presentation.game.GameActivity"
             android:exported="false" />

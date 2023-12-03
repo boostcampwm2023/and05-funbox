@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
@@ -20,6 +21,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.gson.Gson
 import com.google.android.gms.location.Priority
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
@@ -35,12 +37,10 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.FragmentMapBinding
 import com.rpg.funbox.presentation.BaseFragment
-
+import io.socket.client.Socket
 import com.rpg.funbox.presentation.game.GameActivity
-
 import com.rpg.funbox.presentation.checkPermission
 import com.rpg.funbox.presentation.login.AccessPermission
-
 import io.socket.client.IO
 import io.socket.client.Socket.EVENT_CONNECT_ERROR
 import io.socket.engineio.client.EngineIOException
@@ -49,11 +49,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import timber.log.Timber
-
-
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Timer
 import kotlin.concurrent.scheduleAtFixedRate
 
@@ -63,7 +60,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     private var isFabOpen = false
 
     private val viewModel: MapViewModel by activityViewModels()
-
+    lateinit var mSocket: Socket
     private lateinit var naverMap: NaverMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationSource: FusedLocationSource
@@ -93,7 +90,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
 //        if (!hasPermission()) {
 //            ActivityCompat.requestPermissions(
 //                requireActivity(),
@@ -118,8 +114,125 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             toggleFab()
         }
 
-        // viewModel.mapApi()
+        viewModel.mapApi()
         submitUserLocation()
+        initMapView()
+
+    }
+
+    private fun socketConnect() {
+        mSocket = SocketApplication.get()
+        mSocket.connect()
+        mSocket.on(Socket.EVENT_CONNECT) {
+            // 소켓 서버에 연결이 성공하면 호출됨
+            Log.d("Connect", "SOCKET CONNECT")
+            applyGame()
+        }.on(Socket.EVENT_DISCONNECT) { args ->
+            // 소켓 서버 연결이 끊어질 경우에 호출됨
+            Log.d("Connect", "SOCKET DISCONNECT")
+        }.on(Socket.EVENT_CONNECT_ERROR) { args ->
+            // 소켓 서버 연결 시 오류가 발생할 경우에 호출됨
+            if (args[0] is EngineIOException) {
+                Log.d("Disconect", "SOCKET ERROR")
+            }
+        }
+            .on("gameApply"){
+                val applyGameServerData  = Gson().fromJson(it[0].toString(), ApplyGameFromServerData::class.java)
+                applyGameServerData.userId
+                // 수락, 거절 다이얼로그 띄워야함.
+
+                val accept = true
+                // 수락시
+                if (accept){
+                    acceptGame(applyGameServerData.roomId)
+                }
+                else{
+                    rejectGame(applyGameServerData.roomId)
+                }
+
+
+                Log.d("XXXXXXXXXXXXXXXGAMEAPPLY",applyGameServerData.toString())
+            }
+            .on("location"){
+                Log.d("LOCATION",it[0].toString())
+            }
+            .on("gameApplyAnswer"){
+                val json = Gson().fromJson(it[0].toString(), GameApplyAnswerFromServerData::class.java)
+                Log.d("gameApplyAnswer",json.answer)
+                when (json.answer){
+                    "OFFLINE"->{
+                        // 네트워크 연결끊김
+                    }
+                    "ACCEPT"->{
+                        // 게임화면
+                    }
+                    "REJECT"->{
+                        // 메인 화면
+                    }
+                }
+            }
+            .on("quiz"){
+                val json = Gson().fromJson(it[0].toString(), QuizFromServer::class.java)
+                Log.d("퀴즈",json.quiz)
+                Log.d("타겟",json.target.toString())
+
+                if (json.target != 35){//내id)
+                    // UI에서 퀴즈 띄워주기
+                }
+                else{
+                    // 답입력창 띄워주기
+                    val answer = "답입니다."
+                    sendQuizAnswer(json.roomId,answer)
+                }
+            }
+            .on("quizAnswer"){
+                val json = Gson().fromJson(it[0].toString(), QuizAnswerFromServer::class.java)
+                Log.d("quizAnswer",json.answer)
+
+                // UI에서 맞는지 체크
+                val isCorrect = true
+                verifyAnswer(json.roomId,isCorrect)
+
+            }
+            .on("score"){
+                val json = Gson().fromJson(it[0].toString(), ScoreFromServer::class.java)
+                Log.d("score",json.first().toString())
+                Log.d("score",json.last().toString())
+            }
+            .on("lostConnection"){
+                Log.d("lostConnection",it.toString())
+            }
+            .on("error"){
+                Log.e("ERROR",it[0].toString())
+            }
+
+
+
+    }
+
+    private fun verifyAnswer(roomId: String, isCorrect: Boolean) {
+        val json = Gson().toJson(VerifyAnswerToServer(isCorrect,roomId))
+        mSocket.emit("verifyAnswer",JSONObject(json))
+    }
+
+    private fun sendQuizAnswer(roomId: String, answer: String) {
+        val json = Gson().toJson(QuizAnswerToServer(answer,roomId))
+        mSocket.emit("quizAnswer",JSONObject(json))
+    }
+
+    private fun acceptGame(roomId: String) {
+        val json = Gson().toJson(GameApplyAnswerToServerData(roomId,"ACCEPT"))
+        mSocket.emit("gameApplyAnswer",JSONObject(json))
+    }
+
+    private fun rejectGame(roomId: String) {
+        val json = Gson().toJson(GameApplyAnswerToServerData(roomId,"REJECT"))
+        mSocket.emit("gameApplyAnswer",JSONObject(json))
+    }
+
+    private fun applyGame() {
+        val json = Gson().toJson(ApplyGameToServerData(37))
+        mSocket.emit("gameApply",JSONObject(json))
     }
 
     override fun onStart() {
@@ -155,7 +268,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             iconWidth = 120
             icon = OverlayImage.fromResource(R.drawable.navi_icon)
         }
-
         val hasMsg = InfoWindow()
         hasMsg.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
             override fun getText(infoWindow: InfoWindow): CharSequence {
@@ -190,7 +302,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 setOnClickListener { _ ->
                     viewModel.userDetailApi(user.id)
                     infoWindow.adapter = adapter
-
                     runBlocking {
                         val test = viewModel.userDetail.value.profile
                         val image: Bitmap = try {
@@ -249,30 +360,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
             user.mapPin = marker
         }
-    }
-
-    private fun socketConnect() {
-        val socket = IO.socket("http://175.45.193.191:3000/socket")
-        socket.connect()
-        socket.on(io.socket.client.Socket.EVENT_CONNECT) {
-            // 소켓 서버에 연결이 성공하면 호출됨
-            Timber.i("Socket", "Connect")
-        }.on(io.socket.client.Socket.EVENT_DISCONNECT) { args ->
-            // 소켓 서버 연결이 끊어질 경우에 호출됨
-            Timber.i("Socket", "Disconnet: ${args[0]}")
-        }.on(EVENT_CONNECT_ERROR) { args ->
-            // 소켓 서버 연결 시 오류가 발생할 경우에 호출됨
-            if (args[0] is EngineIOException) {
-                Timber.i("Socket", "Connect Error")
-            }
-        }
-    }
-
-    private fun socketConnect2(){
-        //OkHttpClientInstance.okHttpClient
-
-        //val stomp = StompClient(url, intervalMillis, client)
-
     }
 
     private fun submitUserLocation() {
