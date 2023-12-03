@@ -20,7 +20,9 @@ class ScoreBoardFragment : BaseDialogFragment<FragmentScoreBoardBinding>(R.layou
 
         lifecycleScope.launch {
             viewModel.quizUiEvent.collectLatest {
-                if (it == QuizUiEvent.QuizScoreBoard) dismiss()
+                if (it == QuizUiEvent.QuizFinish) {
+                    requireActivity().finish()
+                }
             }
         }
     }
