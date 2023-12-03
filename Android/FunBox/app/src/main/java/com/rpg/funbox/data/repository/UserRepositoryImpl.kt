@@ -4,6 +4,7 @@ import com.rpg.funbox.data.RetrofitInstance
 import com.rpg.funbox.data.dto.UserInfoRequest
 import com.rpg.funbox.data.dto.UserInfoResponse
 import com.rpg.funbox.data.network.service.SignUpApi
+import com.rpg.funbox.data.network.service.UserInfoApi
 import okhttp3.MultipartBody
 import timber.log.Timber
 
@@ -13,8 +14,25 @@ class UserRepositoryImpl : UserRepository {
         RetrofitInstance.retrofit.create(SignUpApi::class.java)
     }
 
+    private val userInfoApi: UserInfoApi by lazy {
+        RetrofitInstance.retrofit.create(UserInfoApi::class.java)
+    }
+
     override suspend fun getUserInfo(): UserInfoResponse? {
         val response = signUpApi.fetchUserInfo()
+        when (response.code()) {
+            in successStatusCodeRange -> {
+                return response.body()
+            }
+
+            else -> {}
+        }
+
+        return null
+    }
+
+    override suspend fun getSpecificUserInfo(userId: Int): UserInfoResponse? {
+        val response = userInfoApi.fetchSpecificUser(userId = userId)
         when (response.code()) {
             in successStatusCodeRange -> {
                 return response.body()
