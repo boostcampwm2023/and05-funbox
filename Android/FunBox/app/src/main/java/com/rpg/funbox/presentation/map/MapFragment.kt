@@ -37,6 +37,8 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.FragmentMapBinding
 import com.rpg.funbox.presentation.BaseFragment
+import com.rpg.funbox.presentation.MapSocket
+import com.rpg.funbox.presentation.MapSocket.mSocket
 import io.socket.client.Socket
 import com.rpg.funbox.presentation.game.GameActivity
 import com.rpg.funbox.presentation.checkPermission
@@ -60,7 +62,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     private var isFabOpen = false
 
     private val viewModel: MapViewModel by activityViewModels()
-    lateinit var mSocket: Socket
     private lateinit var naverMap: NaverMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationSource: FusedLocationSource
@@ -122,7 +123,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     }
 
     private fun socketConnect() {
-        mSocket = SocketApplication.get()
         mSocket.connect()
         mSocket.on(Socket.EVENT_CONNECT) {
             // 소켓 서버에 연결이 성공하면 호출됨
@@ -136,78 +136,13 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             if (args[0] is EngineIOException) {
                 Log.d("Disconect", "SOCKET ERROR")
             }
+        }.on("gameApply"){
+            applyGameServerData  = Gson().fromJson(it[0].toString(), ApplyGameFromServerData::class.java)
+            applyGameServerData.userId
+
+            viewModel.getGame()
         }
-            .on("gameApply"){
-                applyGameServerData  = Gson().fromJson(it[0].toString(), ApplyGameFromServerData::class.java)
-                applyGameServerData.userId
 
-                viewModel.getGame()
-            }
-            .on("location"){
-                Log.d("LOCATION",it[0].toString())
-            }
-            .on("gameApplyAnswer"){
-                val json = Gson().fromJson(it[0].toString(), GameApplyAnswerFromServerData::class.java)
-                Log.d("gameApplyAnswer",json.answer)
-                when (json.answer){
-                    "OFFLINE"->{
-                        // 네트워크 연결끊김
-                    }
-                    "ACCEPT"->{
-                        // 게임화면
-                    }
-                    "REJECT"->{
-                        // 메인 화면
-                    }
-                }
-            }
-            .on("quiz"){
-                val json = Gson().fromJson(it[0].toString(), QuizFromServer::class.java)
-                Log.d("퀴즈",json.quiz)
-                Log.d("타겟",json.target.toString())
-
-                if (json.target != 35){//내id)
-                    // UI에서 퀴즈 띄워주기
-                }
-                else{
-                    // 답입력창 띄워주기
-                    val answer = "답입니다."
-                    sendQuizAnswer(json.roomId,answer)
-                }
-            }
-            .on("quizAnswer"){
-                val json = Gson().fromJson(it[0].toString(), QuizAnswerFromServer::class.java)
-                Log.d("quizAnswer",json.answer)
-
-                // UI에서 맞는지 체크
-                val isCorrect = true
-                verifyAnswer(json.roomId,isCorrect)
-
-            }
-            .on("score"){
-                val json = Gson().fromJson(it[0].toString(), ScoreFromServer::class.java)
-                Log.d("score",json.first().toString())
-                Log.d("score",json.last().toString())
-            }
-            .on("lostConnection"){
-                Log.d("lostConnection",it.toString())
-            }
-            .on("error"){
-                Log.e("ERROR",it[0].toString())
-            }
-
-
-
-    }
-
-    private fun verifyAnswer(roomId: String, isCorrect: Boolean) {
-        val json = Gson().toJson(VerifyAnswerToServer(isCorrect,roomId))
-        mSocket.emit("verifyAnswer",JSONObject(json))
-    }
-
-    private fun sendQuizAnswer(roomId: String, answer: String) {
-        val json = Gson().toJson(QuizAnswerToServer(answer,roomId))
-        mSocket.emit("quizAnswer",JSONObject(json))
     }
 
     private fun acceptGame(roomId: String) {
