@@ -85,7 +85,7 @@ export class UsersService {
         Bucket: bucket_name,
         Key: object_name,
         Body: file.buffer,
-        ACL: 'read-public',
+        ACL: 'public-read',
       }).promise();
     })();
     return object_name;

@@ -1,5 +1,5 @@
 const accessToken =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjIsImlhdCI6MTcwMTMxOTU5NywiZXhwIjoxNzAxNTc4Nzk3fQ.N_BV5POKThG8cdQwVBh2WEgRFZrF-vPUTwsBcgxOzIg';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ODEsImlhdCI6MTcwMTU4NTgyOSwiZXhwIjoxNzAxODQ1MDI5fQ.pXD_hEQ61MKOVzodUXo9j_3h_UCJmZcGDDAQ__2crI4';
 // fetch('http://localhost:3000/users/profile', {
 //   method: 'POST',
 //   headers: {
@@ -30,7 +30,7 @@ const fileSizeInBytes = stats.size;
 const fileStream = fs.createReadStream(filePath);
 form.append('file', fileStream, { knownLength: fileSizeInBytes });
 
-fetch('http://175.45.193.191:3000/users/profile', {
+fetch('http://localhost:3000/users/profile', {
   method: 'POST',
   headers: {
     Authorization: `Bearer ${accessToken}`,
