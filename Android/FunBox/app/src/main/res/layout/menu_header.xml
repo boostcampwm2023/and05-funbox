@@ -18,10 +18,10 @@
 
         <ImageView
             android:id="@+id/iv_menu_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:src="@drawable/profile_add"
-            app:imageUrl="@{vm.profileUri}"
+            android:scaleType="fitCenter"
             app:layout_constraintBottom_toTopOf="@id/tv_menu_header_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
