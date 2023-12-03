@@ -22,6 +22,11 @@ class TitleActivity : AppCompatActivity() {
         setContentView(R.layout.activity_title)
     }
 
+    override fun onStop() {
+        super.onStop()
+        finish()
+    }
+
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
         if (event?.action != MotionEvent.ACTION_DOWN) {
             return super.dispatchTouchEvent(event)

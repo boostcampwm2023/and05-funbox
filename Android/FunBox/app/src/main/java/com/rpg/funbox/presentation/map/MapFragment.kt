@@ -9,7 +9,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
@@ -34,7 +33,6 @@ import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.rpg.funbox.R
-import com.rpg.funbox.data.OkHttpClientInstance
 import com.rpg.funbox.databinding.FragmentMapBinding
 import com.rpg.funbox.presentation.BaseFragment
 
@@ -52,8 +50,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-
-import java.net.ServerSocket
 
 
 import java.time.LocalDateTime
@@ -78,32 +74,22 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     )
 
     private val requestMultiPermissions =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {}
-
-
-    private fun handleUiEvent(event: MapUiEvent) = when (event) {
-        is MapUiEvent.MessageOpen -> {
-            MessageDialog().show(parentFragmentManager, "messageDialog")
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            when {
+                permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+                    Timber.d("권한 허용1")
+                    fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+                    submitUserLocation()
+                }
+                permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                    Timber.d("권한 허용2")
+                    fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+                    submitUserLocation()
+                } else -> {
+                    requireActivity().finish()
+                }
+            }
         }
-
-        is MapUiEvent.ToGame -> {
-            val intent = Intent(context, GameActivity::class.java)
-            intent.putExtra("otherId", viewModel.userDetail.value.id)
-            startActivity(intent)
-        }
-
-        is MapUiEvent.GetGame -> {
-            GetGameDialog().show(parentFragmentManager, "getGame")
-        }
-
-        is MapUiEvent.ToSetting -> {
-            findNavController().navigate(R.id.action_mapFragment_to_settingFragment)
-        }
-
-        is MapUiEvent.Toggle -> {
-            toggleFab()
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,7 +101,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 //                LOCATION_PERMISSION_REQUEST_CODE
 //            )
 //        }
-
+        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+        Timber.d("First X: ${locationSource.lastLocation?.latitude}, First Y: ${locationSource.lastLocation?.longitude}")
+        requestMultiPermissions.launch(AccessPermission.locationPermissionList)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -131,47 +119,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }
 
         // viewModel.mapApi()
-        requestMultiPermissions.launch(AccessPermission.locationPermissionList)
-        if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        } else {
-            requireActivity().finish()
-        }
-
-        Timer().scheduleAtFixedRate(0, 3000) {
-            lifecycleScope.launch {
-                val tmp = runBlocking {
-                    fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
-                }
-                Timber.d("Now: ${LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)}, Locations: $tmp")
-                viewModel.setUsersLocations(tmp.latitude, tmp.longitude)
-                initMapView()
-            }
-        }
-
-    }
-
-    private fun socketConnect2(){
-        //OkHttpClientInstance.okHttpClient
-
-        //val stomp = StompClient(url, intervalMillis, client)
-
-    }
-    private fun socketConnect() {
-        val socket = IO.socket("http://175.45.193.191:3000/socket")
-        socket.connect()
-        socket.on(io.socket.client.Socket.EVENT_CONNECT) {
-            // 소켓 서버에 연결이 성공하면 호출됨
-            Timber.i("Socket", "Connect")
-        }.on(io.socket.client.Socket.EVENT_DISCONNECT) { args ->
-            // 소켓 서버 연결이 끊어질 경우에 호출됨
-            Timber.i("Socket", "Disconnet: ${args[0]}")
-        }.on(EVENT_CONNECT_ERROR) { args ->
-            // 소켓 서버 연결 시 오류가 발생할 경우에 호출됨
-            if (args[0] is EngineIOException) {
-                Timber.i("Socket", "Connect Error")
-            }
-        }
+        submitUserLocation()
     }
 
     override fun onStart() {
@@ -180,51 +128,11 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         isFabOpen = false
     }
 
-    private fun initMapView() {
-        val fm = childFragmentManager
-        val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
-            ?: MapFragment.newInstance().also {
-                fm.beginTransaction().add(R.id.map, it).commit()
-            }
-
-        mapFragment.getMapAsync(this)
-        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
-    }
-
-    private fun hasPermission(): Boolean {
-        for (permission in PERMISSIONS) {
-            if (ContextCompat.checkSelfPermission(requireContext(), permission)
-                != PackageManager.PERMISSION_GRANTED
-            ) {
-                return false
-            }
-        }
-        return true
-    }
-
-
-    private fun sendXYtoApi(latitude: Double, longitude: Double) {
-        //LoadUserService.create().search(latitude,longitude).execute()
-    }
-
-    private fun toggleFab() {
-        if (isFabOpen) {
-            ObjectAnimator.ofFloat(binding.floatingSetting, "translationY", 0f).apply { start() }
-            ObjectAnimator.ofFloat(binding.floatingWrite, "translationY", 0f).apply { start() }
-            binding.floatingActionButton.setImageResource(R.drawable.add_24)
-        } else {
-            ObjectAnimator.ofFloat(binding.floatingSetting, "translationY", -200f).apply { start() }
-            ObjectAnimator.ofFloat(binding.floatingWrite, "translationY", -400f).apply { start() }
-            binding.floatingActionButton.setImageResource(R.drawable.close_24)
-        }
-
-        isFabOpen = !isFabOpen
-    }
-
     @UiThread
     override fun onMapReady(map: NaverMap) {
         this.naverMap = map.apply {
-            locationSource = locationSource
+            locationSource = this@MapFragment.locationSource
+            Timber.d("Last X: ${this@MapFragment.locationSource.lastLocation?.latitude}, Last Y: ${this@MapFragment.locationSource.lastLocation?.longitude}")
             locationTrackingMode = LocationTrackingMode.Face
             uiSettings.isLocationButtonEnabled = true
             minZoom = 13.0
@@ -234,6 +142,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             addOnLocationChangeListener { location ->
                 val cameraUpdate =
                     CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))
+                Timber.d("X: ${location.latitude}, Y :${location.longitude}")
                 naverMap.moveCamera(cameraUpdate)
                 viewModel.setXY(location.latitude, location.longitude)
                 // viewModel.setUsersLocations(location.latitude, location.longitude)
@@ -269,7 +178,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         viewModel.users.value.map { user ->
             var adapter = MapProfileAdapter(requireContext(), viewModel.userDetail.value, null)
             val marker = Marker().apply {
-                Timber.d("User: ${user.id}")
+                // Timber.d("User: ${user.id}")
                 position = user.loc
                 iconTintColor = Color.YELLOW
                 this.map = naverMap
@@ -339,6 +248,107 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             }
 
             user.mapPin = marker
+        }
+    }
+
+    private fun socketConnect() {
+        val socket = IO.socket("http://175.45.193.191:3000/socket")
+        socket.connect()
+        socket.on(io.socket.client.Socket.EVENT_CONNECT) {
+            // 소켓 서버에 연결이 성공하면 호출됨
+            Timber.i("Socket", "Connect")
+        }.on(io.socket.client.Socket.EVENT_DISCONNECT) { args ->
+            // 소켓 서버 연결이 끊어질 경우에 호출됨
+            Timber.i("Socket", "Disconnet: ${args[0]}")
+        }.on(EVENT_CONNECT_ERROR) { args ->
+            // 소켓 서버 연결 시 오류가 발생할 경우에 호출됨
+            if (args[0] is EngineIOException) {
+                Timber.i("Socket", "Connect Error")
+            }
+        }
+    }
+
+    private fun socketConnect2(){
+        //OkHttpClientInstance.okHttpClient
+
+        //val stomp = StompClient(url, intervalMillis, client)
+
+    }
+
+    private fun submitUserLocation() {
+        if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
+            Timer().scheduleAtFixedRate(0, 3000) {
+                lifecycleScope.launch {
+                    val tmp = fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
+                    // Timber.d("Now: ${LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)}, Locations: $tmp")
+                    viewModel.setUsersLocations(tmp.latitude, tmp.longitude)
+                    initMapView()
+                }
+            }
+        }
+    }
+
+    private fun initMapView() {
+        val fm = parentFragmentManager
+        val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
+            ?: MapFragment.newInstance().also {
+                fm.beginTransaction().add(R.id.map, it).commit()
+            }
+
+        mapFragment.getMapAsync(this)
+        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+    }
+
+    private fun hasPermission(): Boolean {
+        for (permission in PERMISSIONS) {
+            if (ContextCompat.checkSelfPermission(requireContext(), permission)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun sendXYtoApi(latitude: Double, longitude: Double) {
+        //LoadUserService.create().search(latitude,longitude).execute()
+    }
+
+    private fun toggleFab() {
+        if (isFabOpen) {
+            ObjectAnimator.ofFloat(binding.floatingSetting, "translationY", 0f).apply { start() }
+            ObjectAnimator.ofFloat(binding.floatingWrite, "translationY", 0f).apply { start() }
+            binding.floatingActionButton.setImageResource(R.drawable.add_24)
+        } else {
+            ObjectAnimator.ofFloat(binding.floatingSetting, "translationY", -200f).apply { start() }
+            ObjectAnimator.ofFloat(binding.floatingWrite, "translationY", -400f).apply { start() }
+            binding.floatingActionButton.setImageResource(R.drawable.close_24)
+        }
+
+        isFabOpen = !isFabOpen
+    }
+
+    private fun handleUiEvent(event: MapUiEvent) = when (event) {
+        is MapUiEvent.MessageOpen -> {
+            MessageDialog().show(parentFragmentManager, "messageDialog")
+        }
+
+        is MapUiEvent.ToGame -> {
+            val intent = Intent(context, GameActivity::class.java)
+            intent.putExtra("otherId", viewModel.userDetail.value.id)
+            startActivity(intent)
+        }
+
+        is MapUiEvent.GetGame -> {
+            GetGameDialog().show(parentFragmentManager, "getGame")
+        }
+
+        is MapUiEvent.ToSetting -> {
+            findNavController().navigate(R.id.action_mapFragment_to_settingFragment)
+        }
+
+        is MapUiEvent.Toggle -> {
+            toggleFab()
         }
     }
 }
