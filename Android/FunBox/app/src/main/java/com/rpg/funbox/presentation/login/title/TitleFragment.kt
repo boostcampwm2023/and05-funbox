@@ -10,13 +10,14 @@ import com.rpg.funbox.R
 import com.rpg.funbox.databinding.FragmentTitleBinding
 import com.rpg.funbox.presentation.BaseFragment
 import com.rpg.funbox.presentation.MainActivity
-import com.rpg.funbox.presentation.login.NaverOAuthLoginCallback
 import com.navercorp.nid.NaverIdLoginSDK
+import com.navercorp.nid.oauth.OAuthLoginCallback
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 
 class TitleFragment : BaseFragment<FragmentTitleBinding>(R.layout.fragment_title) {
 
     private val viewModel: TitleViewModel by activityViewModels()
-    private val naverOAuthLoginCallback: NaverOAuthLoginCallback = NaverOAuthLoginCallback()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -33,14 +34,34 @@ class TitleFragment : BaseFragment<FragmentTitleBinding>(R.layout.fragment_title
             getString(R.string.naver_login_secret_key),
             getString(R.string.social_login_info_naver_client_name)
         )
+        // NaverIdLoginSDK.logout()
+    }
+
+    private fun loginAuthenticate() {
+        val naverOAuthLoginCallback = object : OAuthLoginCallback {
+            override fun onSuccess() {
+                NaverIdLoginSDK.getAccessToken()?.let { token ->
+                    viewModel.submitAccessToken(token)
+                }
+            }
+
+            override fun onFailure(httpStatus: Int, message: String) {}
+
+            override fun onError(errorCode: Int, message: String) {
+                onFailure(httpStatus = errorCode, message = message)
+            }
+        }
+
+        runBlocking {
+            NaverIdLoginSDK.authenticate(requireContext(), naverOAuthLoginCallback)
+        }
     }
 
     private fun handleUiEvent(event: TitleUiEvent) = when (event) {
         is TitleUiEvent.NaverLoginStart -> {
-            // findNavController().navigate(R.id.action_TitleFragment_to_NicknameFragment)
-            NaverIdLoginSDK.authenticate(requireContext(), naverOAuthLoginCallback)
-            naverOAuthLoginCallback.accessToken?.let { token ->
-                viewModel.submitAccessToken(token)
+            runBlocking {
+                val authenticateDeferred = async { loginAuthenticate() }
+                authenticateDeferred.await()
             }
         }
 

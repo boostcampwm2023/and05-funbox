@@ -30,7 +30,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.fm = this
+        binding.vm = viewModel
 
         collectLatestFlow(viewModel.settingUiEvent) { handleUiEvent(it) }
 
@@ -40,23 +40,20 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
         is SettingUiEvent.ToMap -> {
             findNavController().navigate(R.id.action_settingFragment_to_mapFragment)
         }
-    }
-
-    fun clickNickNameSetting(){
-        val dialog = Dialog(requireContext())
-        dialog.setContentView(R.layout.dialog_message)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog.show()
-        val editText = dialog.findViewById<EditText>(R.id.dialogEditText)
-        val button = dialog.findViewById<Button>(R.id.positiveButton)
-        button.setOnClickListener {
-            //api
-            dialog.dismiss()
+        is SettingUiEvent.SetName -> {
+            SetNameDialog().show(parentFragmentManager, "setName")
         }
+        is SettingUiEvent.SetProfile -> {
+            clickProfileSetting()
+        }
+
+        is SettingUiEvent.Draw -> {
+            clickWithDraw()
+        }
+        is SettingUiEvent.CloseName ->{}
     }
 
-
-    fun clickProfileSetting(){
+    private fun clickProfileSetting(){
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_profile_change)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -70,7 +67,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
     }
 
 
-    fun clickWithDraw(){
+    private fun clickWithDraw(){
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_red_with_text)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))

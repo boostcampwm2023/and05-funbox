@@ -8,7 +8,7 @@ import retrofit2.http.POST
 
 interface NaverLoginApi {
 
-    @POST("/")
+    @POST("/auth/navertoken")
     suspend fun submitNaverAccessToken(
         @Body body: NaverAccessTokenRequest
     ): Response<NaverAccessTokenResponse>

@@ -6,24 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.rpg.funbox.R
 import com.rpg.funbox.databinding.DialogGetGameBinding
 import com.rpg.funbox.databinding.DialogMessageBinding
+import com.rpg.funbox.presentation.BaseDialogFragment
 
-class GetGameDialog : DialogFragment() {
-
-    private var _binding: DialogGetGameBinding? = null
-    private val binding get() = _binding!!
+class GetGameDialog : BaseDialogFragment<DialogGetGameBinding>(R.layout.dialog_get_game) {
 
     private val viewModel: MapViewModel by activityViewModels()
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = DialogGetGameBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -33,12 +23,6 @@ class GetGameDialog : DialogFragment() {
         binding.btnNo.setOnClickListener{
             dismiss()
         }
-    }
-
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
 }

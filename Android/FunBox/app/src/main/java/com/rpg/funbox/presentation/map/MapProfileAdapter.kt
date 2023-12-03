@@ -11,7 +11,7 @@ import com.naver.maps.map.overlay.InfoWindow
 class MapProfileAdapter(
     private val pContext: Context,
     private val userDetail: UserDetail,
-    val image: Bitmap?,
+    private val image: Bitmap?,
 ) : InfoWindow.DefaultViewAdapter(pContext) {
     @RequiresApi(Build.VERSION_CODES.P)
     override fun getContentView(p0: InfoWindow): View {
