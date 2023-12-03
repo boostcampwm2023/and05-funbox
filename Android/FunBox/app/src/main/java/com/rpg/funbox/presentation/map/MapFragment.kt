@@ -38,26 +38,8 @@ import io.socket.engineio.client.EngineIOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import okhttp3.Interceptor
-import okhttp3.Response
 import org.json.JSONObject
 
-
-
-
-class HeaderInterceptor : Interceptor {
-    override fun intercept(chain: Interceptor.Chain): Response = chain.run {
-        proceed(
-            request()
-                .newBuilder()
-                .addHeader(
-                    "Authorization",
-                    "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzUsImlhdCI6MTcwMTM5Mjg0MiwiZXhwIjoxNzAxNjUyMDQyfQ.VMGe66yPyxcu1rpJs4EoSyHxXF8sTTsQVKmzU1FG8Js"
-                )
-                .build()
-        )
-    }
-}
 
 class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnMapReadyCallback {
 
@@ -67,7 +49,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     lateinit var mSocket: Socket
     private lateinit var naverMap: NaverMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private val handler = Handler()
     private lateinit var locationSource: FusedLocationSource
     private val LOCATION_PERMISSION_REQUEST_CODE = 5000
     private val PERMISSIONS = arrayOf(
