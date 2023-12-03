@@ -141,6 +141,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 val applyGameServerData  = Gson().fromJson(it[0].toString(), ApplyGameFromServerData::class.java)
                 applyGameServerData.userId
                 // 수락, 거절 다이얼로그 띄워야함.
+
                 val accept = true
                 // 수락시
                 if (accept){
@@ -161,13 +162,13 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 Log.d("gameApplyAnswer",json.answer)
                 when (json.answer){
                     "OFFLINE"->{
-
+                        // 네트워크 연결끊김
                     }
                     "ACCEPT"->{
-
+                        // 게임화면
                     }
                     "REJECT"->{
-
+                        // 메인 화면
                     }
                 }
             }
