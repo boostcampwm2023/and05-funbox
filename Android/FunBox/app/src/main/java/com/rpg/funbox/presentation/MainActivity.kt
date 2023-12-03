@@ -1,10 +1,8 @@
 package com.rpg.funbox.presentation
 
-import android.content.Context
 import android.graphics.Rect
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -13,29 +11,18 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
-import androidx.navigation.fragment.findNavController
 import coil.load
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.ActivityMainBinding
-import com.rpg.funbox.presentation.game.quiz.QuizViewModel
-import com.rpg.funbox.presentation.map.GetGameDialog
-import com.rpg.funbox.presentation.map.MapFragment
-import com.rpg.funbox.presentation.map.MapFragmentDirections
-import com.rpg.funbox.presentation.map.MapUiEvent
 import com.rpg.funbox.presentation.map.MapViewModel
-import com.rpg.funbox.presentation.map.MessageDialog
 import com.rpg.funbox.presentation.setting.SettingViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityMainBinding
 
-    private val quizViewModel: QuizViewModel by viewModels()
     private val mapViewModel: MapViewModel by viewModels()
     private val settingViewModel: SettingViewModel by viewModels()
 
@@ -44,19 +31,34 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.ibSide.setOnClickListener { binding.drawerLayout.openDrawer(GravityCompat.START) }
-        binding.navView.setNavigationItemSelectedListener { menuItem->
-            when(menuItem.itemId){
-                R.id.menu_map -> {settingViewModel.toMap()}
-                R.id.menu_setting -> {mapViewModel.toSetting()}
+        binding.navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.menu_map -> {
+                    settingViewModel.goToMap()
+                }
+
+                R.id.menu_setting -> {
+                    mapViewModel.toSetting()
+                }
             }
             binding.drawerLayout.closeDrawers()
             return@setNavigationItemSelectedListener false
         }
-        settingViewModel.setUserInfo()
+        settingViewModel.initUserInfo()
         lifecycleScope.launch {
-            settingViewModel.user.collect{ user ->
-                binding.navView.getHeaderView(0).findViewById<ImageView>(R.id.iv_menu_header).load(user.profileUrl)
-                binding.navView.getHeaderView(0).findViewById<TextView>(R.id.tv_menu_header_name).text=user.userName
+            settingViewModel.user.collect { user ->
+                user?.let {
+                    binding.navView.getHeaderView(0)
+                        .findViewById<TextView>(R.id.tv_menu_header_name).text = it.userName
+                }
+            }
+        }
+        lifecycleScope.launch {
+            settingViewModel.profileUri.collect { uri ->
+                uri?.let {
+                    binding.navView.getHeaderView(0).findViewById<ImageView>(R.id.iv_menu_header)
+                        .load(it)
+                }
             }
         }
     }
