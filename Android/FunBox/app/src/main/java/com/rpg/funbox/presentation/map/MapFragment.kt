@@ -132,7 +132,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     override fun onMapReady(map: NaverMap) {
         this.naverMap = map.apply {
             locationSource = this@MapFragment.locationSource
-            Timber.d("Last X: ${this@MapFragment.locationSource.lastLocation?.latitude}, Last Y: ${this@MapFragment.locationSource.lastLocation?.longitude}")
             locationTrackingMode = LocationTrackingMode.Face
             uiSettings.isLocationButtonEnabled = true
             minZoom = 13.0
@@ -280,7 +279,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             Timer().scheduleAtFixedRate(0, 3000) {
                 lifecycleScope.launch {
                     val tmp = fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
-                    // Timber.d("Now: ${LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)}, Locations: $tmp")
                     viewModel.setUsersLocations(tmp.latitude, tmp.longitude)
                     initMapView()
                 }

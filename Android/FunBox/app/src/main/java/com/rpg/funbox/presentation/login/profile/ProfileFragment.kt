@@ -74,5 +74,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_p
         is ProfileUiEvent.NetworkErrorEvent -> {
             showSnackBar(R.string.network_error_message)
         }
+
+        else -> {}
     }
 }
