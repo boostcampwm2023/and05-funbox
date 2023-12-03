@@ -30,7 +30,6 @@ export class SocketService {
       this.userIdToClient.set(id, client);
       this.logger.log(`Connected: ${info}`);
       client.emit('connected', info);
-      client.emit('location', JSON.stringify(await this.getNearUsers()));
 
       client.on('disconnect', () => {
         this.userIdToClient.delete(id);
@@ -44,6 +43,7 @@ export class SocketService {
         }
       });
     } catch (error) {
+      console.log(error);
       client.emit('error', error.response);
       client.disconnect();
     }
