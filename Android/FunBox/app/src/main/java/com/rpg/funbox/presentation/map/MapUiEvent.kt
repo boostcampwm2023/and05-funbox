@@ -12,4 +12,6 @@ sealed class MapUiEvent {
     data object ToSetting: MapUiEvent()
 
     data object Toggle: MapUiEvent()
+
+    data object GameStart: MapUiEvent()
 }

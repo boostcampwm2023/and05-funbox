@@ -127,7 +127,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         mSocket.on(Socket.EVENT_CONNECT) {
             // 소켓 서버에 연결이 성공하면 호출됨
             Log.d("Connect", "SOCKET CONNECT")
-            applyGame()
         }.on(Socket.EVENT_DISCONNECT) { args ->
             // 소켓 서버 연결이 끊어질 경우에 호출됨
             Log.d("Connect", "SOCKET DISCONNECT")
@@ -137,9 +136,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 Log.d("Disconect", "SOCKET ERROR")
             }
         }.on("gameApply"){
-            applyGameServerData  = Gson().fromJson(it[0].toString(), ApplyGameFromServerData::class.java)
+            applyGameServerData = Gson().fromJson(it[0].toString(), ApplyGameFromServerData::class.java)
             applyGameServerData.userId
-
+//
             viewModel.getGame()
         }
 
@@ -155,8 +154,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         mSocket.emit("gameApplyAnswer",JSONObject(json))
     }
 
-    private fun applyGame() {
-        val json = Gson().toJson(ApplyGameToServerData(37))
+    private fun applyGame(id: Int) {
+        val json = Gson().toJson(ApplyGameToServerData(id))
+        Log.d("!!",JSONObject(json).toString())
         mSocket.emit("gameApply",JSONObject(json))
     }
 
@@ -224,7 +224,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                     hasMsg.open(this)
                 }
                 setOnClickListener { _ ->
-                    viewModel.userDetailApi(user.id)
+                    viewModel.userDetailApi(user.id, user.name.toString())
                     infoWindow.adapter = adapter
                     runBlocking {
                         val test = viewModel.userDetail.value.profile
@@ -346,6 +346,13 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         is MapUiEvent.ToGame -> {
             val intent = Intent(context, GameActivity::class.java)
             acceptGame(applyGameServerData.roomId)
+            startActivity(intent)
+        }
+
+        is MapUiEvent.GameStart ->{
+            val intent = Intent(context, GameActivity::class.java)
+            Log.d("!!", viewModel.userDetail.value.id.toString())
+            applyGame(viewModel.userDetail.value.id)
             startActivity(intent)
         }
 

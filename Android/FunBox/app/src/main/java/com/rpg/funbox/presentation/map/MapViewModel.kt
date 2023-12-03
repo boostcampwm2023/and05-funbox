@@ -58,6 +58,12 @@ class MapViewModel : ViewModel() {
         }
     }
 
+    fun gameStart(){
+        viewModelScope.launch {
+            _mapUiEvent.emit(MapUiEvent.GameStart)
+        }
+    }
+
     fun rejectGame(){
         viewModelScope.launch {
             _mapUiEvent.emit(MapUiEvent.RejectGame)
@@ -149,13 +155,13 @@ class MapViewModel : ViewModel() {
         }
     }
 
-    fun userDetailApi(id: Int) {
+    fun userDetailApi(id: Int, name: String) {
         _userDetail.update {
             UserDetail(
                 id,
                 "안녕하세요",
                 "https://drive.google.com/file/d/1P6Va6qkB39gnE-gbfbPLCSxIFwAeM8Ul/view?usp=drive_link",
-                "B"
+                name
             )
         }
     }

@@ -72,7 +72,7 @@
                 android:layout_height="wrap_content"
                 android:text="Game Start"
                 android:id="@+id/btn_game_start"
-                android:onClick="@{()->vm.toGame()}"
+                android:onClick="@{()->vm.gameStart()}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
