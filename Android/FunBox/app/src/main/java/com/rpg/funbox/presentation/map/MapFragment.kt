@@ -116,7 +116,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             toggleFab()
         }
 
-        viewModel.mapApi()
+        // viewModel.mapApi()
         submitUserLocation()
         initMapView()
 
