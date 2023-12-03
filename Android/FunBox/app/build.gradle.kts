@@ -1,6 +1,5 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-import java.util.Properties
-import java.io.FileInputStream
+import com.google.firebase.appdistribution.gradle.firebaseAppDistribution
 
 plugins {
     id("com.android.application")
@@ -8,6 +7,7 @@ plugins {
     id("kotlin-kapt")
     id("androidx.navigation.safeargs.kotlin")
     id("com.google.gms.google-services")
+    id("com.google.firebase.appdistribution")
 }
 
 android {
@@ -28,16 +28,24 @@ android {
         resValue("string", "naver_login_secret_key", getApiKey("NAVER_LOGIN_SECRET_KEY"))
         buildConfigField("String", "NAVER_LOGIN_ID_KEY", getApiKey("NAVER_LOGIN_ID_KEY"))
         buildConfigField("String", "NAVER_LOGIN_SECRET_KEY", getApiKey("NAVER_LOGIN_SECRET_KEY"))
-
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
+            isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            firebaseAppDistribution {
+                appId = getApiKey("FIREBASE_APP_ID")
+                artifactType = "AAB"
+                testers = "iamjw95@gmail.com"
+            }
+        }
+        debug {
+            isDebuggable = true
         }
     }
     compileOptions {
@@ -96,9 +104,9 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
 
+
     implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
     implementation("com.google.firebase:firebase-analytics")
-
     implementation("com.google.firebase:firebase-appdistribution-api-ktx:16.0.0-beta10")
 
     implementation("com.google.android.gms:play-services-location:21.0.1")

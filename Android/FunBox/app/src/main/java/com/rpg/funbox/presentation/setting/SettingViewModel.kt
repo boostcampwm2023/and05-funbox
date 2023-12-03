@@ -1,83 +1,132 @@
 package com.rpg.funbox.presentation.setting
 
-import android.util.Log
+import android.net.Uri
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rpg.funbox.R
 import com.rpg.funbox.data.dto.UserInfoResponse
-import com.rpg.funbox.data.repository.NaverLoginRepository
-import com.rpg.funbox.data.repository.NaverLoginRepositoryImpl
 import com.rpg.funbox.data.repository.UserRepository
 import com.rpg.funbox.data.repository.UserRepositoryImpl
-import com.rpg.funbox.presentation.login.nickname.NicknameUiEvent
-import com.rpg.funbox.presentation.map.MapUiEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 
 class SettingViewModel : ViewModel() {
-    private val _settingUiEvent = MutableSharedFlow<SettingUiEvent>()
-    val settingUiEvent = _settingUiEvent.asSharedFlow()
 
     private val userRepository: UserRepository = UserRepositoryImpl()
 
-    private val _user = MutableStateFlow(UserInfoResponse("", null,null))
-    val user = _user
+    private val _user = MutableStateFlow<UserInfoResponse?>(null)
+    val user = _user.asStateFlow()
 
-    private val _newName = MutableStateFlow("")
+    private val _newName = MutableStateFlow<String>("")
     val newName = _newName
 
-    fun toMap() {
+    private val _profileImageFile = MutableStateFlow<MultipartBody.Part?>(null)
+    val profileImageFile = _profileImageFile.asStateFlow()
+
+    private val _newProfileUri = MutableStateFlow<Uri?>(null)
+    val newProfileUri = _newProfileUri.asStateFlow()
+
+    private val _profileUri = MutableStateFlow<Uri?>(null)
+    val profileUri = _profileUri.asStateFlow()
+
+    private val _settingUiEvent = MutableSharedFlow<SettingUiEvent>()
+    val settingUiEvent = _settingUiEvent.asSharedFlow()
+
+    private fun closeSetNameDialog() {
         viewModelScope.launch {
-            _settingUiEvent.emit(SettingUiEvent.ToMap)
+            _settingUiEvent.emit(SettingUiEvent.CloseSetNameDialog)
         }
     }
 
-    fun setUserInfo(){
+    private fun closeSetProfileDialog() {
         viewModelScope.launch {
-            val response = userRepository.getUserInfo()
-            response?.let { response ->
-                _user.update {
-                    it.copy(
-                        userName = response.userName,
-                        profileUrl = response.profileUrl
-                    )
-                }
+            _settingUiEvent.emit(SettingUiEvent.CloseSetProfileDialog)
+        }
+    }
+
+    private fun setUserInfo() {
+        viewModelScope.launch {
+            val userInfo = userRepository.getUserInfo()
+            userInfo?.let {
+                _user.value = userInfo
             }
         }
     }
 
-    fun draw(){
+    fun goToMap() {
         viewModelScope.launch {
-            _settingUiEvent.emit(SettingUiEvent.Draw)
+            _settingUiEvent.emit(SettingUiEvent.GoToMapFragment)
         }
     }
-    fun setName(){
+
+    fun initUserInfo() {
+        viewModelScope.launch {
+            val userInfo = userRepository.getUserInfo()
+            userInfo?.let {
+                _user.value = userInfo
+                _profileUri.value = "https://kr.object.ncloudstorage.com/funbox-profiles/${userInfo.profileUrl}".toUri()
+                _newProfileUri.value = _profileUri.value
+            }
+        }
+    }
+
+    fun setUserName() {
         viewModelScope.launch {
             _settingUiEvent.emit(SettingUiEvent.SetName)
         }
     }
-    private fun closeName(){
+
+    fun submitNewNickname() {
         viewModelScope.launch {
-            _settingUiEvent.emit(SettingUiEvent.CloseName)
+            if (userRepository.patchUserName(userName = _newName.value)) {
+                setUserInfo()
+            }
         }
+        closeSetNameDialog()
     }
-    fun setProfile(){
+
+    fun setUserProfile() {
         viewModelScope.launch {
             _settingUiEvent.emit(SettingUiEvent.SetProfile)
         }
     }
 
-    fun submitNickname() {
+    fun startSelectNewProfile() {
         viewModelScope.launch {
-            Log.d("!!!",_newName.value)
-            if (userRepository.patchUserName(userName = _newName.value)) {
-                Log.d("!!!","a")
-                setUserInfo()
+            _settingUiEvent.emit(SettingUiEvent.SelectProfile)
+        }
+    }
+
+    fun selectNewProfile(uri: Uri?, body: MultipartBody.Part) {
+        if (uri != null) {
+            viewModelScope.launch {
+                _newProfileUri.value = uri
+                _profileImageFile.value = body
+            }
+        } else {
+            _profileUri.value = null
+        }
+    }
+
+    fun submitNewProfile() {
+        viewModelScope.launch {
+            _profileImageFile.value?.let { imageFile ->
+                if (userRepository.postUserProfile(imageFile = imageFile)) {
+                    _profileUri.value = _newProfileUri.value
+                    setUserInfo()
+                }
             }
         }
-        closeName()
+        closeSetProfileDialog()
+    }
+
+    fun draw() {
+        viewModelScope.launch {
+            _settingUiEvent.emit(SettingUiEvent.Draw)
+        }
     }
 }

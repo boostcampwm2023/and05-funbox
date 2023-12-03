@@ -4,116 +4,95 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.rpg.funbox.presentation.setting.SettingViewModel" />
+
     </data>
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#F5EFE7">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/changeNickNameButton"
-        android:layout_width="250dp"
-        android:layout_height="70dp"
-        android:background="@drawable/bg_green_rectangle"
-        android:elevation="1000dp"
-        android:text="닉네임 변경"
-        android:onClick="@{() -> vm.setName()}"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.379" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_color">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/changeProfileButton"
-        android:layout_width="250dp"
-        android:layout_height="70dp"
-        android:layout_marginTop="35dp"
-        android:background="@drawable/bg_green_rectangle"
-        android:elevation="1000dp"
-        android:text="프로필 변경"
-        android:onClick="@{() -> vm.setProfile()}"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/changeNickNameButton"
-        app:layout_constraintVertical_bias="0.0" />
+        <ImageView
+            android:id="@+id/iv_profile_setting"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginTop="60dp"
+            android:contentDescription="@string/profile_setting_description"
+            android:scaleType="fitCenter"
+            android:src="@drawable/group_1940"
+            app:imageUrl="@{vm.profileUri}"
+            app:layout_constraintBottom_toTopOf="@id/tv_nickname_setting"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/langSettingButton"
-        android:layout_width="250dp"
-        android:layout_height="70dp"
-        android:layout_marginTop="35dp"
-        android:background="@drawable/bg_green_rectangle"
-        android:elevation="1000dp"
-        android:text="언어 설정"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/changeProfileButton"
-        app:layout_constraintVertical_bias="0.0" />
+        <TextView
+            android:id="@+id/tv_nickname_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@{vm.user.userName}"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/btn_nickname_setting"
+            app:layout_constraintEnd_toEndOf="@id/iv_profile_setting"
+            app:layout_constraintStart_toStartOf="@id/iv_profile_setting"
+            app:layout_constraintTop_toBottomOf="@id/iv_profile_setting" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/withDrawButton"
-        android:layout_width="250dp"
-        android:layout_height="70dp"
-        android:layout_marginBottom="60dp"
-        android:background="@drawable/bg_red_rectangle"
-        android:elevation="1000dp"
-        android:text="회원 탈퇴하기"
-        android:onClick="@{() -> vm.draw()}"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_nickname_setting"
+            android:layout_width="250dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="60dp"
+            android:background="@drawable/bg_green_rectangle"
+            android:elevation="1000dp"
+            android:onClick="@{() -> vm.setUserName()}"
+            android:text="@string/nickname_setting"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/btn_profile_setting"
+            app:layout_constraintEnd_toEndOf="@id/iv_profile_setting"
+            app:layout_constraintStart_toStartOf="@id/iv_profile_setting"
+            app:layout_constraintTop_toBottomOf="@id/tv_nickname_setting" />
 
-    <ImageView
-        android:id="@+id/profileImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.063"
-        app:imageUrl="@{vm.user.profileUrl}" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_profile_setting"
+            android:layout_width="250dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/bg_green_rectangle"
+            android:elevation="1000dp"
+            android:onClick="@{() -> vm.setUserProfile()}"
+            android:text="@string/profile_setting"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@id/iv_profile_setting"
+            app:layout_constraintStart_toStartOf="@id/iv_profile_setting"
+            app:layout_constraintTop_toBottomOf="@+id/btn_nickname_setting" />
 
-    <TextView
-        android:id="@+id/nameTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="41dp"
-        android:text="@{vm.user.userName}"
-        android:textColor="@color/black"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/changeNickNameButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileImageView"
-        app:layout_constraintVertical_bias="0.0" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_withdraw_setting"
+            android:layout_width="250dp"
+            android:layout_height="70dp"
+            android:layout_marginBottom="60dp"
+            android:background="@drawable/bg_red_rectangle"
+            android:elevation="1000dp"
+            android:onClick="@{() -> vm.draw()}"
+            android:text="@string/withdraw_setting"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

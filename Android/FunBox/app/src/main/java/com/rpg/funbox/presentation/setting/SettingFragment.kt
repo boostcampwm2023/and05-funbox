@@ -1,28 +1,17 @@
 package com.rpg.funbox.presentation.setting
 
 import android.app.Dialog
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
-import android.view.Window
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.TextView
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.rpg.funbox.R
-import com.rpg.funbox.databinding.FragmentProfileBinding
 import com.rpg.funbox.databinding.FragmentSettingBinding
 import com.rpg.funbox.presentation.BaseFragment
-import com.rpg.funbox.presentation.MainActivity
-import com.rpg.funbox.presentation.map.MapUiEvent
 
 class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_setting) {
 
@@ -36,38 +25,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
 
     }
 
-    private fun handleUiEvent(event: SettingUiEvent) = when (event) {
-        is SettingUiEvent.ToMap -> {
-            findNavController().navigate(R.id.action_settingFragment_to_mapFragment)
-        }
-        is SettingUiEvent.SetName -> {
-            SetNameDialog().show(parentFragmentManager, "setName")
-        }
-        is SettingUiEvent.SetProfile -> {
-            clickProfileSetting()
-        }
-
-        is SettingUiEvent.Draw -> {
-            clickWithDraw()
-        }
-        is SettingUiEvent.CloseName ->{}
-    }
-
-    private fun clickProfileSetting(){
-        val dialog = Dialog(requireContext())
-        dialog.setContentView(R.layout.dialog_profile_change)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog.show()
-        val profileImage = dialog.findViewById<ImageButton>(R.id.dialogProfileImageSettingButton)
-        val button = dialog.findViewById<AppCompatButton>(R.id.dialogProfileSettingButton)
-        button.setOnClickListener {
-            //api
-            dialog.dismiss()
-        }
-    }
-
-
-    private fun clickWithDraw(){
+    private fun clickWithDraw() {
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_red_with_text)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -82,4 +40,25 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
         }
     }
 
+    private fun handleUiEvent(event: SettingUiEvent) = when (event) {
+        is SettingUiEvent.GoToMapFragment -> {
+            findNavController().navigate(R.id.action_settingFragment_to_mapFragment)
+        }
+
+        is SettingUiEvent.SetName -> {
+            // findNavController().navigate(R.id.action_settingFragment_to_SetNameDialog)
+            SetNameDialog().show(childFragmentManager, "")
+        }
+
+        is SettingUiEvent.SetProfile -> {
+            // findNavController().navigate(R.id.action_settingFragment_to_SetProfileDialog)
+            SetProfileDialog().show(childFragmentManager, "")
+        }
+
+        is SettingUiEvent.Draw -> {
+            clickWithDraw()
+        }
+
+        else -> {}
+    }
 }
