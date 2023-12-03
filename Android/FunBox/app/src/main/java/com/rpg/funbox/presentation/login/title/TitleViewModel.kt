@@ -36,7 +36,7 @@ class TitleViewModel : ViewModel() {
     private val _profileImageUri = MutableStateFlow<Uri?>(null)
     val profileImageUri = _profileImageUri.asStateFlow()
 
-    private val profileUrl = MutableStateFlow<MultipartBody.Part?>(null)
+    private val profileImageFile = MutableStateFlow<MultipartBody.Part?>(null)
 
     private val _titleUiEvent = MutableSharedFlow<TitleUiEvent>()
     val titleUiEvent = _titleUiEvent.asSharedFlow()
@@ -111,10 +111,9 @@ class TitleViewModel : ViewModel() {
             _profileUiState.update { uiState ->
                 uiState.copy(profileValidState = ProfileValidState.None)
             }
-        }
-        else {
+        } else {
             _profileImageUri.value = uri
-            profileUrl.value = body
+            profileImageFile.value = body
             _profileUiState.update { uiState ->
                 uiState.copy(profileValidState = ProfileValidState.Valid)
             }
@@ -123,7 +122,7 @@ class TitleViewModel : ViewModel() {
 
     fun submitProfile() {
         viewModelScope.launch {
-            when (profileUrl.value?.let { userRepository.postUserProfile(it) }) {
+            when (profileImageFile.value?.let { userRepository.postUserProfile(it) }) {
                 true -> {
                     _profileUiEvent.emit(ProfileUiEvent.ProfileSubmit)
                 }

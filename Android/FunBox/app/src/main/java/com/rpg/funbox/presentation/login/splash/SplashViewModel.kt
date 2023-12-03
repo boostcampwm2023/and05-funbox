@@ -29,7 +29,7 @@ class SplashViewModel : ViewModel() {
                     _splashUiEvent.emit(SplashUiEvent.Unauthorized)
                 }
                 else -> {
-                    if (validateUserName(userRepository.getUserInfo())) {
+                    if (validateUserName(userRepository.getUserInfo()?.userName)) {
                         _splashUiEvent.emit(SplashUiEvent.GetUsersLocationsSuccess)
                     } else {
                         _splashUiEvent.emit(SplashUiEvent.Unauthorized)
