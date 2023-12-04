@@ -66,14 +66,19 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             when {
                 permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
                     Timber.d("권한 허용1")
-                    fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+                    fusedLocationClient =
+                        LocationServices.getFusedLocationProviderClient(requireActivity())
                     submitUserLocation()
                 }
+
                 permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                     Timber.d("권한 허용2")
-                    fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+                    fusedLocationClient =
+                        LocationServices.getFusedLocationProviderClient(requireActivity())
                     submitUserLocation()
-                } else -> {
+                }
+
+                else -> {
                     requireActivity().finish()
                 }
             }
@@ -89,9 +94,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-      
+
         socketConnect()
-        
+
         collectLatestFlow(viewModel.mapUiEvent) { handleUiEvent(it) }
 
         binding.floatingActionButton.setOnClickListener {
@@ -124,10 +129,8 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             addOnLocationChangeListener { location ->
                 val cameraUpdate =
                     CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))
-                Timber.d("X: ${location.latitude}, Y :${location.longitude}")
                 naverMap.moveCamera(cameraUpdate)
                 viewModel.setXY(location.latitude, location.longitude)
-                // viewModel.setUsersLocations(location.latitude, location.longitude)
             }
         }
 
@@ -254,8 +257,10 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             if (args[0] is EngineIOException) {
                 Timber.tag("Disconect").d("SOCKET ERROR")
             }
-        }.on("gameApply"){
-            applyGameServerData = Gson().fromJson(it[0].toString(), ApplyGameFromServerData::class.java)
+        }.on("gameApply") {
+            applyGameServerData =
+                Gson().fromJson(it[0].toString(), ApplyGameFromServerData::class.java)
+            applyGameServerData.userId
             viewModel.getGame()
         }
     }
@@ -278,7 +283,10 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
             Timer().scheduleAtFixedRate(0, 3000) {
                 lifecycleScope.launch {
-                    val tmp = fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
+                    val tmp = fusedLocationClient.getCurrentLocation(
+                        Priority.PRIORITY_HIGH_ACCURACY,
+                        null
+                    ).await()
                     viewModel.setUsersLocations(tmp.latitude, tmp.longitude)
                     initMapView()
                 }
@@ -293,15 +301,15 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
         is MapUiEvent.ToGame -> {
             val intent = Intent(context, GameActivity::class.java)
-            intent.putExtra("StartGame",false)
+            intent.putExtra("StartGame", false)
             intent.putExtra("RoomId", applyGameServerData.roomId)
             intent.putExtra("OtherUserId", applyGameServerData.userId)
             startActivity(intent)
         }
 
-        is MapUiEvent.GameStart ->{
+        is MapUiEvent.GameStart -> {
             val intent = Intent(context, GameActivity::class.java)
-            intent.putExtra("StartGame",true)
+            intent.putExtra("StartGame", true)
             intent.putExtra("OtherUserId", viewModel.userDetail.value.id)
             startActivity(intent)
         }

@@ -23,6 +23,6 @@ class GameActivity : AppCompatActivity() {
     private fun initUsersState() {
         viewModel.setRoomId(intent.getStringExtra("RoomId"))
         viewModel.setUserState(intent.getBooleanExtra("StartGame",false))
-        viewModel.setUserNames(intent.getIntExtra("OtherUserId", -1))
+        intent.getStringExtra("OtherUserId")?.let { viewModel.setUserNames(it.toInt()) }
     }
 }
