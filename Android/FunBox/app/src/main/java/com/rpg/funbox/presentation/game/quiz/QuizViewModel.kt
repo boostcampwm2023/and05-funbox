@@ -10,16 +10,23 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class QuizViewModel : ViewModel() {
 
     private val userRepository: UserRepository = UserRepositoryImpl()
+
+    private val _userState = MutableStateFlow<Boolean>(true)
+    val userState = _userState.asStateFlow()
 
     private val _roomId = MutableStateFlow<String?>(null)
     val roomId = _roomId.asStateFlow()
 
     private val _userName = MutableStateFlow<String?>(null)
     val userName = _userName.asStateFlow()
+
+    private val _otherUserId = MutableStateFlow<Int>(-1)
+    val otherUserId = _otherUserId.asStateFlow()
 
     private val _otherUserName = MutableStateFlow<String?>(null)
     val otherUserName = _otherUserName.asStateFlow()
@@ -42,11 +49,22 @@ class QuizViewModel : ViewModel() {
     private val _quizUiState = MutableStateFlow<QuizUiState>(QuizUiState())
     val quizUiState = _quizUiState.asStateFlow()
 
+    fun setUserState(state: Boolean) {
+        _userState.value = state
+    }
+
     fun setRoomId(newRoomId: String?) {
         _roomId.value = newRoomId
     }
 
+    fun toGame() {
+        viewModelScope.launch {
+            _quizUiEvent.emit(QuizUiEvent.WaitSuccess)
+        }
+    }
+
     fun setUserNames(userId: Int) {
+        _otherUserId.value = userId
         viewModelScope.launch {
             userRepository.getUserInfo()?.let { userInfo ->
                 _userName.value = userInfo.userName

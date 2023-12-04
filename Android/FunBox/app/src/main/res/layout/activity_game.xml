@@ -6,12 +6,8 @@
     <data>
 
         <variable
-            name="quizViewModel"
+            name="vm"
             type="com.rpg.funbox.presentation.game.quiz.QuizViewModel" />
-
-        <variable
-            name="waitViewModel"
-            type="com.rpg.funbox.presentation.game.wait.WaitViewModel" />
 
     </data>
 
