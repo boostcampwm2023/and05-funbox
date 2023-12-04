@@ -6,22 +6,22 @@ import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import coil.load
 import com.rpg.funbox.R
-import java.lang.Exception
+import timber.log.Timber
 
 @BindingAdapter("app:imageUrlBtn")
 fun ImageButton.loadImage(uri: Uri?) {
-    try {
-        load(uri)
-    } catch (e: Exception) {
+    if (uri == null) {
         load(R.drawable.profile_none)
+    } else {
+        load(uri)
     }
 }
 
 @BindingAdapter("app:imageUrl")
 fun ImageView.loadImage(uri: Uri?) {
-    try {
-        load(uri)
-    } catch (e: Exception) {
+    if (uri == null) {
         load(R.drawable.profile_none)
+    } else {
+        load(uri)
     }
 }

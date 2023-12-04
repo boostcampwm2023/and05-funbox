@@ -10,7 +10,7 @@ import com.rpg.funbox.presentation.BaseDialogFragment
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class SetNameDialog: BaseDialogFragment<DialogPositiveBinding>(R.layout.dialog_positive) {
+class SetNameDialog : BaseDialogFragment<DialogPositiveBinding>(R.layout.dialog_positive) {
 
     private val viewModel: SettingViewModel by activityViewModels()
 
