@@ -9,6 +9,10 @@
             name="quizViewModel"
             type="com.rpg.funbox.presentation.game.quiz.QuizViewModel" />
 
+        <variable
+            name="waitViewModel"
+            type="com.rpg.funbox.presentation.game.wait.WaitViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

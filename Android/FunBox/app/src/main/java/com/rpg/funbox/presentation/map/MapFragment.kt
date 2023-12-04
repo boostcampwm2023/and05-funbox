@@ -38,7 +38,10 @@ import com.rpg.funbox.R
 import com.rpg.funbox.databinding.FragmentMapBinding
 import com.rpg.funbox.presentation.BaseFragment
 import com.rpg.funbox.presentation.MapSocket
+import com.rpg.funbox.presentation.MapSocket.acceptGame
+import com.rpg.funbox.presentation.MapSocket.applyGame
 import com.rpg.funbox.presentation.MapSocket.mSocket
+import com.rpg.funbox.presentation.MapSocket.rejectGame
 import io.socket.client.Socket
 import com.rpg.funbox.presentation.game.GameActivity
 import com.rpg.funbox.presentation.checkPermission
@@ -144,21 +147,21 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     }
 
-    private fun acceptGame(roomId: String) {
-        val json = Gson().toJson(GameApplyAnswerToServerData(roomId,"ACCEPT"))
-        mSocket.emit("gameApplyAnswer",JSONObject(json))
-    }
-
-    private fun rejectGame(roomId: String) {
-        val json = Gson().toJson(GameApplyAnswerToServerData(roomId,"REJECT"))
-        mSocket.emit("gameApplyAnswer",JSONObject(json))
-    }
-
-    private fun applyGame(id: Int) {
-        val json = Gson().toJson(ApplyGameToServerData(id))
-        Log.d("!!",JSONObject(json).toString())
-        mSocket.emit("gameApply",JSONObject(json))
-    }
+//    private fun acceptGame(roomId: String) {
+//        val json = Gson().toJson(GameApplyAnswerToServerData(roomId,"ACCEPT"))
+//        mSocket.emit("gameApplyAnswer",JSONObject(json))
+//    }
+//
+//    private fun rejectGame(roomId: String) {
+//        val json = Gson().toJson(GameApplyAnswerToServerData(roomId,"REJECT"))
+//        mSocket.emit("gameApplyAnswer",JSONObject(json))
+//    }
+//
+//    private fun applyGame(id: Int) {
+//        val json = Gson().toJson(ApplyGameToServerData(id))
+//        Log.d("!!",JSONObject(json).toString())
+//        mSocket.emit("gameApply",JSONObject(json))
+//    }
 
     override fun onStart() {
         super.onStart()
@@ -348,7 +351,8 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         is MapUiEvent.ToGame -> {
             val intent = Intent(context, GameActivity::class.java)
             intent.putExtra("StartGame",false)
-            acceptGame(applyGameServerData.roomId)
+            intent.putExtra("RoomId", applyGameServerData.roomId)
+            // acceptGame(applyGameServerData.roomId)
             startActivity(intent)
         }
 

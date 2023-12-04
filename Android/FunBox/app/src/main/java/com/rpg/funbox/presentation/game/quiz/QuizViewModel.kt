@@ -15,6 +15,9 @@ class QuizViewModel : ViewModel() {
 
     private val userRepository: UserRepository = UserRepositoryImpl()
 
+    private val _roomId = MutableStateFlow<String?>(null)
+    val roomId = _roomId.asStateFlow()
+
     private val _userName = MutableStateFlow<String?>(null)
     val userName = _userName.asStateFlow()
 
@@ -38,6 +41,10 @@ class QuizViewModel : ViewModel() {
 
     private val _quizUiState = MutableStateFlow<QuizUiState>(QuizUiState())
     val quizUiState = _quizUiState.asStateFlow()
+
+    fun setRoomId(newRoomId: String?) {
+        _roomId.value = newRoomId
+    }
 
     fun setUserNames(userId: Int) {
         viewModelScope.launch {

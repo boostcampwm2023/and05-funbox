@@ -1,13 +1,12 @@
 package com.rpg.funbox.presentation.game
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
-import com.rpg.funbox.R
 import com.rpg.funbox.databinding.ActivityGameBinding
 import com.rpg.funbox.presentation.game.quiz.QuizViewModel
 import com.rpg.funbox.presentation.game.wait.WaitViewModel
+import timber.log.Timber
 
 class GameActivity : AppCompatActivity() {
 
@@ -17,12 +16,15 @@ class GameActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_game)
-    }
+        binding = ActivityGameBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.waitViewModel = waitViewModel
+        binding.quizViewModel = quizViewModel
 
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        data?.getBooleanExtra("StartGame",false)?.let { waitViewModel.setUserState(it) }
+        quizViewModel.setRoomId(intent.getStringExtra("RoomId"))
+        waitViewModel.setRoomId(intent.getStringExtra("RoomId"))
+
+        Timber.d("StartGame: ${intent.getBooleanExtra("StartGame",false)}")
+        waitViewModel.setUserState(intent.getBooleanExtra("StartGame",false))
     }
 }

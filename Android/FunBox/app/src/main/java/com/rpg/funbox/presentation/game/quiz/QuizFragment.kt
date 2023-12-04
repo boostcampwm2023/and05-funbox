@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.UiThread
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.gson.Gson
@@ -20,6 +19,7 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.rpg.funbox.app.MainApplication
 import com.rpg.funbox.data.JwtDecoder
 import com.rpg.funbox.presentation.CustomNaverMap
+import com.rpg.funbox.presentation.MapSocket
 import com.rpg.funbox.presentation.MapSocket.mSocket
 import com.rpg.funbox.presentation.MapSocket.sendQuizAnswer
 import com.rpg.funbox.presentation.MapSocket.verifyAnswer
@@ -27,8 +27,6 @@ import com.rpg.funbox.presentation.login.AccessPermission
 import com.rpg.funbox.presentation.map.QuizAnswerFromServer
 import com.rpg.funbox.presentation.map.QuizFromServer
 import com.rpg.funbox.presentation.map.ScoreFromServer
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), OnMapReadyCallback {
@@ -84,18 +82,21 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
         }
             .on("quiz") {
                 val json = Gson().fromJson(it[0].toString(), QuizFromServer::class.java)
+                Timber.d(json.toString())
                 Timber.d(json.quiz)
                 Timber.d(json.target.toString())
                 Timber.d("$myUserId")
                 roomId = json.roomId
+                Timber.d("Rood Id: $roomId, Target: ${json.target}")
 
                 when (json.target) {
                     myUserId -> {
+                        Timber.d("답 맞춤")
                         viewModel.setUserQuizState(UserQuizState.Answer)
-
                     }
 
                     else -> {
+                        Timber.d("문제를 냄")
                         viewModel.setLatestQuiz(json.quiz)
                         viewModel.setUserQuizState(UserQuizState.Quiz)
                     }
@@ -108,18 +109,18 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
 
                 viewModel.setLatestAnswer(json.answer)
                 viewModel.checkAnswerCorrect()
-                lifecycleScope.launch {
-                    viewModel.quizUiEvent.collectLatest { uiEvent ->
-                        if (uiEvent == QuizUiEvent.QuizAnswerCheckRight) verifyAnswer(
-                            json.roomId,
-                            true
-                        )
-                        else if (uiEvent == QuizUiEvent.QuizAnswerCheckWrong) verifyAnswer(
-                            json.roomId,
-                            false
-                        )
-                    }
-                }
+//                lifecycleScope.launch {
+//                    viewModel.quizUiEvent.collectLatest { uiEvent ->
+//                        if (uiEvent == QuizUiEvent.QuizAnswerCheckRight) verifyAnswer(
+//                            json.roomId,
+//                            true
+//                        )
+//                        else if (uiEvent == QuizUiEvent.QuizAnswerCheckWrong) verifyAnswer(
+//                            json.roomId,
+//                            false
+//                        )
+//                    }
+//                }
             }
             .on("score") {
                 val json = Gson().fromJson(it[0].toString(), ScoreFromServer::class.java)
