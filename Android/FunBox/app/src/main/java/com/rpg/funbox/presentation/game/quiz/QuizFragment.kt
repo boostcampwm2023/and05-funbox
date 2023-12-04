@@ -35,6 +35,8 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
 
     private val viewModel: QuizViewModel by activityViewModels()
 
+    private var roomId: String = ""
+
     private lateinit var quizMap: NaverMap
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var fusedLocationSource: FusedLocationSource
@@ -82,16 +84,15 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
         }
             .on("quiz") {
                 val json = Gson().fromJson(it[0].toString(), QuizFromServer::class.java)
-                Timber.tag("퀴즈").d(json.quiz)
-                Timber.tag("타겟").d(json.target.toString())
+                Timber.d(json.quiz)
+                Timber.d(json.target.toString())
+                Timber.d("$myUserId")
+                roomId = json.roomId
 
                 when (json.target) {
                     myUserId -> {
                         viewModel.setUserQuizState(UserQuizState.Answer)
-                        lifecycleScope.launch {
-                            viewModel.setLatestQuiz(json.quiz)
-                            viewModel.setUserQuizState(UserQuizState.Quiz)
-                        }
+
                     }
 
                     else -> {
@@ -102,7 +103,8 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
             }
             .on("quizAnswer") {
                 val json = Gson().fromJson(it[0].toString(), QuizAnswerFromServer::class.java)
-                Timber.tag("quizAnswer").d(json.answer)
+                Timber.d(json.answer)
+                roomId = json.roomId
 
                 viewModel.setLatestAnswer(json.answer)
                 viewModel.checkAnswerCorrect()
@@ -121,14 +123,14 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
             }
             .on("score") {
                 val json = Gson().fromJson(it[0].toString(), ScoreFromServer::class.java)
-                Timber.tag("score").d(json.first().toString())
-                Timber.tag("score").d(json.last().toString())
+                Timber.d(json.first().toString())
+                Timber.d(json.last().toString())
 
                 viewModel.setFinalScore(Pair(json.first().toString(), json.last().toString()))
                 viewModel.showScoreBoard()
             }
             .on("lostConnection") {
-                Timber.tag("lostConnection").d(it.toString())
+                Timber.d(it.toString())
 
                 viewModel.alertNetworkError()
             }
@@ -144,8 +146,20 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
             showSnackBar(R.string.network_error_message)
         }
 
+        is QuizUiEvent.QuizAnswerSubmit -> {
+            sendQuizAnswer(roomId, viewModel.latestAnswer.value)
+        }
+
         is QuizUiEvent.QuizAnswerCheckStart -> {
             AnswerCheckFragment().show(childFragmentManager, "AnswerCheckStart")
+        }
+
+        is QuizUiEvent.QuizAnswerCheckRight -> {
+            verifyAnswer(roomId, true)
+        }
+
+        is QuizUiEvent.QuizAnswerCheckWrong -> {
+            verifyAnswer(roomId, false)
         }
 
         is QuizUiEvent.QuizNetworkDisconnected -> {
