@@ -8,15 +8,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { SocketService } from './socket.service';
-import {
-  ParseBoolPipe,
-  ParseIntPipe,
-  UseFilters,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
-import { UpdateLocationDto } from './dto/update-location.dto';
-import { SocketUserDto } from './dto/socket-user.dto';
+import { ParseBoolPipe, ParseIntPipe, UseFilters } from '@nestjs/common';
 import { WsExceptionFilter } from './filters/ws-exception.filter';
 import { GameApplyAnswer } from './enum/game-apply-answer.enum';
 import { AnswerValidationPipe } from './pipes/answer-validation.pipe';
@@ -34,16 +26,6 @@ export class SocketGateway implements OnGatewayConnection {
 
   handleConnection(client: Socket): void {
     this.socketService.handleConnection(client);
-  }
-
-  @SubscribeMessage('updateLocation')
-  @UsePipes(ValidationPipe)
-  updateLocation(client: Socket, updateLocationDto: UpdateLocationDto): void {
-    const { locX, locY } = updateLocationDto;
-    client.data.locX = locX;
-    client.data.locY = locY;
-
-    this.server.emit('location', JSON.stringify(SocketUserDto.of(client)));
   }
 
   @SubscribeMessage('gameApply')

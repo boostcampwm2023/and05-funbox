@@ -2,7 +2,6 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
-import { SocketUserDto } from './dto/socket-user.dto';
 import { GameApplyAnswer } from './enum/game-apply-answer.enum';
 import { Room } from './room';
 
@@ -47,14 +46,6 @@ export class SocketService {
       client.emit('error', error.response);
       client.disconnect();
     }
-  }
-
-  async getNearUsers(): Promise<SocketUserDto[]> {
-    return Promise.all(
-      Array.from(this.userIdToClient.values())
-        .filter((client) => client.data.locX && client.data.locY) // TODO: 주변 위치로 필터링
-        .map(async (client) => SocketUserDto.of(client)),
-    );
   }
 
   gameApply(client: Socket, opponentId: number) {
