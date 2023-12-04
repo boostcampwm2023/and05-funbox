@@ -37,13 +37,16 @@ export class SocketService {
         if (roomId) {
           const room = this.rooms.get(roomId);
           room.lostConnection();
+          this.logger.log(`room ${roomId}: lostConnection`);
           room.quit();
+          this.logger.log(`room ${roomId}: quit`);
           this.rooms.delete(roomId);
         }
       });
     } catch (error) {
-      console.log(error);
-      client.emit('error', error.response);
+      const data = JSON.stringify(error.response);
+      this.logger.log(`error: ${data}`);
+      client.emit('error', data);
       client.disconnect();
     }
   }
@@ -52,11 +55,14 @@ export class SocketService {
     const opponentClient = this.userIdToClient.get(opponentId);
     if (!opponentClient) {
       const data = JSON.stringify({ answer: GameApplyAnswer.OFFLINE });
+      this.logger.log(`gameApplyAnswer to ${client.data.userId}: ${data}`);
       client.emit('gameApplyAnswer', data);
     } else {
       const userId = client.data.userId;
       const roomId = Math.random().toString(36).substring(2, 12);
-      opponentClient.emit('gameApply', JSON.stringify({ userId, roomId }));
+      const data = JSON.stringify({ userId, roomId });
+      this.logger.log(`gameApply to ${opponentClient.data.userId}: ${data}`);
+      opponentClient.emit('gameApply', data);
       this.rooms.set(roomId, new Room(roomId, client, opponentClient));
     }
   }
@@ -67,28 +73,36 @@ export class SocketService {
       throw new NotFoundException();
     }
     const ownerClient = room.owner;
-    ownerClient.emit('gameApplyAnswer', JSON.stringify({ answer }));
+    const data = JSON.stringify({ answer });
+    this.logger.log(`gameApplyAnswer to ${ownerClient.data.userId}: ${data}`);
+    ownerClient.emit('gameApplyAnswer', data);
 
     if (answer === GameApplyAnswer.REJECT) {
       this.rooms.delete(roomId);
     } else {
       this.rooms.get(roomId).nextQuiz();
+      this.logger.log(`room ${roomId}: nextQuiz`);
     }
   }
 
   quizAnswer(roomId: string, answer: string) {
     const room = this.rooms.get(roomId);
     room.deliverAnswer(answer);
+    this.logger.log(`room ${roomId}: deliverAnswer`);
   }
 
   verifyAnswer(roomId: string, isCorrect: boolean) {
     const room = this.rooms.get(roomId);
     room.verifyAnswer(isCorrect);
+    this.logger.log(`room ${roomId}: verifyAnswer`);
     if (room.round < room.quizzes.length) {
       room.nextQuiz();
+      this.logger.log(`room ${roomId}: nextQuiz`);
     } else {
       room.showScore();
+      this.logger.log(`room ${roomId}: showScore`);
       room.quit();
+      this.logger.log(`room ${roomId}: quit`);
       this.rooms.delete(roomId);
     }
   }
