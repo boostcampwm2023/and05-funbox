@@ -172,9 +172,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             locationSource = this@MapFragment.locationSource
             locationTrackingMode = LocationTrackingMode.Face
             uiSettings.isLocationButtonEnabled = true
-            minZoom = 13.0
-            maxZoom = 17.0
-            uiSettings.isZoomControlEnabled = false
+            minZoom = 5.0
+            maxZoom = 20.0
+            uiSettings.isZoomControlEnabled = true
             extent = LatLngBounds(LatLng(31.43, 122.37), LatLng(44.35, 132.0))
             addOnLocationChangeListener { location ->
                 val cameraUpdate =
@@ -299,7 +299,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     }
 
     private fun initMapView() {
-        val fm = parentFragmentManager
+        val fm = childFragmentManager
         val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
             ?: MapFragment.newInstance().also {
                 fm.beginTransaction().add(R.id.map, it).commit()
