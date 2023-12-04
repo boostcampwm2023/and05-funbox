@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './user.entity';
 import { UserLocationDto } from './dto/user-location.dto';
 import { NearUsersDto } from './dto/near-users.dto';
-import { Not } from 'typeorm';
+import { LessThanOrEqual, MoreThanOrEqual, Not } from 'typeorm';
 import * as crypto from 'crypto';
 
 const AWS = require('aws-sdk');
@@ -43,7 +43,15 @@ export class UsersService {
     return nearUsersDto;
 
     async function findNearUsersAlgorithm(idSelf: number): Promise<User[]> {
-      return await User.findBy({ id: Not(idSelf) });
+      const now = new Date();
+      const tenSecondsAgo = new Date();
+      tenSecondsAgo.setSeconds(now.getSeconds() - 10);
+      return await User.find({
+        where: {
+          id: Not(idSelf),
+          last_polling_at: MoreThanOrEqual(tenSecondsAgo),
+        },
+      });
     }
   }
 

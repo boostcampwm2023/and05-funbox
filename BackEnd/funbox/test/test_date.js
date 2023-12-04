@@ -1,2 +1,5 @@
-const a = Date.now() - 3600000;
-console.log(a);
+const now = new Date();
+console.log(now);
+const b = new Date();
+b.setSeconds(now.getSeconds() - 10);
+console.log(b);
