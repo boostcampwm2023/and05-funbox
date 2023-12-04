@@ -168,6 +168,11 @@ class QuizViewModel : ViewModel() {
                 setLatestAnswer(json.answer)
                 checkAnswerCorrect()
             }
+            .on("verifyAnswer") {
+                _quizUiState.update { uiState ->
+                    uiState.copy(answerWriteState = true)
+                }
+            }
             .on("score") {
                 val json = Gson().fromJson(it[0].toString(), ScoreFromServer::class.java)
                 Timber.d(json.first().toString())
@@ -230,6 +235,10 @@ class QuizViewModel : ViewModel() {
     fun submitAnswer() {
         viewModelScope.launch {
             _quizUiEvent.emit(QuizUiEvent.QuizAnswerSubmit)
+            _quizUiState.update { uiState ->
+                uiState.copy(answerValidState = false, answerWriteState = false)
+            }
+            _latestAnswer.value = ""
         }
     }
 
