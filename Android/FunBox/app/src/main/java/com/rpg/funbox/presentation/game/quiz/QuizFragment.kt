@@ -19,7 +19,8 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.rpg.funbox.app.MainApplication
 import com.rpg.funbox.data.JwtDecoder
 import com.rpg.funbox.presentation.CustomNaverMap
-import com.rpg.funbox.presentation.MapSocket
+import com.rpg.funbox.presentation.MapSocket.acceptGame
+import com.rpg.funbox.presentation.MapSocket.applyGame
 import com.rpg.funbox.presentation.MapSocket.mSocket
 import com.rpg.funbox.presentation.MapSocket.sendQuizAnswer
 import com.rpg.funbox.presentation.MapSocket.verifyAnswer
@@ -32,8 +33,6 @@ import timber.log.Timber
 class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), OnMapReadyCallback {
 
     private val viewModel: QuizViewModel by activityViewModels()
-
-    private var roomId: String = ""
 
     private lateinit var quizMap: NaverMap
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -48,7 +47,8 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        socketConnect()
+        connectSocket()
+        setQuizGame()
         initNaverMap()
 
         collectLatestFlow(viewModel.quizUiEvent) { handleUiEvent(it) }
@@ -76,7 +76,7 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
             FusedLocationSource(this, AccessPermission.LOCATION_PERMISSION_REQUEST_CODE)
     }
 
-    private fun socketConnect() {
+    private fun connectSocket() {
         mSocket.on("location") {
             Timber.tag("LOCATION").d(it[0].toString())
         }
@@ -86,8 +86,8 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
                 Timber.d(json.quiz)
                 Timber.d(json.target.toString())
                 Timber.d("$myUserId")
-                roomId = json.roomId
-                Timber.d("Rood Id: $roomId, Target: ${json.target}")
+                viewModel.setRoomId(json.roomId)
+                Timber.d("Rood Id: ${viewModel.roomId.value}, Target: ${json.target}")
 
                 when (json.target) {
                     myUserId -> {
@@ -105,22 +105,10 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
             .on("quizAnswer") {
                 val json = Gson().fromJson(it[0].toString(), QuizAnswerFromServer::class.java)
                 Timber.d(json.answer)
-                roomId = json.roomId
+                viewModel.setRoomId(json.roomId)
 
                 viewModel.setLatestAnswer(json.answer)
                 viewModel.checkAnswerCorrect()
-//                lifecycleScope.launch {
-//                    viewModel.quizUiEvent.collectLatest { uiEvent ->
-//                        if (uiEvent == QuizUiEvent.QuizAnswerCheckRight) verifyAnswer(
-//                            json.roomId,
-//                            true
-//                        )
-//                        else if (uiEvent == QuizUiEvent.QuizAnswerCheckWrong) verifyAnswer(
-//                            json.roomId,
-//                            false
-//                        )
-//                    }
-//                }
             }
             .on("score") {
                 val json = Gson().fromJson(it[0].toString(), ScoreFromServer::class.java)
@@ -142,13 +130,21 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
             }
     }
 
+    private fun setQuizGame() {
+        if (viewModel.userState.value) {
+            applyGame(viewModel.otherUserId.value)
+        } else {
+            viewModel.roomId.value?.let { acceptGame(it) }
+        }
+    }
+
     private fun handleUiEvent(event: QuizUiEvent) = when (event) {
         is QuizUiEvent.NetworkErrorEvent -> {
             showSnackBar(R.string.network_error_message)
         }
 
         is QuizUiEvent.QuizAnswerSubmit -> {
-            sendQuizAnswer(roomId, viewModel.latestAnswer.value)
+            viewModel.roomId.value?.let { sendQuizAnswer(it, viewModel.latestAnswer.value) }
         }
 
         is QuizUiEvent.QuizAnswerCheckStart -> {
@@ -156,11 +152,11 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
         }
 
         is QuizUiEvent.QuizAnswerCheckRight -> {
-            verifyAnswer(roomId, true)
+            viewModel.roomId.value?.let { verifyAnswer(it, true) }
         }
 
         is QuizUiEvent.QuizAnswerCheckWrong -> {
-            verifyAnswer(roomId, false)
+            viewModel.roomId.value?.let { verifyAnswer(it, false) }
         }
 
         is QuizUiEvent.QuizNetworkDisconnected -> {

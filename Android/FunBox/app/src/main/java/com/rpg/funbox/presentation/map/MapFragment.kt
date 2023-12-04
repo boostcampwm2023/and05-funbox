@@ -3,17 +3,14 @@ package com.rpg.funbox.presentation.map
 import android.Manifest
 import android.animation.ObjectAnimator
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -37,43 +34,32 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.FragmentMapBinding
 import com.rpg.funbox.presentation.BaseFragment
-import com.rpg.funbox.presentation.MapSocket
-import com.rpg.funbox.presentation.MapSocket.acceptGame
-import com.rpg.funbox.presentation.MapSocket.applyGame
 import com.rpg.funbox.presentation.MapSocket.mSocket
 import com.rpg.funbox.presentation.MapSocket.rejectGame
 import io.socket.client.Socket
 import com.rpg.funbox.presentation.game.GameActivity
 import com.rpg.funbox.presentation.checkPermission
 import com.rpg.funbox.presentation.login.AccessPermission
-import io.socket.client.IO
-import io.socket.client.Socket.EVENT_CONNECT_ERROR
+import com.rpg.funbox.presentation.login.AccessPermission.LOCATION_PERMISSION_REQUEST_CODE
 import io.socket.engineio.client.EngineIOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 import timber.log.Timber
 import java.util.Timer
 import kotlin.concurrent.scheduleAtFixedRate
 
-
 class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnMapReadyCallback {
 
-    private var isFabOpen = false
-
     private val viewModel: MapViewModel by activityViewModels()
+
     private lateinit var naverMap: NaverMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationSource: FusedLocationSource
-    private val LOCATION_PERMISSION_REQUEST_CODE = 5000
     private lateinit var applyGameServerData: ApplyGameFromServerData
-    private val PERMISSIONS = arrayOf(
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION
-    )
+    private var isFabOpen = false
 
     private val requestMultiPermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
@@ -95,15 +81,8 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        if (!hasPermission()) {
-//            ActivityCompat.requestPermissions(
-//                requireActivity(),
-//                PERMISSIONS,
-//                LOCATION_PERMISSION_REQUEST_CODE
-//            )
-//        }
+
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
-        Timber.d("First X: ${locationSource.lastLocation?.latitude}, First Y: ${locationSource.lastLocation?.longitude}")
         requestMultiPermissions.launch(AccessPermission.locationPermissionList)
     }
 
@@ -119,52 +98,13 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             toggleFab()
         }
 
-        // viewModel.mapApi()
         submitUserLocation()
         initMapView()
-
     }
-
-    private fun socketConnect() {
-        mSocket.connect()
-        mSocket.on(Socket.EVENT_CONNECT) {
-            // 소켓 서버에 연결이 성공하면 호출됨
-            Log.d("Connect", "SOCKET CONNECT")
-        }.on(Socket.EVENT_DISCONNECT) { args ->
-            // 소켓 서버 연결이 끊어질 경우에 호출됨
-            Log.d("Connect", "SOCKET DISCONNECT")
-        }.on(Socket.EVENT_CONNECT_ERROR) { args ->
-            // 소켓 서버 연결 시 오류가 발생할 경우에 호출됨
-            if (args[0] is EngineIOException) {
-                Log.d("Disconect", "SOCKET ERROR")
-            }
-        }.on("gameApply"){
-            applyGameServerData = Gson().fromJson(it[0].toString(), ApplyGameFromServerData::class.java)
-            applyGameServerData.userId
-//
-            viewModel.getGame()
-        }
-
-    }
-
-//    private fun acceptGame(roomId: String) {
-//        val json = Gson().toJson(GameApplyAnswerToServerData(roomId,"ACCEPT"))
-//        mSocket.emit("gameApplyAnswer",JSONObject(json))
-//    }
-//
-//    private fun rejectGame(roomId: String) {
-//        val json = Gson().toJson(GameApplyAnswerToServerData(roomId,"REJECT"))
-//        mSocket.emit("gameApplyAnswer",JSONObject(json))
-//    }
-//
-//    private fun applyGame(id: Int) {
-//        val json = Gson().toJson(ApplyGameToServerData(id))
-//        Log.d("!!",JSONObject(json).toString())
-//        mSocket.emit("gameApply",JSONObject(json))
-//    }
 
     override fun onStart() {
         super.onStart()
+
         viewModel.buttonGone()
         isFabOpen = false
     }
@@ -219,7 +159,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         viewModel.users.value.map { user ->
             var adapter = MapProfileAdapter(requireContext(), viewModel.userDetail.value, null)
             val marker = Marker().apply {
-                // Timber.d("User: ${user.id}")
                 position = user.loc
                 iconTintColor = Color.YELLOW
                 this.map = naverMap
@@ -291,18 +230,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }
     }
 
-    private fun submitUserLocation() {
-        if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
-            Timer().scheduleAtFixedRate(0, 3000) {
-                lifecycleScope.launch {
-                    val tmp = fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
-                    viewModel.setUsersLocations(tmp.latitude, tmp.longitude)
-                    initMapView()
-                }
-            }
-        }
-    }
-
     private fun initMapView() {
         val fm = childFragmentManager
         val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
@@ -314,19 +241,23 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
-    private fun hasPermission(): Boolean {
-        for (permission in PERMISSIONS) {
-            if (ContextCompat.checkSelfPermission(requireContext(), permission)
-                != PackageManager.PERMISSION_GRANTED
-            ) {
-                return false
+    private fun socketConnect() {
+        mSocket.connect()
+        mSocket.on(Socket.EVENT_CONNECT) {
+            // 소켓 서버에 연결이 성공하면 호출됨
+            Timber.tag("Connect").d("SOCKET CONNECT")
+        }.on(Socket.EVENT_DISCONNECT) { args ->
+            // 소켓 서버 연결이 끊어질 경우에 호출됨
+            Timber.tag("Connect").d("SOCKET DISCONNECT")
+        }.on(Socket.EVENT_CONNECT_ERROR) { args ->
+            // 소켓 서버 연결 시 오류가 발생할 경우에 호출됨
+            if (args[0] is EngineIOException) {
+                Timber.tag("Disconect").d("SOCKET ERROR")
             }
+        }.on("gameApply"){
+            applyGameServerData = Gson().fromJson(it[0].toString(), ApplyGameFromServerData::class.java)
+            viewModel.getGame()
         }
-        return true
-    }
-
-    private fun sendXYtoApi(latitude: Double, longitude: Double) {
-        //LoadUserService.create().search(latitude,longitude).execute()
     }
 
     private fun toggleFab() {
@@ -343,6 +274,18 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         isFabOpen = !isFabOpen
     }
 
+    private fun submitUserLocation() {
+        if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
+            Timer().scheduleAtFixedRate(0, 3000) {
+                lifecycleScope.launch {
+                    val tmp = fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
+                    viewModel.setUsersLocations(tmp.latitude, tmp.longitude)
+                    initMapView()
+                }
+            }
+        }
+    }
+
     private fun handleUiEvent(event: MapUiEvent) = when (event) {
         is MapUiEvent.MessageOpen -> {
             MessageDialog().show(parentFragmentManager, "messageDialog")
@@ -352,15 +295,14 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             val intent = Intent(context, GameActivity::class.java)
             intent.putExtra("StartGame",false)
             intent.putExtra("RoomId", applyGameServerData.roomId)
-            // acceptGame(applyGameServerData.roomId)
+            intent.putExtra("OtherUserId", applyGameServerData.userId)
             startActivity(intent)
         }
 
         is MapUiEvent.GameStart ->{
             val intent = Intent(context, GameActivity::class.java)
             intent.putExtra("StartGame",true)
-            Log.d("!!", viewModel.userDetail.value.id.toString())
-            applyGame(viewModel.userDetail.value.id)
+            intent.putExtra("OtherUserId", viewModel.userDetail.value.id)
             startActivity(intent)
         }
 
