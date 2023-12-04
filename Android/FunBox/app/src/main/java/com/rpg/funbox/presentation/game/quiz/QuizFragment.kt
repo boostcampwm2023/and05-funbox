@@ -87,20 +87,16 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
 
                 when (json.target) {
                     myUserId -> {
-                        viewModel.setLatestQuiz(json.quiz)
-                        viewModel.setUserQuizState(UserQuizState.Quiz)
+                        viewModel.setUserQuizState(UserQuizState.Answer)
+                        lifecycleScope.launch {
+                            viewModel.setLatestQuiz(json.quiz)
+                            viewModel.setUserQuizState(UserQuizState.Quiz)
+                        }
                     }
 
                     else -> {
-                        viewModel.setUserQuizState(UserQuizState.Answer)
-                        lifecycleScope.launch {
-                            viewModel.quizUiEvent.collectLatest { uiEvent ->
-                                if (uiEvent == QuizUiEvent.QuizAnswerSubmit) sendQuizAnswer(
-                                    json.roomId,
-                                    viewModel.latestAnswer.value
-                                )
-                            }
-                        }
+                        viewModel.setLatestQuiz(json.quiz)
+                        viewModel.setUserQuizState(UserQuizState.Quiz)
                     }
                 }
             }

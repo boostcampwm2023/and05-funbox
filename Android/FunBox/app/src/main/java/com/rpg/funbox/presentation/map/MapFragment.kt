@@ -172,7 +172,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             locationSource = this@MapFragment.locationSource
             locationTrackingMode = LocationTrackingMode.Face
             uiSettings.isLocationButtonEnabled = true
-            minZoom = 13.0
+            minZoom = 1.0
             maxZoom = 17.0
             uiSettings.isZoomControlEnabled = false
             extent = LatLngBounds(LatLng(31.43, 122.37), LatLng(44.35, 132.0))
@@ -299,7 +299,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     }
 
     private fun initMapView() {
-        val fm = parentFragmentManager
+        val fm = childFragmentManager
         val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
             ?: MapFragment.newInstance().also {
                 fm.beginTransaction().add(R.id.map, it).commit()
@@ -345,12 +345,14 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
         is MapUiEvent.ToGame -> {
             val intent = Intent(context, GameActivity::class.java)
+            intent.putExtra("StartGame",false)
             acceptGame(applyGameServerData.roomId)
             startActivity(intent)
         }
 
         is MapUiEvent.GameStart ->{
             val intent = Intent(context, GameActivity::class.java)
+            intent.putExtra("StartGame",true)
             Log.d("!!", viewModel.userDetail.value.id.toString())
             applyGame(viewModel.userDetail.value.id)
             startActivity(intent)
