@@ -6,7 +6,6 @@ import com.rpg.funbox.data.dto.UserInfoResponse
 import com.rpg.funbox.data.network.service.SignUpApi
 import com.rpg.funbox.data.network.service.UserInfoApi
 import okhttp3.MultipartBody
-import timber.log.Timber
 
 class UserRepositoryImpl : UserRepository {
 
@@ -46,10 +45,8 @@ class UserRepositoryImpl : UserRepository {
 
     override suspend fun patchUserName(userName: String): Boolean {
         val response = signUpApi.submitUserName(UserInfoRequest(userName = userName, null, null))
-        Timber.d("Post User Name: ${response.code()}")
         when (response.code()) {
             in successStatusCodeRange -> {
-                Timber.d("Post UserName: ${response.body()}")
                 return true
             }
 
@@ -61,7 +58,6 @@ class UserRepositoryImpl : UserRepository {
 
     override suspend fun postUserProfile(imageFile: MultipartBody.Part): Boolean {
         val response = signUpApi.submitUserProfile(file = imageFile)
-        Timber.d("Post User Profile: ${response.code()}")
         when (response.code()) {
             in successStatusCodeRange -> {
                 return true
@@ -69,6 +65,19 @@ class UserRepositoryImpl : UserRepository {
 
             else -> {}
         }
+        return false
+    }
+
+    override suspend fun withdraw(): Boolean {
+        val response = signUpApi.deleteUserInfo()
+        when (response.code()) {
+            in successStatusCodeRange -> {
+                return true
+            }
+
+            else -> {}
+        }
+
         return false
     }
 

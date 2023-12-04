@@ -68,7 +68,9 @@ class SettingViewModel : ViewModel() {
             val userInfo = userRepository.getUserInfo()
             userInfo?.let {
                 _user.value = userInfo
-                _profileUri.value = "https://kr.object.ncloudstorage.com/funbox-profiles/${userInfo.profileUrl}".toUri()
+                if (userInfo.profileUrl != null) {
+                    _profileUri.value = "https://kr.object.ncloudstorage.com/funbox-profiles/${userInfo.profileUrl}".toUri()
+                }
                 _newProfileUri.value = _profileUri.value
             }
         }
@@ -124,9 +126,17 @@ class SettingViewModel : ViewModel() {
         closeSetProfileDialog()
     }
 
-    fun draw() {
+    fun startWithdrawal() {
         viewModelScope.launch {
-            _settingUiEvent.emit(SettingUiEvent.Draw)
+            _settingUiEvent.emit(SettingUiEvent.StartWithdrawal)
+        }
+    }
+
+    fun withdraw() {
+        viewModelScope.launch {
+            if (userRepository.withdraw()) {
+                _settingUiEvent.emit(SettingUiEvent.Withdraw)
+            }
         }
     }
 }
