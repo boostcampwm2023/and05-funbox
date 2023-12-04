@@ -6,6 +6,6 @@ import coil.load
 import com.rpg.funbox.R
 
 @BindingAdapter("app:setImage")
-fun ImageView.bindImage(quizUiState: QuizUiState) {
-    load(R.drawable.profile_game)
+fun ImageView.bindImage(image: String) {
+    load(image)
 }
