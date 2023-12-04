@@ -1,6 +1,5 @@
 package com.rpg.funbox.presentation
 
-import android.util.Log
 import com.google.gson.Gson
 import com.rpg.funbox.presentation.map.ApplyGameToServerData
 import com.rpg.funbox.presentation.map.GameApplyAnswerToServerData
@@ -37,7 +36,6 @@ object MapSocket {
 
     fun applyGame(id: Int) {
         val json = Gson().toJson(ApplyGameToServerData(id))
-        Log.d("!!",JSONObject(json).toString())
         mSocket.emit("gameApply",JSONObject(json))
     }
 }

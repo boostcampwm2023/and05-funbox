@@ -2,8 +2,14 @@ package com.rpg.funbox.presentation.game.quiz
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.rpg.funbox.data.repository.UserRepository
 import com.rpg.funbox.data.repository.UserRepositoryImpl
+import com.rpg.funbox.presentation.MapSocket
+import com.rpg.funbox.presentation.map.GameApplyAnswerFromServerData
+import com.rpg.funbox.presentation.map.QuizAnswerFromServer
+import com.rpg.funbox.presentation.map.QuizFromServer
+import com.rpg.funbox.presentation.map.ScoreFromServer
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -49,18 +55,147 @@ class QuizViewModel : ViewModel() {
     private val _quizUiState = MutableStateFlow<QuizUiState>(QuizUiState())
     val quizUiState = _quizUiState.asStateFlow()
 
+    private fun setQuizGame() {
+        viewModelScope.launch {
+            if (userState.value) {
+                Timber.d("게임 ㄱㄱ")
+            } else {
+                roomId.value?.let {
+                    Timber.d("Accept 전")
+                    MapSocket.acceptGame(it)
+                    Timber.d("Accept 후")
+                }
+            }
+        }
+    }
+
+    private fun toGame() {
+        viewModelScope.launch {
+            _quizUiEvent.emit(QuizUiEvent.WaitSuccess)
+        }
+    }
+
+    private fun setUserQuizState(userQuizState: UserQuizState) {
+        _quizUiState.update { uiState ->
+            uiState.copy(userQuizState = userQuizState)
+        }
+    }
+
+    private fun setLatestQuiz(quiz: String) {
+        _latestQuiz.value = quiz
+    }
+
+    private fun checkAnswerCorrect() {
+        viewModelScope.launch {
+            _quizUiEvent.emit(QuizUiEvent.QuizAnswerCheckStart)
+        }
+    }
+
+    private fun setLatestAnswer(answer: String) {
+        _latestAnswer.value = answer
+    }
+
+    private fun setStateNetworkError() {
+        viewModelScope.launch {
+            _quizUiEvent.emit(QuizUiEvent.NetworkErrorEvent())
+        }
+    }
+
+    private fun alertNetworkError() {
+        viewModelScope.launch {
+            _quizUiEvent.emit(QuizUiEvent.QuizNetworkDisconnected)
+        }
+    }
+
+    private fun setFinalScore(scorePair: Pair<String, String>) {
+        _finalScore.value = scorePair
+    }
+
+    private fun showScoreBoard() {
+        viewModelScope.launch {
+            _quizUiEvent.emit(QuizUiEvent.QuizScoreBoard)
+        }
+    }
+
+    fun connectSocket(myUserId: Int) {
+        MapSocket.mSocket.on("location") {
+            Timber.tag("LOCATION").d(it[0].toString())
+        }
+            .on("gameApplyAnswer") {
+            val json = Gson().fromJson(it[0].toString(), GameApplyAnswerFromServerData::class.java)
+            Timber.tag("gameApplyAnswer").d(json.answer)
+            when (json.answer) {
+                "OFFLINE" -> {
+                    finishQuiz()
+                }
+
+                "ACCEPT" -> {
+                    toGame()
+                }
+
+                "REJECT" -> {
+                    finishQuiz()
+                }
+            }
+        }
+            .on("quiz") {
+                val json = Gson().fromJson(it[0].toString(), QuizFromServer::class.java)
+                Timber.d(json.toString())
+                Timber.d(json.quiz)
+                Timber.d(json.target.toString())
+                Timber.d("$myUserId")
+                setRoomId(json.roomId)
+                Timber.d("Rood Id: ${roomId.value}, Target: ${json.target}")
+
+                when (json.target) {
+                    myUserId -> {
+                        Timber.d("답 맞춤")
+                        setUserQuizState(UserQuizState.Answer)
+                    }
+
+                    else -> {
+                        Timber.d("문제를 냄")
+                        setLatestQuiz(json.quiz)
+                        setUserQuizState(UserQuizState.Quiz)
+                    }
+                }
+            }
+            .on("quizAnswer") {
+                val json = Gson().fromJson(it[0].toString(), QuizAnswerFromServer::class.java)
+                Timber.d(json.answer)
+                setRoomId(json.roomId)
+
+                setLatestAnswer(json.answer)
+                checkAnswerCorrect()
+            }
+            .on("score") {
+                val json = Gson().fromJson(it[0].toString(), ScoreFromServer::class.java)
+                Timber.d(json.first().toString())
+                Timber.d(json.last().toString())
+
+                setFinalScore(Pair(json.first().toString(), json.last().toString()))
+                showScoreBoard()
+            }
+            .on("lostConnection") {
+                Timber.d(it.toString())
+
+                alertNetworkError()
+            }
+            .on("error") {
+                Timber.tag("ERROR").e(it[0].toString())
+
+                setStateNetworkError()
+            }
+        Timber.d("이벤트 등록")
+        setQuizGame()
+    }
+
     fun setUserState(state: Boolean) {
         _userState.value = state
     }
 
     fun setRoomId(newRoomId: String?) {
         _roomId.value = newRoomId
-    }
-
-    fun toGame() {
-        viewModelScope.launch {
-            _quizUiEvent.emit(QuizUiEvent.WaitSuccess)
-        }
     }
 
     fun setUserNames(userId: Int) {
@@ -92,30 +227,10 @@ class QuizViewModel : ViewModel() {
         _latestAnswer.value = answer.toString()
     }
 
-    fun setUserQuizState(userQuizState: UserQuizState) {
-        _quizUiState.update { uiState ->
-            uiState.copy(userQuizState = userQuizState)
-        }
-    }
-
-    fun setLatestQuiz(quiz: String) {
-        _latestQuiz.value = quiz
-    }
-
     fun submitAnswer() {
         viewModelScope.launch {
             _quizUiEvent.emit(QuizUiEvent.QuizAnswerSubmit)
         }
-    }
-
-    fun checkAnswerCorrect() {
-        viewModelScope.launch {
-            _quizUiEvent.emit(QuizUiEvent.QuizAnswerCheckStart)
-        }
-    }
-
-    fun setLatestAnswer(answer: String) {
-        _latestAnswer.value = answer
     }
 
     fun checkAnswerRight() {
@@ -130,31 +245,9 @@ class QuizViewModel : ViewModel() {
         }
     }
 
-    fun alertNetworkError() {
-        viewModelScope.launch {
-            _quizUiEvent.emit(QuizUiEvent.QuizNetworkDisconnected)
-        }
-    }
-
-    fun setFinalScore(scorePair: Pair<String, String>) {
-        _finalScore.value = scorePair
-    }
-
-    fun showScoreBoard() {
-        viewModelScope.launch {
-            _quizUiEvent.emit(QuizUiEvent.QuizScoreBoard)
-        }
-    }
-
     fun finishQuiz() {
         viewModelScope.launch {
             _quizUiEvent.emit(QuizUiEvent.QuizFinish)
-        }
-    }
-
-    fun setStateNetworkError() {
-        viewModelScope.launch {
-            _quizUiEvent.emit(QuizUiEvent.NetworkErrorEvent())
         }
     }
 }

@@ -34,6 +34,7 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.FragmentMapBinding
 import com.rpg.funbox.presentation.BaseFragment
+import com.rpg.funbox.presentation.MapSocket.applyGame
 import com.rpg.funbox.presentation.MapSocket.mSocket
 import com.rpg.funbox.presentation.MapSocket.rejectGame
 import io.socket.client.Socket
@@ -311,6 +312,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             val intent = Intent(context, GameActivity::class.java)
             intent.putExtra("StartGame", true)
             intent.putExtra("OtherUserId", viewModel.userDetail.value.id)
+            applyGame(viewModel.userDetail.value.id)
             startActivity(intent)
         }
 

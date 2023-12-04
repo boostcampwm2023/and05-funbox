@@ -9,6 +9,6 @@ data class UserInfoResponse(
     @Json(name = "profileUrl")
     val profileUrl: String?,
 
-    @Json(name = "id")
+    @Json(name = "message")
     val message: String?
 )
