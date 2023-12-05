@@ -116,8 +116,8 @@ class MapViewModel : ViewModel() {
                             )
                         )
                         _users.value.forEach {
-                            if(it.id==newUsers.last().id){
-                                newUsers.last().isInfoOpen=it.isInfoOpen
+                            if (it.id == newUsers.last().id) {
+                                newUsers.last().isInfoOpen = it.isInfoOpen
                             }
                         }
                     } else {

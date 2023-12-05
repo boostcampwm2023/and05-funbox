@@ -319,7 +319,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                         Priority.PRIORITY_HIGH_ACCURACY,
                         null
                     ).await()
-                    viewModel.deleteUserMapPin()
+                    // viewModel.deleteUserMapPin()
                     viewModel.setUsersLocations(tmp.latitude, tmp.longitude)
 
                 }

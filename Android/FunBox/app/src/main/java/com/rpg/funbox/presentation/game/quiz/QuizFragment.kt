@@ -35,6 +35,7 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
             LocationServices.getFusedLocationProviderClient(requireActivity())
 
         initNaverMap()
+        setBackPressedCallback()
         binding.questionQuiz.isSelected = true
 
         collectLatestFlow(viewModel.quizUiEvent) { handleUiEvent(it) }

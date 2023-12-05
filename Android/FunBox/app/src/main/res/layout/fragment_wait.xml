@@ -37,13 +37,15 @@
 
             <ImageView
                 android:id="@+id/user_profile_wait"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
                 android:layout_gravity="top|center"
                 android:layout_margin="16dp"
-                android:background="@drawable/rounded_corner_rect_shadow"
+                android:background="@null"
                 android:contentDescription="@string/user_profile_wait_description"
                 android:elevation="10dp"
+                android:padding="16dp"
+                android:scaleType="fitCenter"
                 app:setImage="@{vm.user.profileUrl}" />
 
             <TextView
@@ -55,8 +57,8 @@
                 android:layout_marginTop="32dp"
                 android:layout_marginEnd="16dp"
                 android:text="@{vm.user.userName}"
-                tools:text="@string/user_id_wait"
-                android:textSize="40sp" />
+                android:textSize="32sp"
+                tools:text="@string/user_id_wait" />
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -77,15 +79,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/user_info_wait">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/side_profile_wait"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
                 android:layout_gravity="top|center"
                 android:layout_margin="16dp"
-                android:background="@drawable/rounded_corner_rect_shadow"
+                android:background="@null"
                 android:contentDescription="@string/side_profile_wait_description"
                 android:elevation="10dp"
+                android:padding="16dp"
+                android:scaleType="fitCenter"
                 app:setImage="@{vm.otherUser.profileUrl}" />
 
             <TextView
@@ -96,9 +100,9 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginEnd="16dp"
-                tools:text="@string/side_id_wait"
                 android:text="@{vm.otherUser.userName}"
-                android:textSize="40sp" />
+                android:textSize="32sp"
+                tools:text="@string/side_id_wait" />
 
             <TextView
                 android:id="@+id/msg_wait"
@@ -107,7 +111,7 @@
                 android:layout_gravity="bottom|center"
                 android:layout_margin="16dp"
                 android:text="@string/msg_wait"
-                android:textSize="32sp" />
+                android:textSize="28sp" />
 
         </com.google.android.material.card.MaterialCardView>
 

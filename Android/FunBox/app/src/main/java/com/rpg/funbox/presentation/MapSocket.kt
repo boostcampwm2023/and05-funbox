@@ -37,5 +37,6 @@ object MapSocket {
     fun applyGame(id: Int) {
         val json = Gson().toJson(ApplyGameToServerData(id))
         mSocket.emit("gameApply",JSONObject(json))
+        Timber.d("Other Id: $id")
     }
 }

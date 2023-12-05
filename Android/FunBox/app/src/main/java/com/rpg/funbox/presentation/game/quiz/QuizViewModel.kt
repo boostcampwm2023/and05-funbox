@@ -80,6 +80,7 @@ class QuizViewModel : ViewModel() {
         _quizUiState.update { uiState ->
             uiState.copy(answerWriteState = true, userQuizState = userQuizState)
         }
+        _latestAnswer.value = ""
     }
 
     private fun setLatestQuiz(quiz: String) {
@@ -200,14 +201,16 @@ class QuizViewModel : ViewModel() {
         _roomId.value = newRoomId
     }
 
-    fun setUserNames(userId: Int) {
+    fun setUsersInfo(userId: Int) {
         _otherUserId.value = userId
         viewModelScope.launch {
             userRepository.getUserInfo()?.let { userInfo ->
-                _user.value= userInfo
+                _user.value = userInfo
+                Timber.d("${_user.value}")
             }
             userRepository.getSpecificUserInfo(userId)?.let { specificUserInfo ->
-                _otherUser.value= specificUserInfo
+                _otherUser.value = specificUserInfo
+                Timber.d("$${_otherUser.value}")
             }
         }
     }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
@@ -21,6 +22,7 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
     val binding
         get() = requireNotNull(_binding)
 
+    private lateinit var backPressedCallback: OnBackPressedCallback
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,6 +40,17 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
         _binding = null
     }
 
+    protected fun setBackPressedCallback() {
+        backPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                requireActivity().finish()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            backPressedCallback
+        )
+    }
 
     fun <T> collectLatestFlow(flow: Flow<T>, action: suspend (T) -> Unit) {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -47,9 +60,7 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
         }
     }
 
-
     fun showSnackBar(messageId: Int) {
         Snackbar.make(this.requireView(), messageId, Snackbar.LENGTH_LONG).show()
     }
-
 }

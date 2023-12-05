@@ -8,6 +8,7 @@ import com.rpg.funbox.data.JwtDecoder
 import com.rpg.funbox.databinding.ActivityGameBinding
 import com.rpg.funbox.presentation.MapSocket
 import com.rpg.funbox.presentation.game.quiz.QuizViewModel
+import timber.log.Timber
 
 class GameActivity : AppCompatActivity() {
 
@@ -20,23 +21,19 @@ class GameActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGameBinding.inflate(layoutInflater)
-        binding.lifecycleOwner = this
         setContentView(binding.root)
         binding.vm = viewModel
         binding.lifecycleOwner = this
+
         viewModel.connectSocket(myUserId = myUserId)
 
         initUsersState()
-
-        if(!viewModel.userState.value){
-            viewModel.roomId.value?.let { MapSocket.acceptGame(it) }
-        }
     }
 
     private fun initUsersState() {
         viewModel.setRoomId(intent.getStringExtra("RoomId"))
         viewModel.setUserState(intent.getBooleanExtra("StartGame",false))
-        intent.getStringExtra("OtherUserId")?.let { viewModel.setUserNames(it.toInt()) }
+        viewModel.setUsersInfo(intent.getIntExtra("OtherUserId", -1))
 
         if (!viewModel.userState.value) {
             viewModel.roomId.value?.let { MapSocket.acceptGame(it) }
