@@ -22,8 +22,6 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
     val binding
         get() = requireNotNull(_binding)
 
-    private lateinit var backPressedCallback: OnBackPressedCallback
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,18 +36,6 @@ abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fr
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    protected fun setBackPressedCallback() {
-        backPressedCallback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                requireActivity().finish()
-            }
-        }
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            backPressedCallback
-        )
     }
 
     fun <T> collectLatestFlow(flow: Flow<T>, action: suspend (T) -> Unit) {

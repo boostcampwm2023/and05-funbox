@@ -44,6 +44,7 @@
     <string name="profile_setting">프로필 설정</string>
     <string name="withdraw_setting">회원 탈퇴하기</string>
     <string name="tv_withdraw_setting">정말로 탈퇴하시겠습니까?</string>
+    <string name="game_apply_message">게임 신청 도착</string>
 
     <string name="iv_main_logo_description">FunBox 로고</string>
     <string name="btn_main_naver_login_description">NAVER 소셜 로그인 버튼</string>

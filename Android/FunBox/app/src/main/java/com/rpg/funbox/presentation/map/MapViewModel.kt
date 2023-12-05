@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.rpg.funbox.data.dto.User
 import com.rpg.funbox.data.dto.UserDetail
 import com.naver.maps.geometry.LatLng
+import com.rpg.funbox.data.dto.UserInfoResponse
 import com.rpg.funbox.data.dto.UserLocation
 import com.rpg.funbox.data.repository.UserRepository
 import com.rpg.funbox.data.repository.UserRepositoryImpl
@@ -27,6 +28,9 @@ class MapViewModel : ViewModel() {
     private val _myMessage = MutableStateFlow("")
     val myMessage = _myMessage.asStateFlow()
 
+    private val _otherUser = MutableStateFlow<UserInfoResponse?>(null)
+    val otherUser = _otherUser.asStateFlow()
+
     private val _users = MutableStateFlow<List<User>>(listOf())
     val users = _users.asStateFlow()
 
@@ -44,6 +48,14 @@ class MapViewModel : ViewModel() {
 
     private val _visibility = MutableStateFlow(false)
     val visibility: StateFlow<Boolean> = _visibility
+
+    fun setOtherUser(userId: Int) {
+        viewModelScope.launch {
+            userRepository.getSpecificUserInfo(userId = userId)?.let { specificUserInfo ->
+                _otherUser.value = specificUserInfo
+            }
+        }
+    }
 
     fun startMessageDialog() {
         viewModelScope.launch {
