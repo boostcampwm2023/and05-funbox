@@ -91,6 +91,7 @@
                     android:inputType="textPersonName"
                     android:onTextChanged="@{(answerValue, s, b, c) -> vm.validateAnswer(answerValue)}"
                     android:padding="16dp"
+                    app:delete_text="@{vm.quizUiState}"
                     app:layout_constraintBottom_toTopOf="@id/btn_nickname"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

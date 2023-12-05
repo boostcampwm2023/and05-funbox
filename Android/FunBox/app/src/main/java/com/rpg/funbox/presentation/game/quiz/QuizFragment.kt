@@ -2,6 +2,7 @@ package com.rpg.funbox.presentation.game.quiz
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.UiThread
 import androidx.fragment.app.activityViewModels
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -27,6 +28,7 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
     private lateinit var quizMap: NaverMap
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var fusedLocationSource: FusedLocationSource
+    private lateinit var backPressedCallback: OnBackPressedCallback
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -35,9 +37,24 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
             LocationServices.getFusedLocationProviderClient(requireActivity())
 
         initNaverMap()
+
+        setBackPressedCallback()
         binding.questionQuiz.isSelected = true
 
         collectLatestFlow(viewModel.quizUiEvent) { handleUiEvent(it) }
+    }
+
+    private fun setBackPressedCallback() {
+        backPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // 방을 폭파시키는 이벤트를 뿌리는 함수
+                requireActivity().finish()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            backPressedCallback
+        )
     }
 
     @UiThread

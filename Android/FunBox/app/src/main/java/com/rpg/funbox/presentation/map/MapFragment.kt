@@ -305,7 +305,8 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }.on("gameApply") {
             applyGameServerData =
                 Gson().fromJson(it[0].toString(), ApplyGameFromServerData::class.java)
-            applyGameServerData.userId
+            Timber.d("Other Id: ${applyGameServerData.userId}")
+            viewModel.setOtherUser(applyGameServerData.userId.toInt())
             viewModel.getGame()
         }
     }
@@ -379,6 +380,8 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         is MapUiEvent.Toggle -> {
             toggleFab()
         }
+
+        else -> {}
     }
 
 }
