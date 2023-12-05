@@ -16,6 +16,8 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
 import com.rpg.funbox.presentation.CustomNaverMap
+import com.rpg.funbox.presentation.MapSocket.sendQuizAnswer
+import com.rpg.funbox.presentation.MapSocket.verifyAnswer
 import com.rpg.funbox.presentation.login.AccessPermission
 
 class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), OnMapReadyCallback {
@@ -40,7 +42,6 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
     @UiThread
     override fun onMapReady(naverMap: NaverMap) {
         quizMap = CustomNaverMap.setNaverMap(naverMap, fusedLocationSource)
-
         quizMap.addOnLocationChangeListener { location ->
             val cameraUpdate = CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))
             naverMap.moveCamera(cameraUpdate)
@@ -65,19 +66,29 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
         }
 
         is QuizUiEvent.QuizAnswerSubmit -> {
-            AnswerCheckFragment().show(childFragmentManager, "")
+            viewModel.roomId.value?.let { sendQuizAnswer(it, viewModel.latestAnswer.value) }
         }
 
-        is QuizUiEvent.QuizAnswerCheck -> {
-            NetworkAlertFragment().show(childFragmentManager, "")
+        is QuizUiEvent.QuizAnswerCheckStart -> {
+            AnswerCheckFragment().show(childFragmentManager, "AnswerCheckStart")
         }
 
-        is QuizUiEvent.QuizOtherUserDisconnected -> {
-            ScoreBoardFragment().show(childFragmentManager, "")
+        is QuizUiEvent.QuizAnswerCheckRight -> {
+            viewModel.roomId.value?.let { verifyAnswer(it, true) }
+        }
+
+        is QuizUiEvent.QuizAnswerCheckWrong -> {
+            viewModel.roomId.value?.let { verifyAnswer(it, false) }
+        }
+
+        is QuizUiEvent.QuizNetworkDisconnected -> {
+            NetworkAlertFragment().show(childFragmentManager, "NetworkDisconnected")
         }
 
         is QuizUiEvent.QuizScoreBoard -> {
-            requireActivity().finish()
+            ScoreBoardFragment().show(childFragmentManager, "ScoreBoard")
         }
+
+        else -> {}
     }
 }

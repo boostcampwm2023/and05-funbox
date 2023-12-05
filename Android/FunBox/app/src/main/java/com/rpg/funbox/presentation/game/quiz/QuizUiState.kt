@@ -1,6 +1,8 @@
 package com.rpg.funbox.presentation.game.quiz
 
 data class QuizUiState(
+    val waiting: Boolean = true,
+    val finishWaiting: Boolean = false,
     val answerValidState: Boolean = false,
     val userQuizState: UserQuizState = UserQuizState.Answer
 ) {

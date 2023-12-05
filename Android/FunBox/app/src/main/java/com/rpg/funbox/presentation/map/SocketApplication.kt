@@ -1,4 +1,5 @@
 package com.rpg.funbox.presentation.map
+import com.rpg.funbox.app.MainApplication
 import io.socket.client.IO
 import io.socket.client.Socket
 import java.net.URISyntaxException
@@ -11,7 +12,7 @@ class SocketApplication {
         fun get(): Socket {
             try {
                 val options = IO.Options()
-                options.extraHeaders = singletonMap("Authorization",singletonList("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzUsImlhdCI6MTcwMTM5Mjg0MiwiZXhwIjoxNzAxNjUyMDQyfQ.VMGe66yPyxcu1rpJs4EoSyHxXF8sTTsQVKmzU1FG8Js"))
+                options.extraHeaders = singletonMap("Authorization",singletonList("Bearer ${MainApplication.mySharedPreferences.getJWT("jwt", "")}"))
                 socket = IO.socket("http://175.45.193.191:3000/socket",options)
             } catch (e: URISyntaxException) {
                 e.printStackTrace()

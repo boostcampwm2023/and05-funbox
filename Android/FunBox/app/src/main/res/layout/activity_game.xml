@@ -6,7 +6,7 @@
     <data>
 
         <variable
-            name="quizViewModel"
+            name="vm"
             type="com.rpg.funbox.presentation.game.quiz.QuizViewModel" />
 
     </data>

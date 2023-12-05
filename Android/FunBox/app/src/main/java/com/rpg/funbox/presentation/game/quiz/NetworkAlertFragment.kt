@@ -20,7 +20,9 @@ class NetworkAlertFragment : BaseDialogFragment<FragmentNetworkAlertBinding>(R.l
 
         lifecycleScope.launch {
             viewModel.quizUiEvent.collectLatest {
-                if (it == QuizUiEvent.QuizOtherUserDisconnected) dismiss()
+                if (it == QuizUiEvent.QuizFinish) {
+                    requireActivity().finish()
+                }
             }
         }
     }

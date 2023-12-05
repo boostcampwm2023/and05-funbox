@@ -21,15 +21,16 @@ class MapViewModel : ViewModel() {
     private val usersLocationRepository: UsersLocationRepository = UsersLocationRepositoryImpl()
 
     private val _myMessage = MutableStateFlow("")
-    val myMessage: StateFlow<String> = _myMessage
-    private val locX: MutableStateFlow<Double?> = MutableStateFlow(null)
-    private val locY: MutableStateFlow<Double?> = MutableStateFlow(null)
+    val myMessage = _myMessage.asStateFlow()
 
-    private val _users = MutableStateFlow(listOf<User>())
-    val users: StateFlow<List<User>> = _users
+    private val _users = MutableStateFlow<List<User>>(listOf())
+    val users = _users.asStateFlow()
 
     private val _usersLocations = MutableStateFlow<List<UserLocation>?>(null)
     val usersLocations = _usersLocations.asStateFlow()
+
+    private val _myLocation = MutableStateFlow<Pair<Double, Double>?>(null)
+    val myLocation = _myLocation.asStateFlow()
 
     private val _userDetail = MutableStateFlow(UserDetail(0, "", "", ""))
     val userDetail: StateFlow<UserDetail> = _userDetail
@@ -58,6 +59,18 @@ class MapViewModel : ViewModel() {
         }
     }
 
+    fun gameStart(){
+        viewModelScope.launch {
+            _mapUiEvent.emit(MapUiEvent.GameStart)
+        }
+    }
+
+    fun rejectGame(){
+        viewModelScope.launch {
+            _mapUiEvent.emit(MapUiEvent.RejectGame)
+        }
+    }
+
     fun getGame() {
         viewModelScope.launch {
             _mapUiEvent.emit(MapUiEvent.GetGame)
@@ -71,12 +84,7 @@ class MapViewModel : ViewModel() {
     }
 
     fun setXY(x: Double, y: Double) {
-        locX.update {
-            x
-        }
-        locY.update {
-            y
-        }
+        _myLocation.value = Pair(x, y)
     }
 
     fun setUsersLocations(locX: Double, locY: Double) {
@@ -112,44 +120,13 @@ class MapViewModel : ViewModel() {
         }
     }
 
-    fun mapApi() {
-        _users.update {
-            listOf(
-                User(
-                    200,
-                    1,
-                    LatLng(37.5670135, 126.9783740),
-                    "A",
-                    false
-
-                ),
-
-                User(
-                    200,
-                    2,
-                    LatLng(37.5600000, 126.9700000),
-                    "B",
-                    true
-                ),
-
-                User(
-                    200,
-                    3,
-                    LatLng(37.2435914, 127.0730043),
-                    "C",
-                    true
-                )
-            )
-        }
-    }
-
-    fun userDetailApi(id: Int) {
+    fun userDetailApi(id: Int, name: String) {
         _userDetail.update {
             UserDetail(
                 id,
                 "안녕하세요",
                 "https://drive.google.com/file/d/1P6Va6qkB39gnE-gbfbPLCSxIFwAeM8Ul/view?usp=drive_link",
-                "B"
+                name
             )
         }
     }

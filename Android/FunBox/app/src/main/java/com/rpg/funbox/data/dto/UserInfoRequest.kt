@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 
 data class UserInfoRequest(
     @Json(name = "username")
-    val userName: String,
+    val userName: String?,
 
     @Json(name = "profileUrl")
     val profileUrl: String?,

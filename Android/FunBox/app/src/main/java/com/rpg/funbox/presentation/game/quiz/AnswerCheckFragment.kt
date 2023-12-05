@@ -19,8 +19,12 @@ class AnswerCheckFragment : BaseDialogFragment<FragmentAnswerCheckBinding>(R.lay
         binding.vm = viewModel
 
         lifecycleScope.launch {
-            viewModel.quizUiEvent.collectLatest {
-                if (it == QuizUiEvent.QuizAnswerCheck) dismiss()
+            viewModel.quizUiEvent.collectLatest { uiEvent ->
+                when (uiEvent) {
+                    QuizUiEvent.QuizAnswerCheckRight -> dismiss()
+                    QuizUiEvent.QuizAnswerCheckWrong -> dismiss()
+                    else -> {}
+                }
             }
         }
     }

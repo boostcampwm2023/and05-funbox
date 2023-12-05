@@ -1,6 +1,5 @@
 package com.rpg.funbox.presentation.map
 
-
 data class ApplyGameToServerData(
     val opponentId: Int
 )
