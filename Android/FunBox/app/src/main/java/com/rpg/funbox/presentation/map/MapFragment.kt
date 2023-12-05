@@ -164,7 +164,16 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }
 
 
+        lifecycleScope.launch {
+            viewModel.pastUsers.collect{
+                it.map { user->
+                    user.mapPin?.map=naverMap
+                }
+            }
+        }
+
         lifecycleScope.launch{
+
             viewModel.users.collect{
                 it.map { user ->
                     var adapter =
@@ -245,7 +254,21 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                         }
                         launch {
                             user.mapPin = marker
-                            user.mapPin?.map = naverMap
+                        }
+                    }
+                }
+                withContext(Dispatchers.Main) {
+                    viewModel.pastUsers.value.forEach { user ->
+                        Timber.d(user.id.toString())
+                        Timber.d(user.mapPin?.map.toString())
+                        user.mapPin?.map = null
+                        Timber.d(user.mapPin?.map.toString())
+                    }
+                    viewModel.pastUserUpdate(it)
+                    viewModel.pastUsers.value.forEach{user->
+                        user.mapPin?.map=naverMap
+                        if(user.isInfoOpen){
+                            user.mapPin?.infoWindow?.open(user.mapPin!!)
                         }
                     }
                 }
@@ -306,20 +329,12 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             Timer().scheduleAtFixedRate(3000, 3000) {
 
                 lifecycleScope.launch {
-                    withContext(Dispatchers.Main){
-                        viewModel.users.value.forEach {
-                            Timber.d(it.id.toString())
-                            Timber.d(it.mapPin?.map.toString())
-                            it.mapPin?.map=null
-                            it.mapPin?.infoWindow?.close()
-                            Timber.d(it.mapPin?.map.toString())
-                        }
-                    }
+
                     val tmp = fusedLocationClient.getCurrentLocation(
                         Priority.PRIORITY_HIGH_ACCURACY,
                         null
                     ).await()
-                    viewModel.deleteUserMapPin()
+                    //viewModel.deleteUserMapPin()
                     viewModel.setUsersLocations(tmp.latitude, tmp.longitude)
 
                 }

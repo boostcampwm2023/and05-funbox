@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout>
+<layout xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <variable
@@ -29,7 +29,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            android:text="abc"
+            tools:text="abc"
             android:textAlignment="center"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@id/tv_profile_msg"
@@ -41,7 +41,7 @@
             android:id="@+id/tv_profile_msg"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="123154687894541321323123123123123"
+            tools:text="123154687894541321323123123123123"
             android:textAlignment="center"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"

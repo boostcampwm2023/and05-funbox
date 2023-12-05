@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 abstract class BaseFragment<T : ViewDataBinding>(private val layoutId: Int) : Fragment() {
 
     private var _binding: T? = null
-    val binding
+    protected val binding
         get() = requireNotNull(_binding)
 
 

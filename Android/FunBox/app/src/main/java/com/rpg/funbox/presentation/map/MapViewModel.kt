@@ -27,6 +27,9 @@ class MapViewModel : ViewModel() {
     private val _myMessage = MutableStateFlow("")
     val myMessage = _myMessage.asStateFlow()
 
+    private val _pastUsers = MutableStateFlow<List<User>>(listOf())
+    val pastUsers = _pastUsers.asStateFlow()
+
     private val _users = MutableStateFlow<List<User>>(listOf())
     val users = _users.asStateFlow()
 
@@ -98,6 +101,10 @@ class MapViewModel : ViewModel() {
         }
     }
 
+    fun pastUserUpdate(users:List<User>){
+        _pastUsers.value=users
+    }
+
     fun setUsersLocations(locX: Double, locY: Double) {
         viewModelScope.launch {
             Timber.d("유저 위치 불러옴")
@@ -118,6 +125,7 @@ class MapViewModel : ViewModel() {
                         _users.value.forEach {
                             if(it.id==newUsers.last().id){
                                 newUsers.last().isInfoOpen=it.isInfoOpen
+                                newUsers.last().marker=it.marker
                             }
                         }
                     } else {
