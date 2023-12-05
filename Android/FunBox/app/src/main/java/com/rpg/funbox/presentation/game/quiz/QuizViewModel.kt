@@ -174,7 +174,7 @@ class QuizViewModel : ViewModel() {
                 Timber.d(json.first().toString())
                 Timber.d(json.last().toString())
 
-                setFinalScore(Pair(json.first().toString(), json.last().toString()))
+                setFinalScore(Pair(json.first().score.toString(), json.last().score.toString()))
                 showScoreBoard()
             }
             .on("lostConnection") {
@@ -203,10 +203,10 @@ class QuizViewModel : ViewModel() {
         _otherUserId.value = userId
         viewModelScope.launch {
             userRepository.getUserInfo()?.let { userInfo ->
-                _user.value = userInfo
+                _user.value= userInfo
             }
             userRepository.getSpecificUserInfo(userId)?.let { specificUserInfo ->
-                _otherUser.value = specificUserInfo
+                _otherUser.value= specificUserInfo
             }
         }
     }

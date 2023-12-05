@@ -45,6 +45,8 @@ import com.rpg.funbox.presentation.login.AccessPermission
 import com.rpg.funbox.presentation.login.AccessPermission.LOCATION_PERMISSION_REQUEST_CODE
 import io.socket.engineio.client.EngineIOException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
@@ -211,14 +213,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                                 }
 
 
-//                    requireActivity().runOnUiThread {
-//                        Handler(Looper.getMainLooper()).postDelayed({
-//                            infoWindow.adapter = adapter
-//                            infoWindow.open(this)
-//                        }, 500)
-//                    }
-
-
                                 if (!this.hasInfoWindow() || this.infoWindow == hasMsg) {
                                     viewModel.buttonVisible()
                                     viewModel.users.value.forEach {user ->
@@ -240,6 +234,15 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                                 }
                                 true
                             }
+
+                            if(user.isInfoOpen){
+                                requireActivity().runOnUiThread {
+                                    Handler(Looper.getMainLooper()).postDelayed({
+                                        this.infoWindow?.close()
+                                        infoWindow.adapter = adapter
+                                        infoWindow.open(this)
+                                    }, 500)
+                                }}
                         }
                         launch {
                             user.mapPin = marker
@@ -301,22 +304,22 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     private fun submitUserLocation() {
         if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
             Timer().scheduleAtFixedRate(3000, 3000) {
-                runBlocking {
-                    lifecycleScope.launch {
+
+                lifecycleScope.launch {
+                    withContext(Dispatchers.Main){
                         viewModel.users.value.forEach {
-                            Timber.d(it.mapPin.toString())
-                            it.mapPin?.map=null }
-                    }
-                    launch {
-                        lifecycleScope.launch {
-                            val tmp = fusedLocationClient.getCurrentLocation(
-                                Priority.PRIORITY_HIGH_ACCURACY,
-                                null
-                            ).await()
-                            viewModel.setUsersLocations(tmp.latitude, tmp.longitude)
-                            initMapView()
+                            Timber.d(it.id.toString())
+                            Timber.d(it.mapPin?.map.toString())
+                            it.mapPin?.map=null
+                            it.mapPin?.infoWindow?.close()
+                            Timber.d(it.mapPin?.map.toString())
                         }
                     }
+                    val tmp = fusedLocationClient.getCurrentLocation(
+                        Priority.PRIORITY_HIGH_ACCURACY,
+                        null
+                    ).await()
+                    viewModel.setUsersLocations(tmp.latitude, tmp.longitude)
                 }
 
             }

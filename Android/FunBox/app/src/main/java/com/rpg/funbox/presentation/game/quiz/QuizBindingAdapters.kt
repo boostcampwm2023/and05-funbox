@@ -6,6 +6,6 @@ import coil.load
 import com.rpg.funbox.R
 
 @BindingAdapter("app:setImage")
-fun ImageView.bindImage(image: String) {
-    load(image)
+fun ImageView.bindImage(image: String?) {
+    load(R.drawable.profile_none)
 }

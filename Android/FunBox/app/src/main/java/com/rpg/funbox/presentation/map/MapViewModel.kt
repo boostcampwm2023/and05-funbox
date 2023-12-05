@@ -126,21 +126,6 @@ class MapViewModel : ViewModel() {
                         )
                     }
                 }
-                newUsers.add(
-                    User(
-                        200,
-                        38,
-                        LatLng(37.6500000, 126.7800000),
-                        "홍길동",
-                        false
-                    )
-                )
-                _users.value.forEach {
-                    if(it.id==newUsers.last().id){
-                        newUsers.last().isInfoOpen=it.isInfoOpen
-                        newUsers.last().marker= it.mapPin?.infoWindow
-                    }
-                }
                 _users.update { newUsers }
             }
         }
