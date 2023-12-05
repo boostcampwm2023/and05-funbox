@@ -5,6 +5,7 @@ import com.rpg.funbox.data.dto.UserInfoResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.PATCH
@@ -26,4 +27,7 @@ interface SignUpApi {
     suspend fun submitUserProfile(
         @Part file: MultipartBody.Part
     ): Response<UserInfoResponse>
+
+    @DELETE("/users")
+    suspend fun deleteUserInfo(): Response<Void>
 }

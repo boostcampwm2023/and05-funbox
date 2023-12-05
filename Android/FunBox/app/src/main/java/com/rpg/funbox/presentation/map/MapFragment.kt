@@ -57,6 +57,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     private val viewModel: MapViewModel by activityViewModels()
 
     private lateinit var naverMap: NaverMap
+    private lateinit var mapFragment: MapFragment
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationSource: FusedLocationSource
     private lateinit var applyGameServerData: ApplyGameFromServerData
@@ -66,14 +67,12 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             when {
                 permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
-                    Timber.d("권한 허용1")
                     fusedLocationClient =
                         LocationServices.getFusedLocationProviderClient(requireActivity())
                     submitUserLocation()
                 }
 
                 permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-                    Timber.d("권한 허용2")
                     fusedLocationClient =
                         LocationServices.getFusedLocationProviderClient(requireActivity())
                     submitUserLocation()
@@ -104,8 +103,8 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             toggleFab()
         }
 
-        submitUserLocation()
         initMapView()
+        submitUserLocation()
     }
 
     override fun onStart() {
@@ -236,12 +235,11 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     private fun initMapView() {
         val fm = childFragmentManager
-        val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
+        mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
             ?: MapFragment.newInstance().also {
                 fm.beginTransaction().add(R.id.map, it).commit()
             }
 
-        mapFragment.getMapAsync(this)
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
@@ -289,7 +287,8 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                         null
                     ).await()
                     viewModel.setUsersLocations(tmp.latitude, tmp.longitude)
-                    initMapView()
+                    mapFragment.getMapAsync(this@MapFragment)
+                    // initMapView()
                 }
             }
         }

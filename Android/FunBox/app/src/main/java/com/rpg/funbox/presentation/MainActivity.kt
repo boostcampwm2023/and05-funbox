@@ -1,5 +1,6 @@
 package com.rpg.funbox.presentation
 
+import android.content.Intent
 import android.graphics.Rect
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -15,8 +16,11 @@ import androidx.lifecycle.lifecycleScope
 import coil.load
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.ActivityMainBinding
+import com.rpg.funbox.presentation.login.TitleActivity
 import com.rpg.funbox.presentation.map.MapViewModel
+import com.rpg.funbox.presentation.setting.SettingUiEvent
 import com.rpg.funbox.presentation.setting.SettingViewModel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -58,6 +62,15 @@ class MainActivity : AppCompatActivity() {
                 uri?.let {
                     binding.navView.getHeaderView(0).findViewById<ImageView>(R.id.iv_menu_header)
                         .load(it)
+                }
+            }
+        }
+        lifecycleScope.launch {
+            settingViewModel.settingUiEvent.collectLatest { uiEvent ->
+                if (uiEvent == SettingUiEvent.Withdraw) {
+                    val intent = Intent(this@MainActivity, TitleActivity::class.java)
+                    startActivity(intent)
+                    finish()
                 }
             }
         }

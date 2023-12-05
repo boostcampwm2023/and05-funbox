@@ -25,7 +25,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:elevation="10dp"
                 android:id="@+id/ibtn_new_profile_change"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
@@ -33,7 +34,7 @@
                 android:layout_marginBottom="32dp"
                 android:onClick="@{() -> vm.startSelectNewProfile()}"
                 android:scaleType="fitCenter"
-                android:src="@drawable/group_1940"
+                android:background="@null"
                 app:imageUrlBtn="@{vm.newProfileUri}"
                 app:layout_constraintBottom_toTopOf="@id/btn_profile_change"
                 app:layout_constraintEnd_toEndOf="parent"

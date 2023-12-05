@@ -1,19 +1,20 @@
 package com.rpg.funbox.presentation.login.profile
 
 import android.annotation.SuppressLint
-import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.FragmentProfileBinding
 import com.rpg.funbox.presentation.BaseFragment
 import com.rpg.funbox.presentation.MainActivity
+import com.rpg.funbox.presentation.login.AccessPermission
 import com.rpg.funbox.presentation.login.title.TitleViewModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -24,32 +25,31 @@ import java.io.File
 class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_profile) {
 
     private val viewModel: TitleViewModel by activityViewModels()
-    private var launcher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val imagePath = result.data?.data
-                val file = File(absolutelyPath(imagePath))
+    private val profileImagePicker =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+                val file = File(absolutelyPath(uri))
                 val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
                 val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
-                viewModel.selectProfile(imagePath, body)
+                viewModel.selectProfile(uri, body)
+        }
+    private val requestMultiPermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+            var flag = true
+            it.entries.forEach { entry ->
+                flag = entry.value
+            }
+            if (flag) {
+                profileImagePicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             }
         }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
 
         collectLatestFlow(viewModel.profileUiEvent) { handleUiEvent(it) }
-    }
-
-    private fun getProfileImage() {
-        val chooserIntent = Intent(Intent.ACTION_CHOOSER)
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        intent.type = "image/*"
-        chooserIntent.putExtra(Intent.EXTRA_INTENT, intent)
-        chooserIntent.putExtra(Intent.EXTRA_TITLE, resources.getString(R.string.msg_select_picture))
-        launcher.launch(chooserIntent)
     }
 
     private fun absolutelyPath(uri: Uri?): String {
@@ -64,17 +64,16 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_p
 
     private fun handleUiEvent(event: ProfileUiEvent) = when (event) {
         is ProfileUiEvent.ProfileSelect -> {
-            getProfileImage()
+            requestMultiPermissions.launch(AccessPermission.profilePermissionList)
         }
 
         is ProfileUiEvent.ProfileSubmit -> {
             startActivity(Intent(requireActivity(), MainActivity::class.java))
+            requireActivity().finish()
         }
 
         is ProfileUiEvent.NetworkErrorEvent -> {
             showSnackBar(R.string.network_error_message)
         }
-
-        else -> {}
     }
 }

@@ -12,4 +12,6 @@ interface UserRepository {
     suspend fun patchUserName(userName: String): Boolean
 
     suspend fun postUserProfile(imageFile: MultipartBody.Part): Boolean
+
+    suspend fun withdraw(): Boolean
 }

@@ -49,9 +49,14 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:maxLines="1"
                 android:text="@{vm.latestQuiz}"
                 android:textSize="32sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:question_marquee="@{vm.quizUiState}" />
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -83,6 +88,7 @@
                     android:layout_weight="8"
                     android:autofillHints="@null"
                     android:background="@drawable/answer_edittext"
+                    android:enabled="@{vm.quizUiState.isEtEnable}"
                     android:inputType="textPersonName"
                     android:onTextChanged="@{(answerValue, s, b, c) -> vm.validateAnswer(answerValue)}"
                     android:padding="16dp"

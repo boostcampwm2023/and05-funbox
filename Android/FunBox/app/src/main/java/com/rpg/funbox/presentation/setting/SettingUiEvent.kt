@@ -10,7 +10,9 @@ sealed class SettingUiEvent {
 
     data object SetProfile : SettingUiEvent()
 
-    data object Draw : SettingUiEvent()
+    data object StartWithdrawal : SettingUiEvent()
+
+    data object Withdraw : SettingUiEvent()
 
     data object CloseSetNameDialog : SettingUiEvent()
 
