@@ -3,6 +3,7 @@ package com.rpg.funbox.presentation.game.quiz
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import com.rpg.funbox.data.dto.UserInfoResponse
 import com.rpg.funbox.data.repository.UserRepository
 import com.rpg.funbox.data.repository.UserRepositoryImpl
 import com.rpg.funbox.presentation.MapSocket
@@ -28,14 +29,14 @@ class QuizViewModel : ViewModel() {
     private val _roomId = MutableStateFlow<String?>(null)
     val roomId = _roomId.asStateFlow()
 
-    private val _userName = MutableStateFlow<String?>(null)
-    val userName = _userName.asStateFlow()
+    private val _user = MutableStateFlow<UserInfoResponse?>(null)
+    val user = _user.asStateFlow()
 
     private val _otherUserId = MutableStateFlow<Int>(-1)
     val otherUserId = _otherUserId.asStateFlow()
 
-    private val _otherUserName = MutableStateFlow<String?>(null)
-    val otherUserName = _otherUserName.asStateFlow()
+    private val _otherUser = MutableStateFlow<UserInfoResponse?>(null)
+    val otherUser = _otherUser.asStateFlow()
 
     private val _location = MutableStateFlow<Pair<Double, Double>?>(null)
     val location = _location.asStateFlow()
@@ -203,10 +204,10 @@ class QuizViewModel : ViewModel() {
         _otherUserId.value = userId
         viewModelScope.launch {
             userRepository.getUserInfo()?.let { userInfo ->
-                _userName.value = userInfo.userName
+                _user.value= userInfo
             }
             userRepository.getSpecificUserInfo(userId)?.let { specificUserInfo ->
-                _otherUserName.value = specificUserInfo.userName
+                _otherUser.value= specificUserInfo
             }
         }
     }

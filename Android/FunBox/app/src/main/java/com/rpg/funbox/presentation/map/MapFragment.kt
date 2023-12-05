@@ -44,8 +44,6 @@ import com.rpg.funbox.presentation.login.AccessPermission
 import com.rpg.funbox.presentation.login.AccessPermission.LOCATION_PERMISSION_REQUEST_CODE
 import io.socket.engineio.client.EngineIOException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
@@ -77,7 +75,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                     fusedLocationClient =
                         LocationServices.getFusedLocationProviderClient(requireActivity())
+
                     //submitUserLocation()
+
                 }
 
                 else -> {
@@ -154,99 +154,115 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         map.setOnMapClickListener { _, _ ->
             viewModel.buttonGone()
             viewModel.users.value.forEach {
+                it.isInfoOpen=false
                 it.mapPin?.infoWindow?.close()
+                Timber.d("@111111")
                 if (it.isMsg) {
                     it.mapPin?.let { mapPin -> hasMsg.open(mapPin) }
                 }
             }
         }
 
-        viewModel.users.value.map { user ->
-            Timber.d("NaverMap: ${user.id}")
-            var adapter = MapProfileAdapter(requireContext(), viewModel.userDetail.value, null)
-            val marker = Marker().apply {
-                position = user.loc
-                iconTintColor = Color.YELLOW
-                this.map = naverMap
-                captionText = user.name.toString()
-                captionTextSize = 20F
-                if (user.isMsg) {
-                    hasMsg.open(this)
-                }
-                setOnClickListener { _ ->
-                    viewModel.userDetailApi(user.id, user.name.toString())
-                    infoWindow.adapter = adapter
+
+        lifecycleScope.launch{
+            viewModel.users.collect{
+                it.map { user ->
+                    var adapter =
+                        MapProfileAdapter(requireContext(), viewModel.userDetail.value, null)
                     runBlocking {
-                        val test = viewModel.userDetail.value.profile
-                        val image: Bitmap = try {
-                            withContext(Dispatchers.IO) {
-                                Glide.with(requireContext())
-                                    .asBitmap()
-                                    .load(test)
-                                    .apply(RequestOptions().override(100, 100))
-                                    .submit()
-                                    .get()
+                        val marker = Marker().apply {
+                            position = user.loc
+                            iconTintColor = Color.YELLOW
+                            captionText = user.name.toString()
+                            captionTextSize = 20F
+                            if (user.isMsg) {
+                                hasMsg.open(this)
                             }
-                        } catch (e: Exception) {
-                            withContext(Dispatchers.IO) {
-                                Glide.with(requireContext())
-                                    .asBitmap()
-                                    .load(R.drawable.close_24)
-                                    .apply(RequestOptions().override(100, 100))
-                                    .submit()
-                                    .get()
+                            setOnClickListener { _ ->
+                                viewModel.userDetailApi(user.id)
+                                infoWindow.adapter = adapter
+                                runBlocking {
+                                    val test = viewModel.userDetail.value?.profile
+                                    val image: Bitmap = try {
+                                        withContext(Dispatchers.IO) {
+                                            Glide.with(requireContext())
+                                                .asBitmap()
+                                                .load(test)
+                                                .apply(RequestOptions().override(100, 100))
+                                                .submit()
+                                                .get()
+                                        }
+                                    } catch (e: Exception) {
+                                        withContext(Dispatchers.IO) {
+                                            Glide.with(requireContext())
+                                                .asBitmap()
+                                                .load(R.drawable.close_24)
+                                                .apply(RequestOptions().override(100, 100))
+                                                .submit()
+                                                .get()
+                                        }
+                                    }
+
+                                    adapter =
+                                        MapProfileAdapter(
+                                            requireContext(),
+                                            viewModel.userDetail.value,
+                                            image
+                                        )
+                                }
+
+
+                                if (!this.hasInfoWindow() || this.infoWindow == hasMsg) {
+                                    viewModel.buttonVisible()
+                                    viewModel.users.value.forEach {user ->
+                                        if (user.isMsg) {
+                                            user.mapPin?.let { mapPin -> hasMsg.open(mapPin) }
+                                        }
+                                    }
+                                    user.isInfoOpen=true
+                                    infoWindow.open(this)
+                                    Timber.d("@@@@@@")
+                                } else {
+                                    viewModel.buttonGone()
+                                    user.isInfoOpen=false
+                                    this.infoWindow?.close()
+                                    Timber.d("!!!!!!!")
+                                    if (user.isMsg) {
+                                        hasMsg.open(this)
+                                    }
+                                }
+                                true
                             }
+
+                            if(user.isInfoOpen){
+                                requireActivity().runOnUiThread {
+                                    Handler(Looper.getMainLooper()).postDelayed({
+                                        this.infoWindow?.close()
+                                        infoWindow.adapter = adapter
+                                        infoWindow.open(this)
+                                    }, 500)
+                                }}
                         }
-
-                        adapter =
-                            MapProfileAdapter(
-                                requireContext(),
-                                viewModel.userDetail.value,
-                                image
-                            )
-                    }
-
-
-                    requireActivity().runOnUiThread {
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            infoWindow.adapter = adapter
-                            infoWindow.open(this)
-                        }, 500)
-                    }
-
-
-                    if (!this.hasInfoWindow() || this.infoWindow == hasMsg) {
-                        viewModel.buttonVisible()
-                        viewModel.users.value.forEach {
-                            if (it.isMsg) {
-                                it.mapPin?.let { mapPin -> hasMsg.open(mapPin) }
-                            }
-                        }
-                        infoWindow.open(this)
-                    } else {
-                        viewModel.buttonGone()
-                        this.infoWindow?.close()
-                        if (user.isMsg) {
-                            hasMsg.open(this)
+                        launch {
+                            user.mapPin = marker
+                            user.mapPin?.map = naverMap
                         }
                     }
-
-                    true
                 }
-
             }
-
-            user.mapPin = marker
         }
     }
 
     private fun initMapView() {
-        val fm = childFragmentManager
-        mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
-            ?: MapFragment.newInstance().also {
-                fm.beginTransaction().add(R.id.map, it).commit()
-            }
 
+//        val fm = childFragmentManager
+
+//        val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
+//            ?: MapFragment.newInstance().also {
+//                fm.beginTransaction().add(R.id.map, it).commit()
+//            }
+
+        binding.map.getFragment<MapFragment>().getMapAsync(this)
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
@@ -287,16 +303,27 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     private fun submitUserLocation() {
         if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
-            Timer().scheduleAtFixedRate(0, 3000) {
+            Timer().scheduleAtFixedRate(3000, 3000) {
+
                 lifecycleScope.launch {
+                    withContext(Dispatchers.Main){
+                        viewModel.users.value.forEach {
+                            Timber.d(it.id.toString())
+                            Timber.d(it.mapPin?.map.toString())
+                            it.mapPin?.map=null
+                            it.mapPin?.infoWindow?.close()
+                            Timber.d(it.mapPin?.map.toString())
+                        }
+                    }
                     val tmp = fusedLocationClient.getCurrentLocation(
                         Priority.PRIORITY_HIGH_ACCURACY,
                         null
                     ).await()
                     viewModel.deleteUserMapPin()
                     viewModel.setUsersLocations(tmp.latitude, tmp.longitude)
-                    mapFragment.getMapAsync(this@MapFragment)
+
                 }
+
             }
         }
     }
@@ -317,8 +344,8 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         is MapUiEvent.GameStart -> {
             val intent = Intent(context, GameActivity::class.java)
             intent.putExtra("StartGame", true)
-            intent.putExtra("OtherUserId", viewModel.userDetail.value.id)
-            applyGame(viewModel.userDetail.value.id)
+            intent.putExtra("OtherUserId", viewModel.userDetail.value?.id)
+            viewModel.userDetail.value?.let { applyGame(it.id) }
             startActivity(intent)
         }
 
@@ -338,4 +365,5 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             toggleFab()
         }
     }
+
 }

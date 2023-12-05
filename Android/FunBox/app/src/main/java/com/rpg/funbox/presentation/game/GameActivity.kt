@@ -20,12 +20,17 @@ class GameActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGameBinding.inflate(layoutInflater)
+        binding.lifecycleOwner = this
         setContentView(binding.root)
         binding.vm = viewModel
         binding.lifecycleOwner = this
         viewModel.connectSocket(myUserId = myUserId)
 
         initUsersState()
+
+        if(!viewModel.userState.value){
+            viewModel.roomId.value?.let { MapSocket.acceptGame(it) }
+        }
     }
 
     private fun initUsersState() {

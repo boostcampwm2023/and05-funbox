@@ -5,8 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.rpg.funbox.data.dto.User
 import com.rpg.funbox.data.dto.UserDetail
 import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.overlay.Marker
 import com.rpg.funbox.data.dto.UserLocation
+import com.rpg.funbox.data.repository.UserRepository
+import com.rpg.funbox.data.repository.UserRepositoryImpl
 import com.rpg.funbox.data.repository.UsersLocationRepository
 import com.rpg.funbox.data.repository.UsersLocationRepositoryImpl
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,6 +22,7 @@ import timber.log.Timber
 class MapViewModel : ViewModel() {
 
     private val usersLocationRepository: UsersLocationRepository = UsersLocationRepositoryImpl()
+    private val userRepository: UserRepository = UserRepositoryImpl()
 
     private val _myMessage = MutableStateFlow("")
     val myMessage = _myMessage.asStateFlow()
@@ -34,8 +36,8 @@ class MapViewModel : ViewModel() {
     private val _myLocation = MutableStateFlow<Pair<Double, Double>?>(null)
     val myLocation = _myLocation.asStateFlow()
 
-    private val _userDetail = MutableStateFlow(UserDetail(0, "", "", ""))
-    val userDetail: StateFlow<UserDetail> = _userDetail
+    private val _userDetail = MutableStateFlow<UserDetail?>(null)
+    val userDetail: StateFlow<UserDetail?> = _userDetail
 
     private val _mapUiEvent = MutableSharedFlow<MapUiEvent>()
     val mapUiEvent = _mapUiEvent.asSharedFlow()
@@ -55,19 +57,19 @@ class MapViewModel : ViewModel() {
         }
     }
 
-    fun toGame(){
+    fun toGame() {
         viewModelScope.launch {
             _mapUiEvent.emit(MapUiEvent.ToGame)
         }
     }
 
-    fun gameStart(){
+    fun gameStart() {
         viewModelScope.launch {
             _mapUiEvent.emit(MapUiEvent.GameStart)
         }
     }
 
-    fun rejectGame(){
+    fun rejectGame() {
         viewModelScope.launch {
             _mapUiEvent.emit(MapUiEvent.RejectGame)
         }
@@ -110,9 +112,14 @@ class MapViewModel : ViewModel() {
                                 location.id,
                                 LatLng(location.locX, location.locY),
                                 location.username,
-                                false
+                                location.isMsgInAnHour,
                             )
                         )
+                        _users.value.forEach {
+                            if(it.id==newUsers.last().id){
+                                newUsers.last().isInfoOpen=it.isInfoOpen
+                            }
+                        }
                     } else {
                         newUsers.add(
                             User(
@@ -125,19 +132,24 @@ class MapViewModel : ViewModel() {
                         )
                     }
                 }
-                _users.value = newUsers
+                _users.update { newUsers }
             }
         }
     }
 
-    fun userDetailApi(id: Int, name: String) {
-        _userDetail.update {
-            UserDetail(
-                id,
-                "안녕하세요",
-                "https://drive.google.com/file/d/1P6Va6qkB39gnE-gbfbPLCSxIFwAeM8Ul/view?usp=drive_link",
-                name
-            )
+    fun userDetailApi(id: Int) {
+        viewModelScope.launch {
+            val response = userRepository.getSpecificUserInfo(id)
+            _userDetail.update {
+                response?.let { response ->
+                    UserDetail(
+                        id,
+                        response.message.toString(),
+                        response.profileUrl.toString(),
+                        response.userName.toString()
+                    )
+                }
+            }
         }
     }
 
