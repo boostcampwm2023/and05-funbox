@@ -54,7 +54,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginEnd="16dp"
-                android:text="@string/user_id_wait"
+                android:text="@{vm.userName}"
                 android:textSize="40sp" />
 
         </com.google.android.material.card.MaterialCardView>
@@ -95,7 +95,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginEnd="16dp"
-                android:text="@string/side_id_wait"
+                android:text="@{vm.otherUserName}"
                 android:textSize="40sp" />
 
             <TextView

@@ -44,6 +44,8 @@ import com.rpg.funbox.presentation.login.AccessPermission
 import com.rpg.funbox.presentation.login.AccessPermission.LOCATION_PERMISSION_REQUEST_CODE
 import io.socket.engineio.client.EngineIOException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
@@ -69,13 +71,13 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
                     fusedLocationClient =
                         LocationServices.getFusedLocationProviderClient(requireActivity())
-                    submitUserLocation()
+                    //submitUserLocation()
                 }
 
                 permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                     fusedLocationClient =
                         LocationServices.getFusedLocationProviderClient(requireActivity())
-                    submitUserLocation()
+                    //submitUserLocation()
                 }
 
                 else -> {
@@ -160,6 +162,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }
 
         viewModel.users.value.map { user ->
+            Timber.d("NaverMap: ${user.id}")
             var adapter = MapProfileAdapter(requireContext(), viewModel.userDetail.value, null)
             val marker = Marker().apply {
                 position = user.loc
@@ -196,7 +199,11 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                         }
 
                         adapter =
-                            MapProfileAdapter(requireContext(), viewModel.userDetail.value, image)
+                            MapProfileAdapter(
+                                requireContext(),
+                                viewModel.userDetail.value,
+                                image
+                            )
                     }
 
 
@@ -286,9 +293,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                         Priority.PRIORITY_HIGH_ACCURACY,
                         null
                     ).await()
+                    viewModel.deleteUserMapPin()
                     viewModel.setUsersLocations(tmp.latitude, tmp.longitude)
                     mapFragment.getMapAsync(this@MapFragment)
-                    // initMapView()
                 }
             }
         }

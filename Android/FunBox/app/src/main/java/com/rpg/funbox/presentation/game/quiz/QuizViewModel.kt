@@ -77,7 +77,7 @@ class QuizViewModel : ViewModel() {
 
     private fun setUserQuizState(userQuizState: UserQuizState) {
         _quizUiState.update { uiState ->
-            uiState.copy(userQuizState = userQuizState)
+            uiState.copy(answerWriteState = true, userQuizState = userQuizState)
         }
     }
 
@@ -122,22 +122,23 @@ class QuizViewModel : ViewModel() {
             Timber.tag("LOCATION").d(it[0].toString())
         }
             .on("gameApplyAnswer") {
-            val json = Gson().fromJson(it[0].toString(), GameApplyAnswerFromServerData::class.java)
-            Timber.tag("gameApplyAnswer").d(json.answer)
-            when (json.answer) {
-                "OFFLINE" -> {
-                    finishQuiz()
-                }
+                val json =
+                    Gson().fromJson(it[0].toString(), GameApplyAnswerFromServerData::class.java)
+                Timber.tag("gameApplyAnswer").d(json.answer)
+                when (json.answer) {
+                    "OFFLINE" -> {
+                        finishQuiz()
+                    }
 
-                "ACCEPT" -> {
-                    toGame()
-                }
+                    "ACCEPT" -> {
+                        toGame()
+                    }
 
-                "REJECT" -> {
-                    finishQuiz()
+                    "REJECT" -> {
+                        finishQuiz()
+                    }
                 }
             }
-        }
             .on("quiz") {
                 val json = Gson().fromJson(it[0].toString(), QuizFromServer::class.java)
                 Timber.d(json.toString())
@@ -168,17 +169,12 @@ class QuizViewModel : ViewModel() {
                 setLatestAnswer(json.answer)
                 checkAnswerCorrect()
             }
-            .on("verifyAnswer") {
-                _quizUiState.update { uiState ->
-                    uiState.copy(answerWriteState = true)
-                }
-            }
             .on("score") {
                 val json = Gson().fromJson(it[0].toString(), ScoreFromServer::class.java)
                 Timber.d(json.first().toString())
                 Timber.d(json.last().toString())
 
-                setFinalScore(Pair(json.first().toString(), json.last().toString()))
+                setFinalScore(Pair(json.first().score.toString(), json.last().score.toString()))
                 showScoreBoard()
             }
             .on("lostConnection") {

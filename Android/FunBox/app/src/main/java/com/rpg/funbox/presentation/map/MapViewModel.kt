@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.rpg.funbox.data.dto.User
 import com.rpg.funbox.data.dto.UserDetail
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.overlay.Marker
 import com.rpg.funbox.data.dto.UserLocation
 import com.rpg.funbox.data.repository.UsersLocationRepository
 import com.rpg.funbox.data.repository.UsersLocationRepositoryImpl
@@ -86,6 +87,13 @@ class MapViewModel : ViewModel() {
 
     fun setXY(x: Double, y: Double) {
         _myLocation.value = Pair(x, y)
+    }
+
+    fun deleteUserMapPin() {
+        _users.value.forEach { user ->
+            Timber.d("${user.id}: ${user.mapPin.toString()}")
+            user.mapPin?.map = null
+        }
     }
 
     fun setUsersLocations(locX: Double, locY: Double) {
