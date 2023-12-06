@@ -332,7 +332,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             val intent = Intent(context, GameActivity::class.java)
             intent.putExtra("StartGame", false)
             intent.putExtra("RoomId", applyGameServerData.roomId)
-            intent.putExtra("OtherUserId", applyGameServerData.userId)
+            intent.putExtra("OtherUserId", applyGameServerData.userId.toInt())
             startActivity(intent)
         }
 
