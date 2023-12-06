@@ -9,6 +9,8 @@ interface UserRepository {
 
     suspend fun getSpecificUserInfo(userId: Int): UserInfoResponse?
 
+    suspend fun patchUserMessage(message: String): Boolean
+
     suspend fun patchUserName(userName: String): Boolean
 
     suspend fun postUserProfile(imageFile: MultipartBody.Part): Boolean

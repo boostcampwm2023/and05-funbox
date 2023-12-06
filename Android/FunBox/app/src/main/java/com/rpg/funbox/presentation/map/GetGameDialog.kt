@@ -1,14 +1,10 @@
 package com.rpg.funbox.presentation.map
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.DialogGetGameBinding
-import com.rpg.funbox.databinding.DialogMessageBinding
 import com.rpg.funbox.presentation.BaseDialogFragment
 
 class GetGameDialog : BaseDialogFragment<DialogGetGameBinding>(R.layout.dialog_get_game) {
@@ -17,6 +13,8 @@ class GetGameDialog : BaseDialogFragment<DialogGetGameBinding>(R.layout.dialog_g
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.vm = viewModel
+
         binding.btnOk.setOnClickListener {
             viewModel.toGame()
             dismiss()

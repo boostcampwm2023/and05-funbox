@@ -20,7 +20,7 @@
             android:id="@+id/iv_menu_header"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:background="@drawable/profile_none"
+            android:background="@null"
             android:contentDescription="@string/profile_setting_description"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toTopOf="@id/tv_menu_header_name"

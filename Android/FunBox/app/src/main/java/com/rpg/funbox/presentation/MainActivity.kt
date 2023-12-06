@@ -59,9 +59,12 @@ class MainActivity : AppCompatActivity() {
         }
         lifecycleScope.launch {
             settingViewModel.profileUri.collect { uri ->
-                uri?.let {
+                if (uri == null) {
                     binding.navView.getHeaderView(0).findViewById<ImageView>(R.id.iv_menu_header)
-                        .load(it)
+                        .load(R.drawable.profile_none)
+                } else {
+                    binding.navView.getHeaderView(0).findViewById<ImageView>(R.id.iv_menu_header)
+                        .load(uri)
                 }
             }
         }

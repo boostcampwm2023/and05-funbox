@@ -1,14 +1,14 @@
 package com.rpg.funbox.presentation.map
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.DialogMessageBinding
 import com.rpg.funbox.presentation.BaseDialogFragment
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class MessageDialog: BaseDialogFragment<DialogMessageBinding>(R.layout.dialog_message) {
 
@@ -16,9 +16,12 @@ class MessageDialog: BaseDialogFragment<DialogMessageBinding>(R.layout.dialog_me
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.positiveButton.setOnClickListener{
-            dismiss()
+        binding.vm = viewModel
+
+        lifecycleScope.launch {
+            viewModel.mapUiEvent.collectLatest { uiEvent ->
+                if (uiEvent == MapUiEvent.MessageSubmit) dismiss()
+            }
         }
     }
-
 }

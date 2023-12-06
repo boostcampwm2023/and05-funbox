@@ -2,6 +2,7 @@ package com.rpg.funbox.presentation.game.quiz
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.UiThread
 import androidx.fragment.app.activityViewModels
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -16,6 +17,7 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
 import com.rpg.funbox.presentation.CustomNaverMap
+import com.rpg.funbox.presentation.MapSocket.quitGame
 import com.rpg.funbox.presentation.MapSocket.sendQuizAnswer
 import com.rpg.funbox.presentation.MapSocket.verifyAnswer
 import com.rpg.funbox.presentation.login.AccessPermission
@@ -27,6 +29,7 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
     private lateinit var quizMap: NaverMap
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var fusedLocationSource: FusedLocationSource
+    private lateinit var backPressedCallback: OnBackPressedCallback
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -36,7 +39,23 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
 
         initNaverMap()
 
+        setBackPressedCallback()
+        binding.questionQuiz.isSelected = true
+
         collectLatestFlow(viewModel.quizUiEvent) { handleUiEvent(it) }
+    }
+
+    private fun setBackPressedCallback() {
+        backPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                viewModel.roomId.value?.let { quitGame(it) }
+                requireActivity().finish()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            backPressedCallback
+        )
     }
 
     @UiThread

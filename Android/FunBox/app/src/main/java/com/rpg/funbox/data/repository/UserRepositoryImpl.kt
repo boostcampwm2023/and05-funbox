@@ -6,6 +6,7 @@ import com.rpg.funbox.data.dto.UserInfoResponse
 import com.rpg.funbox.data.network.service.SignUpApi
 import com.rpg.funbox.data.network.service.UserInfoApi
 import okhttp3.MultipartBody
+import timber.log.Timber
 
 class UserRepositoryImpl : UserRepository {
 
@@ -41,6 +42,21 @@ class UserRepositoryImpl : UserRepository {
         }
 
         return null
+    }
+
+    override suspend fun patchUserMessage(message: String): Boolean {
+        Timber.d("Message: $message")
+        val response = userInfoApi.submitUserMessage(UserInfoRequest(null, null, message = message))
+        Timber.d("Response: ${response.body()}")
+        when (response.code()) {
+            in successStatusCodeRange -> {
+                return true
+            }
+
+            else -> {}
+        }
+
+        return false
     }
 
     override suspend fun patchUserName(userName: String): Boolean {

@@ -3,6 +3,7 @@ package com.rpg.funbox.presentation.game.quiz
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import com.rpg.funbox.data.dto.UserInfoResponse
 import com.rpg.funbox.data.repository.UserRepository
 import com.rpg.funbox.data.repository.UserRepositoryImpl
 import com.rpg.funbox.presentation.MapSocket
@@ -28,14 +29,14 @@ class QuizViewModel : ViewModel() {
     private val _roomId = MutableStateFlow<String?>(null)
     val roomId = _roomId.asStateFlow()
 
-    private val _userName = MutableStateFlow<String?>(null)
-    val userName = _userName.asStateFlow()
+    private val _user = MutableStateFlow<UserInfoResponse?>(null)
+    val user = _user.asStateFlow()
 
     private val _otherUserId = MutableStateFlow<Int>(-1)
     val otherUserId = _otherUserId.asStateFlow()
 
-    private val _otherUserName = MutableStateFlow<String?>(null)
-    val otherUserName = _otherUserName.asStateFlow()
+    private val _otherUser = MutableStateFlow<UserInfoResponse?>(null)
+    val otherUser = _otherUser.asStateFlow()
 
     private val _location = MutableStateFlow<Pair<Double, Double>?>(null)
     val location = _location.asStateFlow()
@@ -77,8 +78,9 @@ class QuizViewModel : ViewModel() {
 
     private fun setUserQuizState(userQuizState: UserQuizState) {
         _quizUiState.update { uiState ->
-            uiState.copy(userQuizState = userQuizState)
+            uiState.copy(answerWriteState = true, userQuizState = userQuizState)
         }
+        _latestAnswer.value = ""
     }
 
     private fun setLatestQuiz(quiz: String) {
@@ -122,22 +124,23 @@ class QuizViewModel : ViewModel() {
             Timber.tag("LOCATION").d(it[0].toString())
         }
             .on("gameApplyAnswer") {
-            val json = Gson().fromJson(it[0].toString(), GameApplyAnswerFromServerData::class.java)
-            Timber.tag("gameApplyAnswer").d(json.answer)
-            when (json.answer) {
-                "OFFLINE" -> {
-                    finishQuiz()
-                }
+                val json =
+                    Gson().fromJson(it[0].toString(), GameApplyAnswerFromServerData::class.java)
+                Timber.tag("gameApplyAnswer").d(json.answer)
+                when (json.answer) {
+                    "OFFLINE" -> {
+                        finishQuiz()
+                    }
 
-                "ACCEPT" -> {
-                    toGame()
-                }
+                    "ACCEPT" -> {
+                        toGame()
+                    }
 
-                "REJECT" -> {
-                    finishQuiz()
+                    "REJECT" -> {
+                        finishQuiz()
+                    }
                 }
             }
-        }
             .on("quiz") {
                 val json = Gson().fromJson(it[0].toString(), QuizFromServer::class.java)
                 Timber.d(json.toString())
@@ -168,27 +171,21 @@ class QuizViewModel : ViewModel() {
                 setLatestAnswer(json.answer)
                 checkAnswerCorrect()
             }
-            .on("verifyAnswer") {
-                _quizUiState.update { uiState ->
-                    uiState.copy(answerWriteState = true)
-                }
-            }
             .on("score") {
                 val json = Gson().fromJson(it[0].toString(), ScoreFromServer::class.java)
                 Timber.d(json.first().toString())
                 Timber.d(json.last().toString())
 
-                setFinalScore(Pair(json.first().toString(), json.last().toString()))
+                setFinalScore(Pair(json.first().score.toString(), json.last().score.toString()))
                 showScoreBoard()
             }
+            .on("quitGame") {
+                alertNetworkError()
+            }
             .on("lostConnection") {
-                Timber.d(it.toString())
-
                 alertNetworkError()
             }
             .on("error") {
-                Timber.tag("ERROR").e(it[0].toString())
-
                 setStateNetworkError()
             }
         Timber.d("이벤트 등록")
@@ -203,14 +200,17 @@ class QuizViewModel : ViewModel() {
         _roomId.value = newRoomId
     }
 
-    fun setUserNames(userId: Int) {
+    fun setUsersInfo(userId: Int) {
+        Timber.d("Other User: $userId")
         _otherUserId.value = userId
         viewModelScope.launch {
             userRepository.getUserInfo()?.let { userInfo ->
-                _userName.value = userInfo.userName
+                _user.value = userInfo
+                Timber.d("${_user.value}")
             }
             userRepository.getSpecificUserInfo(userId)?.let { specificUserInfo ->
-                _otherUserName.value = specificUserInfo.userName
+                _otherUser.value = specificUserInfo
+                Timber.d("$${_otherUser.value}")
             }
         }
     }

@@ -6,7 +6,9 @@ import androidx.activity.viewModels
 import com.rpg.funbox.app.MainApplication
 import com.rpg.funbox.data.JwtDecoder
 import com.rpg.funbox.databinding.ActivityGameBinding
+import com.rpg.funbox.presentation.MapSocket
 import com.rpg.funbox.presentation.game.quiz.QuizViewModel
+import timber.log.Timber
 
 class GameActivity : AppCompatActivity() {
 
@@ -21,6 +23,8 @@ class GameActivity : AppCompatActivity() {
         binding = ActivityGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.vm = viewModel
+        binding.lifecycleOwner = this
+
         viewModel.connectSocket(myUserId = myUserId)
 
         initUsersState()
@@ -29,6 +33,10 @@ class GameActivity : AppCompatActivity() {
     private fun initUsersState() {
         viewModel.setRoomId(intent.getStringExtra("RoomId"))
         viewModel.setUserState(intent.getBooleanExtra("StartGame",false))
-        intent.getStringExtra("OtherUserId")?.let { viewModel.setUserNames(it.toInt()) }
+        viewModel.setUsersInfo(intent.getIntExtra("OtherUserId", -1))
+
+        if (!viewModel.userState.value) {
+            viewModel.roomId.value?.let { MapSocket.acceptGame(it) }
+        }
     }
 }
