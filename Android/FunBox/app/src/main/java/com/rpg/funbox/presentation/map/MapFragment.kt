@@ -359,5 +359,11 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         is MapUiEvent.Toggle -> {
             toggleFab()
         }
+
+        is MapUiEvent.NetworkErrorEvent -> {
+            showSnackBar(R.string.network_error_message)
+        }
+
+        else -> {}
     }
 }

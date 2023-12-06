@@ -26,7 +26,7 @@ class MapViewModel : ViewModel() {
     private val userRepository: UserRepository = UserRepositoryImpl()
 
     private val _myMessage = MutableStateFlow("")
-    val myMessage = _myMessage.asStateFlow()
+    val myMessage = _myMessage
 
     private val _otherUser = MutableStateFlow<UserInfoResponse?>(null)
     val otherUser = _otherUser.asStateFlow()
@@ -103,13 +103,6 @@ class MapViewModel : ViewModel() {
         _myLocation.value = Pair(x, y)
     }
 
-    fun deleteUserMapPin() {
-        _users.value.forEach { user ->
-            Timber.d("${user.id}: ${user.mapPin.toString()}")
-            user.mapPin?.map = null
-        }
-    }
-
     fun setUsersLocations(locX: Double, locY: Double) {
         viewModelScope.launch {
             Timber.d("유저 위치 불러옴")
@@ -172,5 +165,16 @@ class MapViewModel : ViewModel() {
 
     fun buttonGone() {
         _visibility.update { false }
+    }
+
+    fun submitMessage() {
+        viewModelScope.launch {
+            if (userRepository.patchUserMessage(message = _myMessage.value)) {
+                _mapUiEvent.emit(MapUiEvent.MessageSubmit)
+                _myMessage.value = ""
+            } else {
+                _mapUiEvent.emit(MapUiEvent.NetworkErrorEvent())
+            }
+        }
     }
 }
