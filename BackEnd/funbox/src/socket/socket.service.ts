@@ -106,4 +106,13 @@ export class SocketService {
       this.rooms.delete(roomId);
     }
   }
+
+  quitGame(client: Socket, roomId: string) {
+    const room = this.rooms.get(roomId);
+    room.quitGame(client);
+    this.logger.log(`room ${roomId}: quitGame`);
+    room.quit();
+    this.logger.log(`room ${roomId}: quit`);
+    this.rooms.delete(roomId);
+  }
 }

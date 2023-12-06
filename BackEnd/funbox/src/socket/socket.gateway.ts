@@ -77,4 +77,14 @@ export class SocketGateway implements OnGatewayConnection {
     this.logger.log(`verifyAnswer from ${client.data.userId}: ${log}`);
     this.socketService.verifyAnswer(roomId, isCorrect);
   }
+
+  @SubscribeMessage('quitGame')
+  quitGame(
+    @ConnectedSocket() client: Socket,
+    @MessageBody('roomId') roomId: string,
+  ): void {
+    const log = JSON.stringify({ roomId });
+    this.logger.log(`quitGame from ${client.data.userId}: ${log}`);
+    this.socketService.quitGame(client, roomId);
+  }
 }
