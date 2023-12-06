@@ -64,6 +64,11 @@ export class Room {
     this.opponent.emit('lostConnection');
   }
 
+  quitGame(client: Socket) {
+    const target = client.id === this.owner.id ? this.opponent : this.owner;
+    target.emit('quitGame', JSON.stringify({ userId: client.data.userId }));
+  }
+
   quit() {
     delete this.owner.data.roomId;
     delete this.opponent.data.roomId;
