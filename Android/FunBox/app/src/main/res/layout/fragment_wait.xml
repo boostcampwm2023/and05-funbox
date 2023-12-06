@@ -90,7 +90,7 @@
                 android:elevation="10dp"
                 android:padding="16dp"
                 android:scaleType="fitCenter"
-                app:setImage="@{vm.otherUser.profileUrl}" />
+                app:setImage="@{vm.otherUserInfo.profileUrl}" />
 
             <TextView
                 android:id="@+id/side_id_wait"
@@ -100,7 +100,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginEnd="16dp"
-                android:text="@{vm.otherUser.userName}"
+                android:text="@{vm.otherUserInfo.userName}"
                 android:textSize="32sp"
                 tools:text="@string/side_id_wait" />
 
