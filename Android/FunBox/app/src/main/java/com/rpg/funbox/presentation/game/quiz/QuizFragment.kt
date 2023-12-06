@@ -17,6 +17,7 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
 import com.rpg.funbox.presentation.CustomNaverMap
+import com.rpg.funbox.presentation.MapSocket.quitGame
 import com.rpg.funbox.presentation.MapSocket.sendQuizAnswer
 import com.rpg.funbox.presentation.MapSocket.verifyAnswer
 import com.rpg.funbox.presentation.login.AccessPermission
@@ -47,7 +48,7 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
     private fun setBackPressedCallback() {
         backPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                // 방을 폭파시키는 이벤트를 뿌리는 함수
+                viewModel.roomId.value?.let { quitGame(it) }
                 requireActivity().finish()
             }
         }

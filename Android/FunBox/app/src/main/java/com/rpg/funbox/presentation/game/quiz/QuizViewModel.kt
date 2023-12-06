@@ -201,6 +201,7 @@ class QuizViewModel : ViewModel() {
     }
 
     fun setUsersInfo(userId: Int) {
+        Timber.d("Other User: $userId")
         _otherUserId.value = userId
         viewModelScope.launch {
             userRepository.getUserInfo()?.let { userInfo ->
