@@ -1,6 +1,7 @@
 package com.rpg.funbox.presentation.login.title
 
 data class TitleUiState(
-    val success: Boolean = true
+    val networkSuccess: Boolean = true
 ) {
+    val isNaverLoginBtnEnabled: Boolean = (networkSuccess)
 }
