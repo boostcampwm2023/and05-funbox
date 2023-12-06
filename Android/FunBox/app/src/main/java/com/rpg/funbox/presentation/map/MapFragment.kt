@@ -57,7 +57,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     private val viewModel: MapViewModel by activityViewModels()
 
     private lateinit var naverMap: NaverMap
-    private lateinit var mapFragment: MapFragment
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationSource: FusedLocationSource
     private lateinit var applyGameServerData: ApplyGameFromServerData
@@ -69,14 +68,11 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
                     fusedLocationClient =
                         LocationServices.getFusedLocationProviderClient(requireActivity())
-                    //submitUserLocation()
                 }
 
                 permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                     fusedLocationClient =
                         LocationServices.getFusedLocationProviderClient(requireActivity())
-
-                    //submitUserLocation()
 
                 }
 
@@ -154,7 +150,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         map.setOnMapClickListener { _, _ ->
             viewModel.buttonGone()
             viewModel.users.value.forEach {
-                it.isInfoOpen=false
+                it.isInfoOpen = false
                 it.mapPin?.infoWindow?.close()
                 Timber.d("@111111")
                 if (it.isMsg) {
@@ -165,16 +161,16 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
 
         lifecycleScope.launch {
-            viewModel.pastUsers.collect{
-                it.map { user->
-                    user.mapPin?.map=naverMap
+            viewModel.pastUsers.collect {
+                it.map { user ->
+                    user.mapPin?.map = naverMap
                 }
             }
         }
 
-        lifecycleScope.launch{
+        lifecycleScope.launch {
 
-            viewModel.users.collect{
+            viewModel.users.collect {
                 it.map { user ->
                     var adapter =
                         MapProfileAdapter(requireContext(), viewModel.userDetail.value, null)
@@ -223,17 +219,17 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
                                 if (!this.hasInfoWindow() || this.infoWindow == hasMsg) {
                                     viewModel.buttonVisible()
-                                    viewModel.users.value.forEach {user ->
+                                    viewModel.users.value.forEach { user ->
                                         if (user.isMsg) {
                                             user.mapPin?.let { mapPin -> hasMsg.open(mapPin) }
                                         }
                                     }
-                                    user.isInfoOpen=true
+                                    user.isInfoOpen = true
                                     infoWindow.open(this)
                                     Timber.d("@@@@@@")
                                 } else {
                                     viewModel.buttonGone()
-                                    user.isInfoOpen=false
+                                    user.isInfoOpen = false
                                     this.infoWindow?.close()
                                     Timber.d("!!!!!!!")
                                     if (user.isMsg) {
@@ -243,14 +239,15 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                                 true
                             }
 
-                            if(user.isInfoOpen){
+                            if (user.isInfoOpen) {
                                 requireActivity().runOnUiThread {
                                     Handler(Looper.getMainLooper()).postDelayed({
                                         this.infoWindow?.close()
                                         infoWindow.adapter = adapter
                                         infoWindow.open(this)
                                     }, 500)
-                                }}
+                                }
+                            }
                         }
                         launch {
                             user.mapPin = marker
@@ -265,9 +262,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                         Timber.d(user.mapPin?.map.toString())
                     }
                     viewModel.pastUserUpdate(it)
-                    viewModel.pastUsers.value.forEach{user->
-                        user.mapPin?.map=naverMap
-                        if(user.isInfoOpen){
+                    viewModel.pastUsers.value.forEach { user ->
+                        user.mapPin?.map = naverMap
+                        if (user.isInfoOpen) {
                             user.mapPin?.infoWindow?.open(user.mapPin!!)
                         }
                     }
@@ -277,14 +274,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     }
 
     private fun initMapView() {
-
-//        val fm = childFragmentManager
-
-//        val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
-//            ?: MapFragment.newInstance().also {
-//                fm.beginTransaction().add(R.id.map, it).commit()
-//            }
-
         binding.map.getFragment<MapFragment>().getMapAsync(this)
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
@@ -292,16 +281,11 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     private fun socketConnect() {
         mSocket.connect()
         mSocket.on(Socket.EVENT_CONNECT) {
-            // 소켓 서버에 연결이 성공하면 호출됨
             Timber.tag("Connect").d("SOCKET CONNECT")
-        }.on(Socket.EVENT_DISCONNECT) { args ->
-            // 소켓 서버 연결이 끊어질 경우에 호출됨
+        }.on(Socket.EVENT_DISCONNECT) { _ ->
             Timber.tag("Connect").d("SOCKET DISCONNECT")
         }.on(Socket.EVENT_CONNECT_ERROR) { args ->
-            // 소켓 서버 연결 시 오류가 발생할 경우에 호출됨
-            if (args[0] is EngineIOException) {
-                Timber.tag("Disconect").d("SOCKET ERROR")
-            }
+            if (args[0] is EngineIOException) Timber.tag("Disconnect").d("SOCKET ERROR")
         }.on("gameApply") {
             applyGameServerData =
                 Gson().fromJson(it[0].toString(), ApplyGameFromServerData::class.java)
@@ -328,18 +312,13 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     private fun submitUserLocation() {
         if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
             Timer().scheduleAtFixedRate(3000, 3000) {
-
                 lifecycleScope.launch {
-
                     val tmp = fusedLocationClient.getCurrentLocation(
                         Priority.PRIORITY_HIGH_ACCURACY,
                         null
                     ).await()
-                    //viewModel.deleteUserMapPin()
                     viewModel.setUsersLocations(tmp.latitude, tmp.longitude)
-
                 }
-
             }
         }
     }
@@ -380,8 +359,5 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         is MapUiEvent.Toggle -> {
             toggleFab()
         }
-
-        else -> {}
     }
-
 }

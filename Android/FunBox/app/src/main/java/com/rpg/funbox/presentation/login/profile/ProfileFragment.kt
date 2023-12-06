@@ -1,6 +1,5 @@
 package com.rpg.funbox.presentation.login.profile
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
@@ -21,17 +20,19 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 
-@SuppressLint("IntentReset")
 class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_profile) {
 
     private val viewModel: TitleViewModel by activityViewModels()
     private val profileImagePicker =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-                val file = File(absolutelyPath(uri))
+            val path = absolutelyPath(uri)
+            if (path != null) {
+                val file = File(path)
                 val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
                 val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
                 viewModel.selectProfile(uri, body)
+            }
         }
     private val requestMultiPermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
@@ -52,14 +53,14 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(R.layout.fragment_p
         collectLatestFlow(viewModel.profileUiEvent) { handleUiEvent(it) }
     }
 
-    private fun absolutelyPath(uri: Uri?): String {
+    private fun absolutelyPath(uri: Uri?): String? {
         val proj: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
         val cursor: Cursor? =
             uri?.let { requireActivity().contentResolver.query(it, proj, null, null, null) }
         val index = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
         cursor?.moveToFirst()
 
-        return cursor!!.getString(index!!)
+        return index?.let { cursor.getString(it) }
     }
 
     private fun handleUiEvent(event: ProfileUiEvent) = when (event) {

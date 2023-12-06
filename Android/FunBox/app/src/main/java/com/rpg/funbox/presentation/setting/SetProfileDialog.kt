@@ -1,6 +1,5 @@
 package com.rpg.funbox.presentation.setting
 
-import android.annotation.SuppressLint
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
@@ -21,7 +20,6 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 
-@SuppressLint("IntentReset")
 class SetProfileDialog : BaseDialogFragment<DialogProfileChangeBinding>(R.layout.dialog_profile_change) {
 
     private val viewModel: SettingViewModel by activityViewModels()

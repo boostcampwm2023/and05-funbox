@@ -179,14 +179,13 @@ class QuizViewModel : ViewModel() {
                 setFinalScore(Pair(json.first().score.toString(), json.last().score.toString()))
                 showScoreBoard()
             }
+            .on("quitGame") {
+                alertNetworkError()
+            }
             .on("lostConnection") {
-                Timber.d(it.toString())
-
                 alertNetworkError()
             }
             .on("error") {
-                Timber.tag("ERROR").e(it[0].toString())
-
                 setStateNetworkError()
             }
         Timber.d("이벤트 등록")

@@ -46,3 +46,7 @@ data class ScoreFromServerItem(
     val score: Int,
     val username: String
 )
+
+data class QuitGameToServer(
+    val roomId: String
+)

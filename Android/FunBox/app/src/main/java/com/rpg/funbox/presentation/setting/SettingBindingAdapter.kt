@@ -7,6 +7,7 @@ import androidx.databinding.BindingAdapter
 import coil.load
 import com.rpg.funbox.R
 import timber.log.Timber
+import java.io.IOException
 
 @BindingAdapter("app:imageUrlBtn")
 fun ImageButton.loadImage(uri: Uri?) {

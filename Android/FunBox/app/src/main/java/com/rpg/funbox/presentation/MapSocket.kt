@@ -3,6 +3,7 @@ package com.rpg.funbox.presentation
 import com.google.gson.Gson
 import com.rpg.funbox.presentation.map.ApplyGameToServerData
 import com.rpg.funbox.presentation.map.GameApplyAnswerToServerData
+import com.rpg.funbox.presentation.map.QuitGameToServer
 import com.rpg.funbox.presentation.map.QuizAnswerToServer
 import com.rpg.funbox.presentation.map.SocketApplication
 import com.rpg.funbox.presentation.map.VerifyAnswerToServer
@@ -25,18 +26,23 @@ object MapSocket {
     }
 
     fun acceptGame(roomId: String) {
-        val json = Gson().toJson(GameApplyAnswerToServerData(roomId,"ACCEPT"))
-        mSocket.emit("gameApplyAnswer",JSONObject(json))
+        val json = Gson().toJson(GameApplyAnswerToServerData(roomId, "ACCEPT"))
+        mSocket.emit("gameApplyAnswer", JSONObject(json))
     }
 
     fun rejectGame(roomId: String) {
-        val json = Gson().toJson(GameApplyAnswerToServerData(roomId,"REJECT"))
-        mSocket.emit("gameApplyAnswer",JSONObject(json))
+        val json = Gson().toJson(GameApplyAnswerToServerData(roomId, "REJECT"))
+        mSocket.emit("gameApplyAnswer", JSONObject(json))
     }
 
     fun applyGame(id: Int) {
         val json = Gson().toJson(ApplyGameToServerData(id))
-        mSocket.emit("gameApply",JSONObject(json))
+        mSocket.emit("gameApply", JSONObject(json))
         Timber.d("Other Id: $id")
+    }
+
+    fun quitGame(roomId: String) {
+        val json = Gson().toJson(QuitGameToServer(roomId))
+        mSocket.emit("quitGame", JSONObject(json))
     }
 }
