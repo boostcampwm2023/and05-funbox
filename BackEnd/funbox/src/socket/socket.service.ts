@@ -34,8 +34,8 @@ export class SocketService {
         this.userIdToClient.delete(id);
         this.logger.log(`Disconnected: ${info}`);
         const roomId = client.data.roomId;
-        if (roomId) {
-          const room = this.rooms.get(roomId);
+        const room = this.rooms.get(roomId);
+        if (room) {
           room.lostConnection();
           this.logger.log(`room ${roomId}: lostConnection`);
           room.quit();
@@ -78,6 +78,8 @@ export class SocketService {
     ownerClient.emit('gameApplyAnswer', data);
 
     if (answer === GameApplyAnswer.REJECT) {
+      room.quit();
+      this.logger.log(`room ${roomId}: quit`);
       this.rooms.delete(roomId);
     } else {
       this.rooms.get(roomId).nextQuiz();
