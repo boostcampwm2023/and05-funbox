@@ -14,7 +14,7 @@ class GetGameDialog : BaseDialogFragment<DialogGetGameBinding>(R.layout.dialog_g
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-
+        isCancelable=false
         binding.btnOk.setOnClickListener {
             viewModel.toGame()
             dismiss()

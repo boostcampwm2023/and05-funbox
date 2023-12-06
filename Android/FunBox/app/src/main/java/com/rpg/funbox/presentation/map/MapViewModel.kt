@@ -49,12 +49,19 @@ class MapViewModel : ViewModel() {
     private val _visibility = MutableStateFlow(false)
     val visibility: StateFlow<Boolean> = _visibility
 
+    private val _applyGameFromServerData = MutableStateFlow<ApplyGameFromServerData?>(null)
+    val applyGameFromServerData = _applyGameFromServerData.asStateFlow()
+
     fun setOtherUser(userId: Int) {
         viewModelScope.launch {
             userRepository.getSpecificUserInfo(userId = userId)?.let { specificUserInfo ->
                 _otherUser.value = specificUserInfo
             }
         }
+    }
+
+    fun setApplyGameData(applyGameFromServerData: ApplyGameFromServerData){
+        _applyGameFromServerData.value=applyGameFromServerData
     }
 
     fun startMessageDialog() {
