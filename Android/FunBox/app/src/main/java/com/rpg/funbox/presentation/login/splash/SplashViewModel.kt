@@ -9,6 +9,7 @@ import com.rpg.funbox.data.repository.UsersLocationRepositoryImpl
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class SplashViewModel : ViewModel() {
 
@@ -24,17 +25,32 @@ class SplashViewModel : ViewModel() {
 
     fun getUsersLocations(locX: Double, locY: Double) {
         viewModelScope.launch {
-            when (usersLocationRepository.getUsersLocation(locX, locY)) {
-                null -> {
-                    _splashUiEvent.emit(SplashUiEvent.Unauthorized)
-                }
-                else -> {
-                    if (validateUserName(userRepository.getUserInfo()?.userName)) {
-                        _splashUiEvent.emit(SplashUiEvent.GetUsersLocationsSuccess)
-                    } else {
-                        _splashUiEvent.emit(SplashUiEvent.Unauthorized)
+            try {
+                usersLocationRepository.getUsersLocation(locX, locY)?.let { userLocationResponse ->
+                    when (userLocationResponse.resultMessage) {
+                        "OK" -> {
+                            if (validateUserName(userRepository.getUserInfo()?.userName)) {
+                                _splashUiEvent.emit(SplashUiEvent.GetUsersLocationsSuccess)
+                                Timber.d("OK")
+                            } else {
+                                _splashUiEvent.emit(SplashUiEvent.Unauthorized)
+                                Timber.d("No Nickname")
+                            }
+                        }
+
+                        "Unauthorized" -> {
+                            _splashUiEvent.emit(SplashUiEvent.Unauthorized)
+                            Timber.d("Unauthorized")
+                        }
+
+                        else -> {
+                            _splashUiEvent.emit(SplashUiEvent.NetworkErrorEvent())
+                            Timber.d("else")
+                        }
                     }
                 }
+            } catch (e: Exception) {
+                _splashUiEvent.emit(SplashUiEvent.NetworkErrorEvent())
             }
         }
     }
