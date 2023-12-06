@@ -4,9 +4,13 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.google.gson.Gson
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.FragmentSettingBinding
 import com.rpg.funbox.presentation.BaseFragment
+import com.rpg.funbox.presentation.MapSocket.mSocket
+import com.rpg.funbox.presentation.map.ApplyGameFromServerData
+import timber.log.Timber
 
 class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_setting) {
 
@@ -26,17 +30,18 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
         }
 
         is SettingUiEvent.SetName -> {
-            // findNavController().navigate(R.id.action_settingFragment_to_SetNameDialog)
-            SetNameDialog().show(childFragmentManager, "")
+            findNavController().navigate(R.id.action_settingFragment_to_setNameDialog)
+            //SetNameDialog().show(childFragmentManager, "")
         }
 
         is SettingUiEvent.SetProfile -> {
-            // findNavController().navigate(R.id.action_settingFragment_to_SetProfileDialog)
-            SetProfileDialog().show(childFragmentManager, "")
+            findNavController().navigate(R.id.action_settingFragment_to_setProfileDialog)
+            //SetProfileDialog().show(childFragmentManager, "")
         }
 
         is SettingUiEvent.StartWithdrawal -> {
-            WithdrawalDialog().show(childFragmentManager, "")
+            findNavController().navigate(R.id.action_settingFragment_to_withdrawalDialog)
+            //WithdrawalDialog().show(childFragmentManager, "")
         }
 
         else -> {}

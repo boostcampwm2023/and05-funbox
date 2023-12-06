@@ -5,6 +5,7 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.UiThread
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.naver.maps.geometry.LatLng
@@ -85,11 +86,14 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
         }
 
         is QuizUiEvent.QuizAnswerSubmit -> {
+            findNavController().navigate(R.id.action_QuizFragment_to_loadingDialog)
+            //LoadingDialog().show(childFragmentManager,"loading")
             viewModel.roomId.value?.let { sendQuizAnswer(it, viewModel.latestAnswer.value) }
         }
 
         is QuizUiEvent.QuizAnswerCheckStart -> {
-            AnswerCheckFragment().show(childFragmentManager, "AnswerCheckStart")
+            findNavController().navigate(R.id.action_QuizFragment_to_answerCheckFragment)
+            //AnswerCheckFragment().show(childFragmentManager, "AnswerCheckStart")
         }
 
         is QuizUiEvent.QuizAnswerCheckRight -> {
@@ -101,11 +105,13 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
         }
 
         is QuizUiEvent.QuizNetworkDisconnected -> {
-            NetworkAlertFragment().show(childFragmentManager, "NetworkDisconnected")
+            findNavController().navigate(R.id.action_QuizFragment_to_networkAlertFragment)
+            //NetworkAlertFragment().show(childFragmentManager, "NetworkDisconnected")
         }
 
         is QuizUiEvent.QuizScoreBoard -> {
-            ScoreBoardFragment().show(childFragmentManager, "ScoreBoard")
+            findNavController().navigate(R.id.action_QuizFragment_to_scoreBoardFragment)
+            //ScoreBoardFragment().show(childFragmentManager, "ScoreBoard")
         }
 
         else -> {}
