@@ -108,24 +108,38 @@ class MapViewModel : ViewModel() {
             Timber.d("유저 위치 불러옴")
             _usersLocations.value = usersLocationRepository.getUsersLocation(locX, locY)
             _usersLocations.value?.let { list ->
-                val newUsers = mutableListOf<User>()
+                val newUsers = _users.value.toMutableList()
                 list.forEach { location ->
                     if ((location.locX != null) && (location.locY != null)) {
-                        newUsers.add(
-                            User(
-                                200,
-                                location.id,
-                                LatLng(location.locX, location.locY),
-                                location.username,
-                                location.isMsgInAnHour,
+                        newUsers.find {it.id == location.id}?.let {
+                            val temp = it.copy(
+                                loc = LatLng(location.locX, location.locY),
                             )
-                        )
-                        _users.value.forEach {
-                            if(it.id==newUsers.last().id){
-                                newUsers.last().isInfoOpen=it.isInfoOpen
-                                newUsers.last().marker=it.marker
-                            }
+                            val idx = newUsers.indexOf(it)
+                            newUsers[idx].mapPin?.map = null
+                            newUsers[idx].mapPin =null
+                            Timber.d(newUsers[idx].toString())
+                            Timber.d(temp.toString())
+                            newUsers.removeAt(idx)
+                            newUsers.add(temp)
+                        }?: run{
+                            newUsers.add(
+                                User(
+                                    200,
+                                    location.id,
+                                    LatLng(location.locX, location.locY),
+                                    location.username,
+                                    location.isMsgInAnHour,
+                                )
+                            )
                         }
+
+//                        _users.value.forEach {
+//                            if(it.id==newUsers.last().id){
+//                                newUsers.last().isInfoOpen=it.isInfoOpen
+//                                newUsers.last().marker=it.marker
+//                            }
+//                        }
                     } else {
                         newUsers.add(
                             User(
@@ -138,7 +152,9 @@ class MapViewModel : ViewModel() {
                         )
                     }
                 }
-                _users.update { newUsers }
+                newUsers.forEach {Timber.d( it.mapPin?.map.toString()) }
+
+                _users.update { newUsers.toList() }
             }
         }
     }

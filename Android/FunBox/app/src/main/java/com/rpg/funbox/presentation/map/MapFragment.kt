@@ -161,11 +161,12 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 }
             }
         }
-        
+
 
         lifecycleScope.launch {
 
             viewModel.users.collect {
+                Timber.d(it.toString())
                 it.map { user ->
                     var adapter =
                         MapProfileAdapter(requireContext(), viewModel.userDetail.value, null)
@@ -249,6 +250,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                             user.mapPin?.map = naverMap
                         }
                     }
+                    Timber.d(it.toString())
                 }
 
             }
@@ -296,14 +298,14 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             Timer().scheduleAtFixedRate(3000, 3000) {
                 lifecycleScope.launch {
 
-                    withContext(Dispatchers.Main) {
-                        viewModel.users.value.forEach { user ->
-                            Timber.d(user.id.toString())
-                            Timber.d(user.mapPin?.map.toString())
-                            user.mapPin?.map = null
-                            Timber.d(user.mapPin?.map.toString())
-                        }
-                    }
+//                    withContext(Dispatchers.Main) {
+//                        viewModel.users.value.forEach { user ->
+//                            Timber.d(user.id.toString())
+//                            Timber.d(user.mapPin?.map.toString())
+//                            user.mapPin?.map = null
+//                            Timber.d(user.mapPin?.map.toString())
+//                        }
+//                    }
 
                     val tmp = fusedLocationClient.getCurrentLocation(
                         Priority.PRIORITY_HIGH_ACCURACY,

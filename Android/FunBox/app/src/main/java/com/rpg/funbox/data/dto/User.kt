@@ -7,7 +7,7 @@ import com.naver.maps.map.overlay.Marker
 data class User(
     val status: Int,
     val id: Int,
-    val loc: LatLng,
+    var loc: LatLng,
     val name: String?,
     val isMsg: Boolean,
     var mapPin: Marker? = null,
