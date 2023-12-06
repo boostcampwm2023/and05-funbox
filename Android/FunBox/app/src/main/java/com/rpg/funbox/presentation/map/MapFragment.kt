@@ -161,15 +161,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 }
             }
         }
-
-
-        lifecycleScope.launch {
-            viewModel.users.collect {
-                it.map { user ->
-                    user.mapPin?.map = naverMap
-                }
-            }
-        }
+        
 
         lifecycleScope.launch {
 
