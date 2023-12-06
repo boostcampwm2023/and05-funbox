@@ -110,6 +110,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
         viewModel.buttonGone()
         isFabOpen = false
+        viewModel.users.value.forEach {user->
+            user.isInfoOpen = false
+        }
     }
 
     @UiThread
@@ -161,7 +164,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
 
         lifecycleScope.launch {
-            viewModel.pastUsers.collect {
+            viewModel.users.collect {
                 it.map { user ->
                     user.mapPin?.map = naverMap
                 }
@@ -251,24 +254,11 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                         }
                         launch {
                             user.mapPin = marker
+                            user.mapPin?.map = naverMap
                         }
                     }
                 }
-                withContext(Dispatchers.Main) {
-                    viewModel.pastUsers.value.forEach { user ->
-                        Timber.d(user.id.toString())
-                        Timber.d(user.mapPin?.map.toString())
-                        user.mapPin?.map = null
-                        Timber.d(user.mapPin?.map.toString())
-                    }
-                    viewModel.pastUserUpdate(it)
-                    viewModel.pastUsers.value.forEach { user ->
-                        user.mapPin?.map = naverMap
-                        if (user.isInfoOpen) {
-                            user.mapPin?.infoWindow?.open(user.mapPin!!)
-                        }
-                    }
-                }
+
             }
         }
     }
@@ -313,6 +303,16 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
             Timer().scheduleAtFixedRate(3000, 3000) {
                 lifecycleScope.launch {
+
+                    withContext(Dispatchers.Main) {
+                        viewModel.users.value.forEach { user ->
+                            Timber.d(user.id.toString())
+                            Timber.d(user.mapPin?.map.toString())
+                            user.mapPin?.map = null
+                            Timber.d(user.mapPin?.map.toString())
+                        }
+                    }
+
                     val tmp = fusedLocationClient.getCurrentLocation(
                         Priority.PRIORITY_HIGH_ACCURACY,
                         null

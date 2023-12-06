@@ -28,9 +28,6 @@ class MapViewModel : ViewModel() {
     private val _myMessage = MutableStateFlow("")
     val myMessage = _myMessage.asStateFlow()
 
-    private val _pastUsers = MutableStateFlow<List<User>>(listOf())
-    val pastUsers = _pastUsers.asStateFlow()
-
     private val _otherUser = MutableStateFlow<UserInfoResponse?>(null)
     val otherUser = _otherUser.asStateFlow()
 
@@ -111,10 +108,6 @@ class MapViewModel : ViewModel() {
             Timber.d("${user.id}: ${user.mapPin.toString()}")
             user.mapPin?.map = null
         }
-    }
-
-    fun pastUserUpdate(users:List<User>){
-        _pastUsers.value=users
     }
 
     fun setUsersLocations(locX: Double, locY: Double) {
