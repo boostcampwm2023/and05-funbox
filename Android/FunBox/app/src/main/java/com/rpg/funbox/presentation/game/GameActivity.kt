@@ -8,7 +8,6 @@ import com.rpg.funbox.data.JwtDecoder
 import com.rpg.funbox.databinding.ActivityGameBinding
 import com.rpg.funbox.presentation.MapSocket
 import com.rpg.funbox.presentation.game.quiz.QuizViewModel
-import timber.log.Timber
 
 class GameActivity : AppCompatActivity() {
 
@@ -17,7 +16,6 @@ class GameActivity : AppCompatActivity() {
 
     private val myUserId =
         JwtDecoder.getUser(MainApplication.mySharedPreferences.getJWT("jwt", "")).id
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGameBinding.inflate(layoutInflater)
