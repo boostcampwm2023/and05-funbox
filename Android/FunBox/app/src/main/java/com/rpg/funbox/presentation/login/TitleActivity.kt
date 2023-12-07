@@ -8,7 +8,6 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.activity.viewModels
-import com.rpg.funbox.R
 import com.rpg.funbox.databinding.ActivityTitleBinding
 import com.rpg.funbox.presentation.login.title.TitleViewModel
 
@@ -19,7 +18,10 @@ class TitleActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_title)
+        binding = ActivityTitleBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.vm = viewModel
     }
 
     override fun onStop() {

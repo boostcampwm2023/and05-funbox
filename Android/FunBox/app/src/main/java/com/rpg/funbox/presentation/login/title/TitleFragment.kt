@@ -12,12 +12,16 @@ import com.rpg.funbox.presentation.BaseFragment
 import com.rpg.funbox.presentation.MainActivity
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.OAuthLoginCallback
+import com.rpg.funbox.presentation.slideLeft
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import timber.log.Timber
+import kotlin.properties.Delegates
 
 class TitleFragment : BaseFragment<FragmentTitleBinding>(R.layout.fragment_title) {
 
     private val viewModel: TitleViewModel by activityViewModels()
+    private var isNetworkError by Delegates.notNull<Boolean>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -25,6 +29,12 @@ class TitleFragment : BaseFragment<FragmentTitleBinding>(R.layout.fragment_title
 
         initNaverIdLoginSdk()
         collectLatestFlow(viewModel.titleUiEvent) { handleUiEvent(it) }
+
+        isNetworkError = requireActivity().intent.getBooleanExtra("ServerError", false)
+        Timber.d("$isNetworkError")
+        if (isNetworkError) {
+            viewModel.alertNetworkError()
+        }
     }
 
     private fun initNaverIdLoginSdk() {
@@ -76,9 +86,11 @@ class TitleFragment : BaseFragment<FragmentTitleBinding>(R.layout.fragment_title
                 Toast.LENGTH_SHORT
             ).show()
             startActivity(Intent(requireContext(), MainActivity::class.java))
+            requireActivity().slideLeft()
         }
 
         is TitleUiEvent.NetworkErrorEvent -> {
+            Timber.d("Network Error")
             showSnackBar(R.string.network_error_message)
         }
     }
