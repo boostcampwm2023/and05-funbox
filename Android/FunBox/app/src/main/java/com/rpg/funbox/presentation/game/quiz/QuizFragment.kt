@@ -110,8 +110,9 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
         }
 
         is QuizUiEvent.QuizScoreBoard -> {
-            findNavController().navigate(R.id.action_QuizFragment_to_scoreBoardFragment)
-            //ScoreBoardFragment().show(childFragmentManager, "ScoreBoard")
+            viewModel.setUserQuizStateTrue()
+            //findNavController().navigate(R.id.action_QuizFragment_to_scoreBoardFragment)
+            ScoreBoardFragment().show(childFragmentManager, "ScoreBoard")
         }
 
         else -> {}

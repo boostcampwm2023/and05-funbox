@@ -136,6 +136,7 @@ class MainActivity : AppCompatActivity() {
             mapViewModel.setOtherUser(applyGameServerData.userId.toInt())
             mapViewModel.setApplyGameData(applyGameServerData)
             mapViewModel.getGame()
+            settingViewModel.getGame()
         }
     }
 }

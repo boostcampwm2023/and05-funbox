@@ -83,6 +83,12 @@ class QuizViewModel : ViewModel() {
         _latestAnswer.value = ""
     }
 
+    fun setUserQuizStateTrue() {
+        _quizUiState.update { uiState ->
+            uiState.copy(answerWriteState = true)
+        }
+    }
+
     private fun setLatestQuiz(quiz: String) {
         _latestQuiz.value = quiz
     }

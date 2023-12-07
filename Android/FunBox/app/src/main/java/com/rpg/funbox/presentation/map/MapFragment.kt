@@ -322,8 +322,8 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }
 
         is MapUiEvent.GetGame -> {
-            findNavController().navigate(R.id.action_mapFragment_to_getGameDialog)
-            //GetGameDialog().show(parentFragmentManager, "getGame")
+            //findNavController().navigate(R.id.action_mapFragment_to_getGameDialog)
+            GetGameDialog().show(parentFragmentManager, "getGame")
         }
 
         is MapUiEvent.ToSetting -> {

@@ -3,9 +3,13 @@ package com.rpg.funbox.presentation.game.quiz
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.DialogLoadingBinding
 import com.rpg.funbox.presentation.BaseDialogFragment
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class LoadingDialog : BaseDialogFragment<DialogLoadingBinding>(R.layout.dialog_loading) {
 
@@ -15,8 +19,13 @@ class LoadingDialog : BaseDialogFragment<DialogLoadingBinding>(R.layout.dialog_l
         super.onViewCreated(view, savedInstanceState)
         binding.vm=viewModel
         isCancelable=false
-        if(viewModel.quizUiState.value.isUserQuizState){
-            dismiss()
+        lifecycleScope.launch {
+            viewModel.quizUiState.collect{
+                Timber.d(viewModel.quizUiState.value.isUserQuizState.toString())
+                if(it.isUserQuizState){
+                    dismiss()
+                }
+            }
         }
     }
 
