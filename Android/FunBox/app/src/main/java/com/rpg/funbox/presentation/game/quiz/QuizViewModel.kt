@@ -59,7 +59,7 @@ class QuizViewModel : ViewModel() {
 
     val chatAdapter = ChatAdapter()
 
-    private val _chatMessages = MutableStateFlow<MutableList<String>>(mutableListOf())
+    private val _chatMessages = MutableStateFlow<MutableList<MessageItem>>(mutableListOf())
     val chatMessages = _chatMessages.asStateFlow()
 
     val sendMessage = MutableStateFlow<String>("")
@@ -211,14 +211,14 @@ class QuizViewModel : ViewModel() {
             .on("directMessage") {
                 val json = Gson().fromJson(it[0].toString(), Chat::class.java)
                 Timber.d("${json.message}")
-                addMessage(json.message)
+                addMessage(MessageItem(1, json.message))
                 receiveMessage()
             }
         Timber.d("이벤트 등록")
         setQuizGame()
     }
 
-    fun addMessage(message:String){
+    fun addMessage(message:MessageItem){
         _chatMessages.value.add(message)
     }
 

@@ -113,7 +113,7 @@ class MapViewModel : ViewModel() {
     fun setUsersLocations(locX: Double, locY: Double) {
         viewModelScope.launch {
             Timber.d("유저 위치 불러옴")
-            _usersLocations.value = usersLocationRepository.getUsersLocation(locX, locY)
+            _usersLocations.value = usersLocationRepository.getUsersLocation(locX, locY).userLocations
             _usersLocations.value?.let { list ->
                 val newUsers = mutableListOf<User>()
                 list.forEach { location ->

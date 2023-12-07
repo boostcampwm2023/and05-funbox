@@ -11,12 +11,12 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:background="@drawable/round_radius"
-        android:backgroundTint="#C8E1DE"
+        android:backgroundTint="#DFAEBF"
         android:padding="10dp"
         android:textColor="@color/black"
         android:textSize="21sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tool:text="abcdfadfadsf" />
 

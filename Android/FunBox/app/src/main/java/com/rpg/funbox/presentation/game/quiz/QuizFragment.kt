@@ -128,7 +128,7 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
 
         is QuizUiEvent.SendMessage -> {
             send(viewModel.otherUserId.value, viewModel.sendMessage.value)
-            viewModel.addMessage(viewModel.sendMessage.value)
+            viewModel.addMessage(MessageItem(0, viewModel.sendMessage.value))
             Timber.d("${viewModel.chatMessages}")
         }
 
