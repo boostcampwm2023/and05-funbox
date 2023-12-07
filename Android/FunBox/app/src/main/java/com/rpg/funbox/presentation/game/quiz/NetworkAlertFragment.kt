@@ -18,6 +18,8 @@ class NetworkAlertFragment : BaseDialogFragment<FragmentNetworkAlertBinding>(R.l
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
 
+        isCancelable = false
+
         lifecycleScope.launch {
             viewModel.quizUiEvent.collectLatest {
                 if (it == QuizUiEvent.QuizFinish) {
