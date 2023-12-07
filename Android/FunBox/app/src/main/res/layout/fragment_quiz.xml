@@ -123,7 +123,7 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <com.naver.maps.map.MapView
+        <androidx.fragment.app.FragmentContainerView
             android:id="@+id/map_view_quiz"
             android:name="com.naver.maps.map.MapFragment"
             android:layout_width="0dp"
