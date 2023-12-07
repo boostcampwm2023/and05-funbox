@@ -73,7 +73,7 @@ export class SocketService {
     if (answer === GameApplyAnswer.REJECT) {
       this.gameService.deleteGameRoom(roomId);
     } else {
-      this.gameService.startGame(roomId, 2);
+      this.gameService.startGame(roomId, 4);
     }
   }
 
