@@ -7,6 +7,7 @@ import com.rpg.funbox.data.dto.UserInfoResponse
 import com.rpg.funbox.data.repository.UserRepository
 import com.rpg.funbox.data.repository.UserRepositoryImpl
 import com.rpg.funbox.presentation.MapSocket
+import com.rpg.funbox.presentation.map.Chat
 import com.rpg.funbox.presentation.map.GameApplyAnswerFromServerData
 import com.rpg.funbox.presentation.map.QuizAnswerFromServer
 import com.rpg.funbox.presentation.map.QuizFromServer
@@ -55,6 +56,13 @@ class QuizViewModel : ViewModel() {
 
     private val _quizUiState = MutableStateFlow<QuizUiState>(QuizUiState())
     val quizUiState = _quizUiState.asStateFlow()
+
+    val chatAdapter = ChatAdapter()
+
+    private val _chatMessages = MutableStateFlow<MutableList<String>>(mutableListOf())
+    val chatMessages = _chatMessages.asStateFlow()
+
+    val sendMessage = MutableStateFlow<String>("")
 
     private fun setQuizGame() {
         viewModelScope.launch {
@@ -106,6 +114,12 @@ class QuizViewModel : ViewModel() {
     private fun setStateNetworkError() {
         viewModelScope.launch {
             _quizUiEvent.emit(QuizUiEvent.NetworkErrorEvent())
+        }
+    }
+
+    private fun receiveMessage() {
+        viewModelScope.launch {
+            _quizUiEvent.emit(QuizUiEvent.ReceiveMessage)
         }
     }
 
@@ -194,8 +208,18 @@ class QuizViewModel : ViewModel() {
             .on("error") {
                 setStateNetworkError()
             }
+            .on("directMessage") {
+                val json = Gson().fromJson(it[0].toString(), Chat::class.java)
+                Timber.d("${json.message}")
+                addMessage(json.message)
+                receiveMessage()
+            }
         Timber.d("이벤트 등록")
         setQuizGame()
+    }
+
+    fun addMessage(message:String){
+        _chatMessages.value.add(message)
     }
 
     fun setUserState(state: Boolean) {
@@ -245,6 +269,13 @@ class QuizViewModel : ViewModel() {
                 uiState.copy(answerValidState = false, answerWriteState = false)
             }
             _latestAnswer.value = ""
+        }
+    }
+
+    fun sendMessage() {
+        viewModelScope.launch {
+            _quizUiEvent.emit(QuizUiEvent.SendMessage)
+            sendMessage.value = ""
         }
     }
 

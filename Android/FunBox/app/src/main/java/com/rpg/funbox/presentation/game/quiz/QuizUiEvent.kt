@@ -19,4 +19,8 @@ sealed class QuizUiEvent {
     data object QuizScoreBoard : QuizUiEvent()
 
     data object QuizFinish : QuizUiEvent()
+
+    data object SendMessage : QuizUiEvent()
+
+    data object ReceiveMessage : QuizUiEvent()
 }
