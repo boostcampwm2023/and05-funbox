@@ -80,4 +80,15 @@ export class SocketGateway implements OnGatewayConnection {
     this.logger.log(`quitGame from ${client.data.userId}`);
     this.socketService.quitGame(client);
   }
+
+  @SubscribeMessage('directMessage')
+  directMessage(
+    @ConnectedSocket() client: Socket,
+    @MessageBody('userId', ParseIntPipe) userId: number,
+    @MessageBody('message') message: string,
+  ): void {
+    const log = JSON.stringify({ userId, message });
+    this.logger.log(`directMessage from ${client.data.userId}: ${log}`);
+    this.socketService.directMessage(client, userId, message);
+  }
 }

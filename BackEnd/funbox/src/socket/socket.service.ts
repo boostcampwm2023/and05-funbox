@@ -108,4 +108,13 @@ export class SocketService {
     }
     return roomId;
   }
+
+  directMessage(client: Socket, userId: number, message: string) {
+    const receiver = this.userIdToClient.get(userId);
+    if (!receiver) return;
+
+    const data = JSON.stringify({ userId: client.data.userId, message });
+    this.logger.log(`directMessage to ${receiver.data.userId}: ${data}`);
+    receiver.emit('directMessage', data);
+  }
 }
