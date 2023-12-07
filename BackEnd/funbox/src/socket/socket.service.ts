@@ -1,19 +1,19 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 import { GameApplyAnswer } from './enum/game-apply-answer.enum';
-import { Room } from './room';
+import { GameService } from './game.service';
 
 @Injectable()
 export class SocketService {
   private userIdToClient: Map<number, Socket> = new Map();
-  private rooms: Map<string, Room> = new Map();
   private logger: Logger = new Logger('SocketService');
 
   constructor(
     private authService: AuthService,
     private userService: UsersService,
+    private gameService: GameService,
   ) {}
 
   async handleConnection(client: Socket) {
@@ -34,13 +34,9 @@ export class SocketService {
         this.userIdToClient.delete(id);
         this.logger.log(`Disconnected: ${info}`);
         const roomId = client.data.roomId;
-        const room = this.rooms.get(roomId);
-        if (room) {
-          room.lostConnection();
-          this.logger.log(`room ${roomId}: lostConnection`);
-          room.quit();
-          this.logger.log(`room ${roomId}: quit`);
-          this.rooms.delete(roomId);
+        if (roomId) {
+          this.gameService.lostConnection(roomId);
+          this.gameService.deleteGameRoom(roomId);
         }
       });
     } catch (error) {
@@ -63,58 +59,53 @@ export class SocketService {
       const data = JSON.stringify({ userId, roomId });
       this.logger.log(`gameApply to ${opponentClient.data.userId}: ${data}`);
       opponentClient.emit('gameApply', data);
-      this.rooms.set(roomId, new Room(roomId, client, opponentClient));
+      this.gameService.createGameRoom(client, opponentClient, roomId);
     }
   }
 
-  gameApplyAnswer(roomId: string, answer: GameApplyAnswer) {
-    const room = this.rooms.get(roomId);
-    if (!room) {
-      throw new NotFoundException();
-    }
-    const ownerClient = room.owner;
+  gameApplyAnswer(client: Socket, answer: GameApplyAnswer) {
+    const roomId = this.getRoomId(client);
+
     const data = JSON.stringify({ answer });
-    this.logger.log(`gameApplyAnswer to ${ownerClient.data.userId}: ${data}`);
-    ownerClient.emit('gameApplyAnswer', data);
+    this.logger.log(`gameApplyAnswer to room(${roomId}): ${data}`);
+    client.to(roomId).emit('gameApplyAnswer', data);
 
     if (answer === GameApplyAnswer.REJECT) {
-      room.quit();
-      this.logger.log(`room ${roomId}: quit`);
-      this.rooms.delete(roomId);
+      this.gameService.deleteGameRoom(roomId);
     } else {
-      this.rooms.get(roomId).nextQuiz();
-      this.logger.log(`room ${roomId}: nextQuiz`);
+      this.gameService.startGame(roomId, 2);
     }
   }
 
-  quizAnswer(roomId: string, answer: string) {
-    const room = this.rooms.get(roomId);
-    room.deliverAnswer(answer);
-    this.logger.log(`room ${roomId}: deliverAnswer`);
+  quizAnswer(client: Socket, answer: string) {
+    const roomId = this.getRoomId(client);
+
+    const data = JSON.stringify({ roomId, answer });
+    this.logger.log(`quizAnswer to room(${roomId}): ${data}`);
+    client.to(roomId).emit('quizAnswer', data);
   }
 
-  verifyAnswer(roomId: string, isCorrect: boolean) {
-    const room = this.rooms.get(roomId);
-    room.verifyAnswer(isCorrect);
-    this.logger.log(`room ${roomId}: verifyAnswer`);
-    if (room.round < room.quizzes.length) {
-      room.nextQuiz();
-      this.logger.log(`room ${roomId}: nextQuiz`);
-    } else {
-      room.showScore();
-      this.logger.log(`room ${roomId}: showScore`);
-      room.quit();
-      this.logger.log(`room ${roomId}: quit`);
-      this.rooms.delete(roomId);
+  verifyAnswer(client: Socket, isCorrect: boolean) {
+    const roomId = this.getRoomId(client);
+
+    this.gameService.verifyAnswer(roomId, isCorrect);
+  }
+
+  quitGame(client: Socket) {
+    const roomId = this.getRoomId(client);
+
+    const data = JSON.stringify({ userId: client.data.userId });
+    this.logger.log(`quitGame to room(${roomId}): ${data}`);
+    client.to(roomId).emit('quitGame', data);
+
+    this.gameService.deleteGameRoom(roomId);
+  }
+
+  getRoomId(client: Socket): string {
+    const roomId = client.data.roomId;
+    if (!roomId) {
+      throw new BadRequestException();
     }
-  }
-
-  quitGame(client: Socket, roomId: string) {
-    const room = this.rooms.get(roomId);
-    room.quitGame(client);
-    this.logger.log(`room ${roomId}: quitGame`);
-    room.quit();
-    this.logger.log(`room ${roomId}: quit`);
-    this.rooms.delete(roomId);
+    return roomId;
   }
 }

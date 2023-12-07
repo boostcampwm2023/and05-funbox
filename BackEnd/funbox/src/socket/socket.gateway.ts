@@ -48,43 +48,36 @@ export class SocketGateway implements OnGatewayConnection {
   @SubscribeMessage('gameApplyAnswer')
   gameApplyAnswer(
     @ConnectedSocket() client: Socket,
-    @MessageBody('roomId') roomId: string,
     @MessageBody('answer', AnswerValidationPipe) answer: GameApplyAnswer,
   ): void {
-    const log = JSON.stringify({ roomId, answer });
+    const log = JSON.stringify({ answer });
     this.logger.log(`gameApplyAnswer from ${client.data.userId}: ${log}`);
-    this.socketService.gameApplyAnswer(roomId, answer);
+    this.socketService.gameApplyAnswer(client, answer);
   }
 
   @SubscribeMessage('quizAnswer')
   quizAnswer(
     @ConnectedSocket() client: Socket,
-    @MessageBody('roomId') roomId: string,
     @MessageBody('answer') answer: string,
   ): void {
-    const log = JSON.stringify({ roomId, answer });
+    const log = JSON.stringify({ answer });
     this.logger.log(`quizAnswer from ${client.data.userId}: ${log}`);
-    this.socketService.quizAnswer(roomId, answer);
+    this.socketService.quizAnswer(client, answer);
   }
 
   @SubscribeMessage('verifyAnswer')
   verifyAnswer(
     @ConnectedSocket() client: Socket,
-    @MessageBody('roomId') roomId: string,
     @MessageBody('isCorrect', ParseBoolPipe) isCorrect: boolean,
   ): void {
-    const log = JSON.stringify({ roomId, isCorrect });
+    const log = JSON.stringify({ isCorrect });
     this.logger.log(`verifyAnswer from ${client.data.userId}: ${log}`);
-    this.socketService.verifyAnswer(roomId, isCorrect);
+    this.socketService.verifyAnswer(client, isCorrect);
   }
 
   @SubscribeMessage('quitGame')
-  quitGame(
-    @ConnectedSocket() client: Socket,
-    @MessageBody('roomId') roomId: string,
-  ): void {
-    const log = JSON.stringify({ roomId });
-    this.logger.log(`quitGame from ${client.data.userId}: ${log}`);
-    this.socketService.quitGame(client, roomId);
+  quitGame(@ConnectedSocket() client: Socket): void {
+    this.logger.log(`quitGame from ${client.data.userId}`);
+    this.socketService.quitGame(client);
   }
 }
