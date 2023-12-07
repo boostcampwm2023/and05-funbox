@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { User } from 'src/users/user.entity';
@@ -15,12 +15,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload) {
     const { id } = payload;
-    const userAuthDto = UserAuthDto.of(
-      await User.findOne({ where: { id: id } }),
-    );
-    if (!userAuthDto) {
-      throw new NotFoundException('there is not that user');
+    const user = await User.findOne({ where: { id: id } });
+    if (!user) {
+      throw new UnauthorizedException('there is not that user');
     }
-    return userAuthDto;
+    return UserAuthDto.of(user);
   }
 }
