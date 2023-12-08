@@ -60,7 +60,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     private val viewModel: MapViewModel by activityViewModels()
 
-    private lateinit var locationTimer: Timer
     private lateinit var naverMap: NaverMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationSource: FusedLocationSource
@@ -119,12 +118,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         viewModel.users.value?.forEach { user ->
             user.isInfoOpen = false
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        locationTimer.cancel()
     }
 
     @UiThread
