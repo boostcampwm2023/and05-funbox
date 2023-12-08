@@ -34,6 +34,9 @@ class MapViewModel : ViewModel() {
     private val _users = MutableStateFlow<List<User>>(listOf())
     val users = _users.asStateFlow()
 
+    private val _usersUpdate = MutableStateFlow<Boolean>(false)
+    val usersUpdate = _usersUpdate.asStateFlow()
+
     private val _usersLocations = MutableStateFlow<List<UserLocation>?>(null)
     val usersLocations = _usersLocations.asStateFlow()
 
@@ -115,24 +118,29 @@ class MapViewModel : ViewModel() {
             Timber.d("유저 위치 불러옴")
             _usersLocations.value = usersLocationRepository.getUsersLocation(locX, locY).userLocations
             _usersLocations.value?.let { list ->
-                val newUsers = mutableListOf<User>()
+                val idList = list.map{it.id}
+                val newUsers = _users.value.filter{user->
+                    user.id in idList}.toMutableList()
+                deleteOldPlayer(idList)
                 list.forEach { location ->
                     if ((location.locX != null) && (location.locY != null)) {
-                        newUsers.add(
-                            User(
-                                200,
-                                location.id,
-                                LatLng(location.locX, location.locY),
-                                location.username,
-                                location.isMsgInAnHour,
+                        newUsers.find {it.id == location.id}?.let {
+                            val idx = newUsers.indexOf(it)
+                            Timber.d(newUsers[idx].mapPin?.infoWindow.toString())
+                            newUsers[idx].loc = LatLng(location.locX, location.locY)
+                            Timber.d(newUsers[idx].mapPin.toString())
+                        }?: run{
+                            newUsers.add(
+                                User(
+                                    200,
+                                    location.id,
+                                    LatLng(location.locX, location.locY),
+                                    location.username,
+                                    location.isMsgInAnHour,
+                                )
                             )
-                        )
-                        _users.value.forEach {
-                            if(it.id==newUsers.last().id){
-                                newUsers.last().isInfoOpen=it.isInfoOpen
-                                newUsers.last().marker=it.marker
-                            }
                         }
+
                     } else {
                         newUsers.add(
                             User(
@@ -145,7 +153,19 @@ class MapViewModel : ViewModel() {
                         )
                     }
                 }
-                _users.update { newUsers }
+                //newUsers.forEach {Timber.d( it.mapPin?.infoWindow.toString()) }
+
+                _users.update { newUsers.toList() }
+                _usersUpdate.update { !it }
+            }
+        }
+    }
+
+    private fun deleteOldPlayer(idList: List<Int>) {
+        users.value.forEach { user ->
+            if (user.id !in idList) {
+                user.mapPin?.map = null
+                user.mapPin = null
             }
         }
     }
