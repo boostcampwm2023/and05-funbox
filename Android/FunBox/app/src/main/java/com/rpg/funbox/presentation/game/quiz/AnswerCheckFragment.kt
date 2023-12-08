@@ -17,6 +17,8 @@ class AnswerCheckFragment : BaseDialogFragment<FragmentAnswerCheckBinding>(R.lay
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
+      
+        isCancelable = false
 
         lifecycleScope.launch {
             viewModel.quizUiEvent.collectLatest { uiEvent ->

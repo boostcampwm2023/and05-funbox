@@ -17,6 +17,12 @@
         <action
             android:id="@+id/action_mapFragment_to_settingFragment"
             app:destination="@id/settingFragment" />
+        <action
+            android:id="@+id/action_mapFragment_to_getGameDialog"
+            app:destination="@id/getGameDialog" />
+        <action
+            android:id="@+id/action_mapFragment_to_messageDialog"
+            app:destination="@id/messageDialog" />
     </fragment>
 
     <fragment
@@ -38,25 +44,61 @@
             app:popUpTo="@id/mapFragment"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_settingFragment_to_SetNameDialog"
-            app:destination="@id/SetNameDialog"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
+            android:id="@+id/action_settingFragment_to_getGameDialog"
+            app:destination="@id/getGameDialog" />
         <action
-            android:id="@+id/action_settingFragment_to_SetProfileDialog"
-            app:destination="@id/SetProfileDialog"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
+            android:id="@+id/action_settingFragment_to_withdrawalDialog"
+            app:destination="@id/withdrawalDialog" />
+        <action
+            android:id="@+id/action_settingFragment_to_setNameDialog"
+            app:destination="@id/setNameDialog" />
+        <action
+            android:id="@+id/action_settingFragment_to_setProfileDialog"
+            app:destination="@id/setProfileDialog" />
     </fragment>
 
-    <fragment
-        android:id="@+id/SetNameDialog"
+    <dialog
+        android:id="@+id/getGameDialog"
+        android:name="com.rpg.funbox.presentation.map.GetGameDialog"
+        android:label="GetGameDialog" >
+        <action
+            android:id="@+id/action_getGameDialog_to_mapFragment"
+            app:destination="@id/mapFragment" />
+        <action
+            android:id="@+id/action_getGameDialog_to_settingFragment"
+            app:destination="@id/settingFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/messageDialog"
+        android:name="com.rpg.funbox.presentation.map.MessageDialog"
+        android:label="MessageDialog" >
+        <action
+            android:id="@+id/action_messageDialog_to_mapFragment"
+            app:destination="@id/mapFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/withdrawalDialog"
+        android:name="com.rpg.funbox.presentation.setting.WithdrawalDialog"
+        android:label="WithdrawalDialog" >
+        <action
+            android:id="@+id/action_withdrawalDialog_to_settingFragment"
+            app:destination="@id/settingFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/setNameDialog"
         android:name="com.rpg.funbox.presentation.setting.SetNameDialog"
-        android:label="SetNameDialogFragment" />
-
-    <fragment
-        android:id="@+id/SetProfileDialog"
+        android:label="SetNameDialog" >
+        <action
+            android:id="@+id/action_setNameDialog_to_settingFragment"
+            app:destination="@id/settingFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/setProfileDialog"
         android:name="com.rpg.funbox.presentation.setting.SetProfileDialog"
-        android:label="SetProfileDialogFragment" />
+        android:label="SetProfileDialog" >
+        <action
+            android:id="@+id/action_setProfileDialog_to_settingFragment"
+            app:destination="@id/settingFragment" />
+    </dialog>
 
 </navigation>

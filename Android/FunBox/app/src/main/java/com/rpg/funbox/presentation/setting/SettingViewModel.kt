@@ -7,6 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.rpg.funbox.data.dto.UserInfoResponse
 import com.rpg.funbox.data.repository.UserRepository
 import com.rpg.funbox.data.repository.UserRepositoryImpl
+import com.rpg.funbox.data.repository.UsersLocationRepository
+import com.rpg.funbox.data.repository.UsersLocationRepositoryImpl
+import com.rpg.funbox.presentation.map.MapUiEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -16,6 +19,7 @@ import okhttp3.MultipartBody
 
 class SettingViewModel : ViewModel() {
 
+    private val usersLocationRepository: UsersLocationRepository = UsersLocationRepositoryImpl()
     private val userRepository: UserRepository = UserRepositoryImpl()
 
     private val _user = MutableStateFlow<UserInfoResponse?>(null)
@@ -60,6 +64,12 @@ class SettingViewModel : ViewModel() {
     fun goToMap() {
         viewModelScope.launch {
             _settingUiEvent.emit(SettingUiEvent.GoToMapFragment)
+        }
+    }
+
+    fun submitLocation(locX: Double, locY: Double) {
+        viewModelScope.launch {
+            usersLocationRepository.getUsersLocation(locX, locY)
         }
     }
 
@@ -137,6 +147,24 @@ class SettingViewModel : ViewModel() {
             if (userRepository.withdraw()) {
                 _settingUiEvent.emit(SettingUiEvent.Withdraw)
             }
+        }
+    }
+
+    fun rejectGame() {
+        viewModelScope.launch {
+            _settingUiEvent.emit(SettingUiEvent.RejectGame)
+        }
+    }
+
+    fun getGame() {
+        viewModelScope.launch {
+            _settingUiEvent.emit(SettingUiEvent.GetGame)
+        }
+    }
+
+    fun toGame() {
+        viewModelScope.launch {
+            _settingUiEvent.emit(SettingUiEvent.ToGame)
         }
     }
 }

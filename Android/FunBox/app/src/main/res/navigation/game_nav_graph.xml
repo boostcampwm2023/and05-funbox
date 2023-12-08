@@ -13,14 +13,43 @@
         <action
             android:id="@+id/action_WaitFragment_to_QuizFragment"
             app:destination="@id/QuizFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out" />
     </fragment>
 
     <fragment
         android:id="@+id/QuizFragment"
         android:name="com.rpg.funbox.presentation.game.quiz.QuizFragment"
         android:label="@string/fragment_quiz_label"
-        tools:layout="QuizFragment" />
+        tools:layout="QuizFragment" >
+        <action
+            android:id="@+id/action_QuizFragment_to_answerCheckFragment"
+            app:destination="@id/answerCheckFragment" />
+        <action
+            android:id="@+id/action_QuizFragment_to_loadingDialog"
+            app:destination="@id/loadingDialog" />
+        <action
+            android:id="@+id/action_QuizFragment_to_scoreBoardFragment"
+            app:destination="@id/scoreBoardFragment" />
+        <action
+            android:id="@+id/action_QuizFragment_to_networkAlertFragment"
+            app:destination="@id/networkAlertFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/answerCheckFragment"
+        android:name="com.rpg.funbox.presentation.game.quiz.AnswerCheckFragment"
+        android:label="AnswerCheckFragment" />
+    <dialog
+        android:id="@+id/loadingDialog"
+        android:name="com.rpg.funbox.presentation.game.quiz.LoadingDialog"
+        android:label="LoadingDialog" />
+    <dialog
+        android:id="@+id/networkAlertFragment"
+        android:name="com.rpg.funbox.presentation.game.quiz.NetworkAlertFragment"
+        android:label="NetworkAlertFragment" />
+    <dialog
+        android:id="@+id/scoreBoardFragment"
+        android:name="com.rpg.funbox.presentation.game.quiz.ScoreBoardFragment"
+        android:label="ScoreBoardFragment" />
 
 </navigation>

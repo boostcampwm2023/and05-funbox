@@ -28,8 +28,7 @@ class TitleViewModel : ViewModel() {
     private val naverLoginRepository: NaverLoginRepository = NaverLoginRepositoryImpl()
     private val userRepository: UserRepository = UserRepositoryImpl()
 
-    private val _userAuthDto = MutableStateFlow<UserAuthDto?>(null)
-    val userAuthDto = _userAuthDto.asStateFlow()
+    private val userAuthDto = MutableStateFlow<UserAuthDto?>(null)
 
     private val userName = MutableStateFlow<String>("")
 
@@ -56,6 +55,15 @@ class TitleViewModel : ViewModel() {
     private val _profileUiState = MutableStateFlow<ProfileUiState>(ProfileUiState())
     val profileUiState = _profileUiState.asStateFlow()
 
+    fun alertNetworkError() {
+        viewModelScope.launch {
+            _titleUiEvent.emit(TitleUiEvent.NetworkErrorEvent())
+        }
+        _titleUiState.update { uiState ->
+            uiState.copy(networkSuccess = false)
+        }
+    }
+
     fun startNaverLogin() {
         viewModelScope.launch {
             _titleUiEvent.emit(TitleUiEvent.NaverLoginStart)
@@ -64,7 +72,7 @@ class TitleViewModel : ViewModel() {
 
     fun submitAccessToken(token: String) {
         viewModelScope.launch {
-            _userAuthDto.value = naverLoginRepository.postNaverAccessToken(token)
+            userAuthDto.value = naverLoginRepository.postNaverAccessToken(token)
             when (userRepository.getUserInfo()?.userName) {
                 null -> {
                     _titleUiEvent.emit(TitleUiEvent.SignUpStart)

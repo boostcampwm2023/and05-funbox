@@ -31,6 +31,7 @@
 
         <activity
             android:name=".presentation.game.GameActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
         <meta-data

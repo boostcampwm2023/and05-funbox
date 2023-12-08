@@ -41,10 +41,13 @@ import com.rpg.funbox.presentation.MapSocket.rejectGame
 import io.socket.client.Socket
 import com.rpg.funbox.presentation.game.GameActivity
 import com.rpg.funbox.presentation.checkPermission
+import com.rpg.funbox.presentation.fadeInOut
 import com.rpg.funbox.presentation.login.AccessPermission
 import com.rpg.funbox.presentation.login.AccessPermission.LOCATION_PERMISSION_REQUEST_CODE
+import com.rpg.funbox.presentation.slideLeft
 import io.socket.engineio.client.EngineIOException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
@@ -57,10 +60,11 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     private val viewModel: MapViewModel by activityViewModels()
 
+    private lateinit var locationTimer: Timer
     private lateinit var naverMap: NaverMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationSource: FusedLocationSource
-    private lateinit var applyGameServerData: ApplyGameFromServerData
+
     private var isFabOpen = false
     private var infoUserId : Int? = null
     private val requestMultiPermissions =
@@ -74,7 +78,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                     fusedLocationClient =
                         LocationServices.getFusedLocationProviderClient(requireActivity())
-
                 }
 
                 else -> {
@@ -94,12 +97,14 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
 
-        socketConnect()
-
         collectLatestFlow(viewModel.mapUiEvent) { handleUiEvent(it) }
 
         binding.floatingActionButton.setOnClickListener {
             toggleFab()
+        }
+
+        if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
+            viewModel.setLocationPermitted()
         }
 
         initMapView()
@@ -111,13 +116,20 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
         viewModel.buttonGone()
         isFabOpen = false
-        viewModel.users.value.forEach {user->
+        viewModel.users.value?.forEach { user ->
             user.isInfoOpen = false
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        locationTimer.cancel()
+    }
+
     @UiThread
     override fun onMapReady(map: NaverMap) {
+        val infoWindow = InfoWindow()
         this.naverMap = map.apply {
             locationSource = this@MapFragment.locationSource
             locationTrackingMode = LocationTrackingMode.Face
@@ -128,12 +140,21 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             uiSettings.isZoomControlEnabled = true
 
             extent = LatLngBounds(LatLng(31.43, 122.37), LatLng(44.35, 132.0))
-//            addOnLocationChangeListener { location ->
-//                val cameraUpdate =
-//                    CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))
-//                naverMap.moveCamera(cameraUpdate)
-//                viewModel.setXY(location.latitude, location.longitude)
-//            }
+            addOnLocationChangeListener { location ->
+                val cameraUpdate =
+                    CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))
+                naverMap.moveCamera(cameraUpdate)
+                viewModel.setXY(location.latitude, location.longitude)
+            }
+            viewModel.users.value?.let { users ->
+                users.forEach { user ->
+                    viewModel.userDetail.value?.let { userDetail ->
+                        if ((user.id == userDetail.id) && (user.isInfoOpen)) {
+                            infoWindow.open(this)
+                        }
+                    }
+                }
+            }
         }
 
         naverMap.locationOverlay.apply {
@@ -149,11 +170,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             }
         }
 
-        val infoWindow = InfoWindow()
-
         map.setOnMapClickListener { _, _ ->
             viewModel.buttonGone()
-            viewModel.users.value.forEach {
+            viewModel.users.value?.forEach {
                 it.isInfoOpen = false
                 it.mapPin?.infoWindow?.close()
                 Timber.d("@111111")
@@ -162,7 +181,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 }
             }
         }
-
 
         lifecycleScope.launch {
             viewModel.usersUpdate.collect{
@@ -177,7 +195,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                                     captionText = user.name.toString()
                                     captionTextSize = 20F
                                     if (user.isMsg) {
-                                        hasMsg.open(this)
+                                        user.mapPin?.let { mapPin -> hasMsg.open(mapPin) }
                                     }
                                     setMarkerClickListener(user, infoWindow, hasMsg)
                                 }
@@ -286,23 +304,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
-    private fun socketConnect() {
-        mSocket.connect()
-        mSocket.on(Socket.EVENT_CONNECT) {
-            Timber.tag("Connect").d("SOCKET CONNECT")
-        }.on(Socket.EVENT_DISCONNECT) { _ ->
-            Timber.tag("Connect").d("SOCKET DISCONNECT")
-        }.on(Socket.EVENT_CONNECT_ERROR) { args ->
-            if (args[0] is EngineIOException) Timber.tag("Disconnect").d("SOCKET ERROR")
-        }.on("gameApply") {
-            applyGameServerData =
-                Gson().fromJson(it[0].toString(), ApplyGameFromServerData::class.java)
-            Timber.d("Other Id: ${applyGameServerData.userId}")
-            viewModel.setOtherUser(applyGameServerData.userId.toInt())
-            viewModel.getGame()
-        }
-    }
-
     private fun toggleFab() {
         if (isFabOpen) {
             ObjectAnimator.ofFloat(binding.floatingSetting, "translationY", 0f).apply { start() }
@@ -319,21 +320,35 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     private fun submitUserLocation() {
         if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
-            Timer().scheduleAtFixedRate(3000, 3000) {
+            Timer().scheduleAtFixedRate(0, 3000) {
                 lifecycleScope.launch {
-                    val tmp = fusedLocationClient.getCurrentLocation(
+//                     val drawPinDeferred = async {
+//                         binding.map.getFragment<MapFragment>()
+//                             .getMapAsync(this@MapFragment)
+//                     }
+//                     drawPinDeferred.await()
+                    val location = fusedLocationClient.getCurrentLocation(
                         Priority.PRIORITY_HIGH_ACCURACY,
                         null
                     ).await()
-                    viewModel.setUsersLocations(tmp.latitude, tmp.longitude)
+                    val makePinDeferred = async {
+                        viewModel.setUsersLocations(location.latitude, location.longitude)
+                    }
+                    makePinDeferred.await()
                 }
             }
         }
     }
 
     private fun handleUiEvent(event: MapUiEvent) = when (event) {
+        is MapUiEvent.LocationPermitted -> {
+            initMapView()
+            submitUserLocation()
+        }
+
         is MapUiEvent.MessageOpen -> {
-            MessageDialog().show(parentFragmentManager, "messageDialog")
+            findNavController().navigate(R.id.action_mapFragment_to_messageDialog)
+            //MessageDialog().show(parentFragmentManager, "messageDialog")
         }
 
         is MapUiEvent.ToGame -> {
@@ -341,7 +356,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             intent.putExtra("StartGame", false)
             intent.putExtra("RoomId", applyGameServerData.roomId)
             intent.putExtra("OtherUserId", applyGameServerData.userId.toInt())
-            startActivity(intent)
+            startActivity(intent, requireActivity().fadeInOut())
         }
 
         is MapUiEvent.GameStart -> {
@@ -349,14 +364,15 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             intent.putExtra("StartGame", true)
             intent.putExtra("OtherUserId", viewModel.userDetail.value?.id)
             viewModel.userDetail.value?.let { applyGame(it.id) }
-            startActivity(intent)
+            startActivity(intent, requireActivity().slideLeft())
         }
 
         is MapUiEvent.RejectGame -> {
-            rejectGame(applyGameServerData.roomId)
+            viewModel.applyGameFromServerData.value?.roomId?.let { rejectGame(it) }
         }
 
         is MapUiEvent.GetGame -> {
+            //findNavController().navigate(R.id.action_mapFragment_to_getGameDialog)
             GetGameDialog().show(parentFragmentManager, "getGame")
         }
 

@@ -5,9 +5,13 @@
 
     <data>
 
+        <import type="android.view.View" />
+        <import type="android.widget.ImageView" />
+
         <variable
             name="vm"
             type="com.rpg.funbox.presentation.login.title.TitleViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -25,8 +29,8 @@
             app:layout_constraintBottom_toTopOf="@id/btn_main_naver_login"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
+            app:layout_constraintTop_toTopOf="parent"
+            app:image_tint="@{vm.titleUiState}" />
 
         <ImageButton
             android:id="@+id/btn_main_naver_login"
@@ -36,10 +40,23 @@
             android:contentDescription="@string/iv_main_logo_description"
             android:onClick="@{() -> vm.startNaverLogin()}"
             android:src="@drawable/naver_login"
+            android:visibility="@{(vm.titleUiState.isNaverLoginBtnEnabled == true) ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_main_logo" />
+
+        <TextView
+            android:id="@+id/tv_network_error_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:text="@string/network_error_message"
+            android:textSize="24sp"
+            android:visibility="@{(vm.titleUiState.isNaverLoginBtnEnabled == false) ? View.VISIBLE : View.GONE }"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

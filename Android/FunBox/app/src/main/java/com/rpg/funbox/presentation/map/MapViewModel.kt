@@ -52,12 +52,19 @@ class MapViewModel : ViewModel() {
     private val _visibility = MutableStateFlow(false)
     val visibility: StateFlow<Boolean> = _visibility
 
+    private val _applyGameFromServerData = MutableStateFlow<ApplyGameFromServerData?>(null)
+    val applyGameFromServerData = _applyGameFromServerData.asStateFlow()
+
     fun setOtherUser(userId: Int) {
         viewModelScope.launch {
             userRepository.getSpecificUserInfo(userId = userId)?.let { specificUserInfo ->
                 _otherUser.value = specificUserInfo
             }
         }
+    }
+
+    fun setApplyGameData(applyGameFromServerData: ApplyGameFromServerData){
+        _applyGameFromServerData.value=applyGameFromServerData
     }
 
     fun startMessageDialog() {
@@ -109,7 +116,7 @@ class MapViewModel : ViewModel() {
     fun setUsersLocations(locX: Double, locY: Double) {
         viewModelScope.launch {
             Timber.d("유저 위치 불러옴")
-            _usersLocations.value = usersLocationRepository.getUsersLocation(locX, locY)
+            _usersLocations.value = usersLocationRepository.getUsersLocation(locX, locY).userLocations
             _usersLocations.value?.let { list ->
                 val idList = list.map{it.id}
                 val newUsers = _users.value.filter{user->

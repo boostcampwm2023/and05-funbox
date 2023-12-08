@@ -55,4 +55,6 @@
     <string name="user_profile_wait_description">유저 프로필 사진</string>
     <string name="side_profile_wait_description">상대 유저 프로필 사진</string>
     <string name="profile_setting_description">환경 설정의 프로필 사진</string>
+    <string name="loading_message">상대방이 답변을 확인하는 중입니다.</string>
+    <string name="send">send</string>
 </resources>

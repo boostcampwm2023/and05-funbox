@@ -13,15 +13,21 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.ActivityNavigator
 import coil.load
+import com.google.gson.Gson
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.ActivityMainBinding
 import com.rpg.funbox.presentation.login.TitleActivity
+import com.rpg.funbox.presentation.map.ApplyGameFromServerData
 import com.rpg.funbox.presentation.map.MapViewModel
 import com.rpg.funbox.presentation.setting.SettingUiEvent
 import com.rpg.funbox.presentation.setting.SettingViewModel
+import io.socket.client.Socket
+import io.socket.engineio.client.EngineIOException
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,11 +35,15 @@ class MainActivity : AppCompatActivity() {
 
     private val mapViewModel: MapViewModel by viewModels()
     private val settingViewModel: SettingViewModel by viewModels()
+    private lateinit var applyGameServerData: ApplyGameFromServerData
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        socketConnect()
+
         binding.ibSide.setOnClickListener { binding.drawerLayout.openDrawer(GravityCompat.START) }
         binding.navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -109,6 +119,25 @@ class MainActivity : AppCompatActivity() {
                 it.windowToken,
                 InputMethodManager.HIDE_NOT_ALWAYS
             )
+        }
+    }
+
+    private fun socketConnect() {
+        MapSocket.mSocket.connect()
+        MapSocket.mSocket.on(Socket.EVENT_CONNECT) {
+            Timber.tag("Connect").d("SOCKET CONNECT")
+        }.on(Socket.EVENT_DISCONNECT) { _ ->
+            Timber.tag("Connect").d("SOCKET DISCONNECT")
+        }.on(Socket.EVENT_CONNECT_ERROR) { args ->
+            if (args[0] is EngineIOException) Timber.tag("Disconnect").d("SOCKET ERROR")
+        }.on("gameApply") {
+            applyGameServerData =
+                Gson().fromJson(it[0].toString(), ApplyGameFromServerData::class.java)
+            Timber.d("Other Id: ${applyGameServerData.userId}")
+            mapViewModel.setOtherUser(applyGameServerData.userId.toInt())
+            mapViewModel.setApplyGameData(applyGameServerData)
+            mapViewModel.getGame()
+            settingViewModel.getGame()
         }
     }
 }
