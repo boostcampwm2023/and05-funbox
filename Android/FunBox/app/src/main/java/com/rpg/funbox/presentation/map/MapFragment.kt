@@ -60,7 +60,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     private val viewModel: MapViewModel by activityViewModels()
 
-    private lateinit var locationTimer: Timer
     private lateinit var naverMap: NaverMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationSource: FusedLocationSource
@@ -119,12 +118,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         viewModel.users.value?.forEach { user ->
             user.isInfoOpen = false
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        locationTimer.cancel()
     }
 
     @UiThread
@@ -354,8 +347,10 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         is MapUiEvent.ToGame -> {
             val intent = Intent(context, GameActivity::class.java)
             intent.putExtra("StartGame", false)
-            intent.putExtra("RoomId", applyGameServerData.roomId)
-            intent.putExtra("OtherUserId", applyGameServerData.userId.toInt())
+            viewModel.applyGameFromServerData.value?.let { gameData ->
+                intent.putExtra("RoomId", gameData.roomId)
+                intent.putExtra("OtherUserId", gameData.userId.toInt())
+            }
             startActivity(intent, requireActivity().fadeInOut())
         }
 

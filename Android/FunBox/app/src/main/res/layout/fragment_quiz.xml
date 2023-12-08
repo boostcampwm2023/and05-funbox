@@ -197,7 +197,7 @@
                 <EditText
                     android:id="@+id/et_chat"
                     android:layout_width="0dp"
-                    android:text="@={vm.sendMessage}"
+                    android:text="@={vm.sendingMessage}"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/btn_chat"

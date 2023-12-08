@@ -22,18 +22,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Timer
 import kotlin.concurrent.scheduleAtFixedRate
-import com.google.gson.Gson
-import com.rpg.funbox.R
-import com.rpg.funbox.databinding.FragmentSettingBinding
-import com.rpg.funbox.presentation.BaseFragment
 import com.rpg.funbox.presentation.MapSocket
-import com.rpg.funbox.presentation.MapSocket.mSocket
 import com.rpg.funbox.presentation.game.GameActivity
-import com.rpg.funbox.presentation.map.ApplyGameFromServerData
 import com.rpg.funbox.presentation.map.GetGameDialog
-import com.rpg.funbox.presentation.map.MapUiEvent
 import com.rpg.funbox.presentation.map.MapViewModel
-import timber.log.Timber
 
 class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_setting) {
 

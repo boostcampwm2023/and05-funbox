@@ -55,6 +55,12 @@ class MapViewModel : ViewModel() {
     private val _applyGameFromServerData = MutableStateFlow<ApplyGameFromServerData?>(null)
     val applyGameFromServerData = _applyGameFromServerData.asStateFlow()
 
+    fun setLocationPermitted() {
+        viewModelScope.launch {
+            _mapUiEvent.emit(MapUiEvent.LocationPermitted)
+        }
+    }
+
     fun setOtherUser(userId: Int) {
         viewModelScope.launch {
             userRepository.getSpecificUserInfo(userId = userId)?.let { specificUserInfo ->
