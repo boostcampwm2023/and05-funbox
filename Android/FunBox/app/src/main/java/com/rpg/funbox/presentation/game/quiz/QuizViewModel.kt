@@ -76,7 +76,7 @@ class QuizViewModel : ViewModel() {
     private val _chatMessages = MutableStateFlow<MutableList<MessageItem>>(mutableListOf())
     val chatMessages = _chatMessages.asStateFlow()
 
-    val sendMessage = MutableStateFlow<String>("")
+    val sendingMessage = MutableStateFlow<String>("")
 
     private fun setQuizGame() {
         viewModelScope.launch {
@@ -314,7 +314,7 @@ class QuizViewModel : ViewModel() {
     fun sendMessage() {
         viewModelScope.launch {
             _quizUiEvent.emit(QuizUiEvent.SendMessage)
-            sendMessage.value = ""
+            sendingMessage.value = ""
         }
     }
 

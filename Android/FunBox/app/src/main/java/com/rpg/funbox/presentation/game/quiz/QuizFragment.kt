@@ -38,9 +38,6 @@ import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import java.util.Timer
 import kotlin.concurrent.scheduleAtFixedRate
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), OnMapReadyCallback {
 
@@ -212,8 +209,8 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
         }
 
         is QuizUiEvent.SendMessage -> {
-            send(viewModel.otherUserId.value, viewModel.sendMessage.value)
-            viewModel.addMessage(MessageItem(0, viewModel.sendMessage.value))
+            send(viewModel.otherUserId.value, viewModel.sendingMessage.value)
+            viewModel.addMessage(MessageItem(0, viewModel.sendingMessage.value))
             Timber.d("${viewModel.chatMessages}")
         }
 

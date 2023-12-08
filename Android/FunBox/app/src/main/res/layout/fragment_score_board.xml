@@ -66,7 +66,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="32dp"
-            android:text="@{vm.otherUser.userName}"
+            android:text="@{vm.otherUserInfo.userName}"
             android:textSize="24sp"
             app:layout_constraintBottom_toTopOf="@id/btn_confirm_score_board"
             app:layout_constraintEnd_toStartOf="@id/tv_side_score_score_board"
