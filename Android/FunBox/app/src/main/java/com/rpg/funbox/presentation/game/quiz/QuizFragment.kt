@@ -5,6 +5,8 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.UiThread
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.naver.maps.geometry.LatLng
@@ -18,9 +20,13 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
 import com.rpg.funbox.presentation.CustomNaverMap
 import com.rpg.funbox.presentation.MapSocket.quitGame
+import com.rpg.funbox.presentation.MapSocket.send
 import com.rpg.funbox.presentation.MapSocket.sendQuizAnswer
 import com.rpg.funbox.presentation.MapSocket.verifyAnswer
 import com.rpg.funbox.presentation.login.AccessPermission
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), OnMapReadyCallback {
 
@@ -43,6 +49,12 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
         binding.questionQuiz.isSelected = true
 
         collectLatestFlow(viewModel.quizUiEvent) { handleUiEvent(it) }
+
+        lifecycleScope.launch {
+            viewModel.chatMessages.collect{
+                viewModel.chatAdapter.submitList(it)
+            }
+        }
     }
 
     private fun setBackPressedCallback() {
@@ -85,11 +97,14 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
         }
 
         is QuizUiEvent.QuizAnswerSubmit -> {
+            findNavController().navigate(R.id.action_QuizFragment_to_loadingDialog)
+            //LoadingDialog().show(childFragmentManager,"loading")
             viewModel.roomId.value?.let { sendQuizAnswer(it, viewModel.latestAnswer.value) }
         }
 
         is QuizUiEvent.QuizAnswerCheckStart -> {
-            AnswerCheckFragment().show(childFragmentManager, "AnswerCheckStart")
+            findNavController().navigate(R.id.action_QuizFragment_to_answerCheckFragment)
+            //AnswerCheckFragment().show(childFragmentManager, "AnswerCheckStart")
         }
 
         is QuizUiEvent.QuizAnswerCheckRight -> {
@@ -101,11 +116,20 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
         }
 
         is QuizUiEvent.QuizNetworkDisconnected -> {
-            NetworkAlertFragment().show(childFragmentManager, "NetworkDisconnected")
+            findNavController().navigate(R.id.action_QuizFragment_to_networkAlertFragment)
+            //NetworkAlertFragment().show(childFragmentManager, "NetworkDisconnected")
         }
 
         is QuizUiEvent.QuizScoreBoard -> {
+            viewModel.setUserQuizStateTrue()
+            //findNavController().navigate(R.id.action_QuizFragment_to_scoreBoardFragment)
             ScoreBoardFragment().show(childFragmentManager, "ScoreBoard")
+        }
+
+        is QuizUiEvent.SendMessage -> {
+            send(viewModel.otherUserId.value, viewModel.sendMessage.value)
+            viewModel.addMessage(MessageItem(0, viewModel.sendMessage.value))
+            Timber.d("${viewModel.chatMessages}")
         }
 
         else -> {}

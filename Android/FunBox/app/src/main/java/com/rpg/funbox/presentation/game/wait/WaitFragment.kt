@@ -28,6 +28,7 @@ class WaitFragment : BaseFragment<FragmentWaitBinding>(R.layout.fragment_wait) {
     private fun handleUiEvent(event: QuizUiEvent) = when (event) {
         is QuizUiEvent.NetworkErrorEvent -> {
             showSnackBar(R.string.network_error_message)
+            requireActivity().finish()
         }
 
         is QuizUiEvent.WaitSuccess -> {

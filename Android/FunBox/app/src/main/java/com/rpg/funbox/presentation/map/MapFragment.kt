@@ -59,7 +59,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     private lateinit var naverMap: NaverMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationSource: FusedLocationSource
-    private lateinit var applyGameServerData: ApplyGameFromServerData
+
     private var isFabOpen = false
 
     private val requestMultiPermissions =
@@ -92,8 +92,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-
-        socketConnect()
 
         collectLatestFlow(viewModel.mapUiEvent) { handleUiEvent(it) }
 
@@ -158,15 +156,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 Timber.d("@111111")
                 if (it.isMsg) {
                     it.mapPin?.let { mapPin -> hasMsg.open(mapPin) }
-                }
-            }
-        }
-
-
-        lifecycleScope.launch {
-            viewModel.users.collect {
-                it.map { user ->
-                    user.mapPin?.map = naverMap
                 }
             }
         }
@@ -268,23 +257,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
-    private fun socketConnect() {
-        mSocket.connect()
-        mSocket.on(Socket.EVENT_CONNECT) {
-            Timber.tag("Connect").d("SOCKET CONNECT")
-        }.on(Socket.EVENT_DISCONNECT) { _ ->
-            Timber.tag("Connect").d("SOCKET DISCONNECT")
-        }.on(Socket.EVENT_CONNECT_ERROR) { args ->
-            if (args[0] is EngineIOException) Timber.tag("Disconnect").d("SOCKET ERROR")
-        }.on("gameApply") {
-            applyGameServerData =
-                Gson().fromJson(it[0].toString(), ApplyGameFromServerData::class.java)
-            Timber.d("Other Id: ${applyGameServerData.userId}")
-            viewModel.setOtherUser(applyGameServerData.userId.toInt())
-            viewModel.getGame()
-        }
-    }
-
     private fun toggleFab() {
         if (isFabOpen) {
             ObjectAnimator.ofFloat(binding.floatingSetting, "translationY", 0f).apply { start() }
@@ -301,7 +273,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     private fun submitUserLocation() {
         if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
-            Timer().scheduleAtFixedRate(3000, 3000) {
+            Timer().scheduleAtFixedRate(0, 3000) {
                 lifecycleScope.launch {
 
                     withContext(Dispatchers.Main) {
@@ -325,14 +297,15 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     private fun handleUiEvent(event: MapUiEvent) = when (event) {
         is MapUiEvent.MessageOpen -> {
-            MessageDialog().show(parentFragmentManager, "messageDialog")
+            findNavController().navigate(R.id.action_mapFragment_to_messageDialog)
+            //MessageDialog().show(parentFragmentManager, "messageDialog")
         }
 
         is MapUiEvent.ToGame -> {
             val intent = Intent(context, GameActivity::class.java)
             intent.putExtra("StartGame", false)
-            intent.putExtra("RoomId", applyGameServerData.roomId)
-            intent.putExtra("OtherUserId", applyGameServerData.userId.toInt())
+            intent.putExtra("RoomId", viewModel.applyGameFromServerData.value?.roomId)
+            intent.putExtra("OtherUserId", viewModel.applyGameFromServerData.value?.userId?.toInt())
             startActivity(intent)
         }
 
@@ -345,10 +318,11 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }
 
         is MapUiEvent.RejectGame -> {
-            rejectGame(applyGameServerData.roomId)
+            viewModel.applyGameFromServerData.value?.roomId?.let { rejectGame(it) }
         }
 
         is MapUiEvent.GetGame -> {
+            //findNavController().navigate(R.id.action_mapFragment_to_getGameDialog)
             GetGameDialog().show(parentFragmentManager, "getGame")
         }
 
