@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.rpg.funbox.app.MainApplication
 import com.rpg.funbox.presentation.MainActivity
 import com.rpg.funbox.presentation.login.TitleActivity
 import kotlinx.coroutines.flow.collectLatest
@@ -19,6 +20,8 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // MainApplication.mySharedPreferences.setJWT("jwt", "")
 
         collectLatestUiEvent()
     }

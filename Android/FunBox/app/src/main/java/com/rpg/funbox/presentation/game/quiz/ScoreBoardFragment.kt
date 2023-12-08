@@ -17,7 +17,9 @@ class ScoreBoardFragment : BaseDialogFragment<FragmentScoreBoardBinding>(R.layou
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-        isCancelable=false
+
+        isCancelable = false
+
         lifecycleScope.launch {
             viewModel.quizUiEvent.collectLatest {
                 if (it == QuizUiEvent.QuizFinish) {

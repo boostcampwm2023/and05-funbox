@@ -1,6 +1,5 @@
 package com.rpg.funbox.presentation.setting
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
@@ -8,7 +7,6 @@ import androidx.lifecycle.lifecycleScope
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.DialogRedWithTextBinding
 import com.rpg.funbox.presentation.BaseDialogFragment
-import com.rpg.funbox.presentation.login.TitleActivity
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 

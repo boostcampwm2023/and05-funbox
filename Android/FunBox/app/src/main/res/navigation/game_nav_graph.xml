@@ -13,8 +13,8 @@
         <action
             android:id="@+id/action_WaitFragment_to_QuizFragment"
             app:destination="@id/QuizFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out" />
     </fragment>
 
     <fragment

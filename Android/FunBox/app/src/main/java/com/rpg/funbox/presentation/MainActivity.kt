@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.ActivityNavigator
 import coil.load
 import com.google.gson.Gson
 import com.rpg.funbox.R

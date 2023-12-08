@@ -3,9 +3,13 @@ package com.rpg.funbox.presentation.game.quiz
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import com.naver.maps.geometry.LatLng
+import com.rpg.funbox.data.dto.User
 import com.rpg.funbox.data.dto.UserInfoResponse
 import com.rpg.funbox.data.repository.UserRepository
 import com.rpg.funbox.data.repository.UserRepositoryImpl
+import com.rpg.funbox.data.repository.UsersLocationRepository
+import com.rpg.funbox.data.repository.UsersLocationRepositoryImpl
 import com.rpg.funbox.presentation.MapSocket
 import com.rpg.funbox.presentation.map.Chat
 import com.rpg.funbox.presentation.map.GameApplyAnswerFromServerData
@@ -22,6 +26,7 @@ import timber.log.Timber
 
 class QuizViewModel : ViewModel() {
 
+    private val usersLocationRepository: UsersLocationRepository = UsersLocationRepositoryImpl()
     private val userRepository: UserRepository = UserRepositoryImpl()
 
     private val _userState = MutableStateFlow<Boolean>(true)
@@ -36,8 +41,17 @@ class QuizViewModel : ViewModel() {
     private val _otherUserId = MutableStateFlow<Int>(-1)
     val otherUserId = _otherUserId.asStateFlow()
 
-    private val _otherUser = MutableStateFlow<UserInfoResponse?>(null)
-    val otherUser = _otherUser.asStateFlow()
+    private val _otherUserInfo = MutableStateFlow<UserInfoResponse?>(null)
+    val otherUserInfo = _otherUserInfo.asStateFlow()
+
+    private val _prevOtherUser = MutableStateFlow<User?>(null)
+    val prevOtherUser = _prevOtherUser.asStateFlow()
+
+    private val _nowOtherUser = MutableStateFlow<User?>(null)
+    val nowOtherUser = _nowOtherUser.asStateFlow()
+
+    private val _users = MutableStateFlow<List<User>>(listOf())
+    val users = _users.asStateFlow()
 
     private val _location = MutableStateFlow<Pair<Double, Double>?>(null)
     val location = _location.asStateFlow()
@@ -196,7 +210,11 @@ class QuizViewModel : ViewModel() {
                 Timber.d(json.first().toString())
                 Timber.d(json.last().toString())
 
-                setFinalScore(Pair(json.first().score.toString(), json.last().score.toString()))
+                if (_userState.value) {
+                    setFinalScore(Pair(json.first().score.toString(), json.last().score.toString()))
+                } else {
+                    setFinalScore(Pair(json.last().score.toString(), json.first().score.toString()))
+                }
                 showScoreBoard()
             }
             .on("quitGame") {
@@ -239,8 +257,29 @@ class QuizViewModel : ViewModel() {
                 Timber.d("${_user.value}")
             }
             userRepository.getSpecificUserInfo(userId)?.let { specificUserInfo ->
-                _otherUser.value = specificUserInfo
-                Timber.d("$${_otherUser.value}")
+                _otherUserInfo.value = specificUserInfo
+                Timber.d("$${_otherUserInfo.value}")
+            }
+        }
+    }
+
+    fun setUsersLocations(locX: Double, locY: Double) {
+        viewModelScope.launch {
+            _prevOtherUser.value = _nowOtherUser.value
+            _nowOtherUser.value = null
+            usersLocationRepository.getUsersLocation(locX, locY).userLocations?.let { locations ->
+                locations.forEach { location ->
+                    if ((location.id == _otherUserId.value) && (location.locX != null) && (location.locY != null)) {
+                        _nowOtherUser.value = User(
+                            200,
+                            location.id,
+                            LatLng(location.locX, location.locY),
+                            location.username,
+                            location.isMsgInAnHour,
+                            mapPin = null
+                        )
+                    }
+                }
             }
         }
     }

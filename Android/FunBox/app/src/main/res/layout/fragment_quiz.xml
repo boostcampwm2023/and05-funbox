@@ -127,15 +127,15 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <com.naver.maps.map.MapView
-                android:id="@+id/map_view_quiz"
-                android:name="com.naver.maps.map.MapFragment"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <androidx.fragment.app.FragmentContainerView
+              android:id="@+id/map_view_quiz"
+              android:name="com.naver.maps.map.MapFragment"
+              android:layout_width="0dp"
+              android:layout_height="0dp"
+              app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -212,7 +212,9 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/et_chat" />
+              
             </androidx.constraintlayout.widget.ConstraintLayout>
+          
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

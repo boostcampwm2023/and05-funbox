@@ -97,7 +97,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     implementation("com.squareup.moshi:moshi-kotlin:1.9.0")
 
-    implementation("com.navercorp.nid:oauth-jdk8:5.1.0")
+    implementation("com.navercorp.nid:oauth-jdk8:5.4.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
 
     implementation("com.jakewharton.timber:timber:5.0.1")
