@@ -2,6 +2,7 @@ package com.rpg.funbox.presentation
 
 import com.google.gson.Gson
 import com.rpg.funbox.presentation.map.ApplyGameToServerData
+import com.rpg.funbox.presentation.map.Chat
 import com.rpg.funbox.presentation.map.GameApplyAnswerToServerData
 import com.rpg.funbox.presentation.map.QuitGameToServer
 import com.rpg.funbox.presentation.map.QuizAnswerToServer
@@ -44,5 +45,11 @@ object MapSocket {
     fun quitGame(roomId: String) {
         val json = Gson().toJson(QuitGameToServer(roomId))
         mSocket.emit("quitGame", JSONObject(json))
+    }
+
+    fun send(otherId:Int, message:String){
+        val json = Gson().toJson(Chat(otherId,message))
+        Timber.d("Other Id: $otherId $message")
+        mSocket.emit("directMessage", JSONObject(json))
     }
 }

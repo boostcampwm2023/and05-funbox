@@ -63,7 +63,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     private lateinit var naverMap: NaverMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationSource: FusedLocationSource
-    private lateinit var applyGameServerData: ApplyGameFromServerData
+
     private var isFabOpen = false
 
     private val requestMultiPermissions =
@@ -95,8 +95,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-
-        socketConnect()
 
         collectLatestFlow(viewModel.mapUiEvent) { handleUiEvent(it) }
 
@@ -184,13 +182,8 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }
 
         lifecycleScope.launch {
-            viewModel.prevUsers.value?.let { users ->
-                users.forEach { user ->
-                    user.mapPin?.map = null
-                }
-            }
-            viewModel.users.value?.let { users ->
-                users.map { user ->
+            viewModel.users.collect {
+                it.map { user ->
                     var adapter =
                         MapProfileAdapter(requireContext(), viewModel.userDetail.value, null)
                     user.mapPin = Marker().apply {
@@ -278,23 +271,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
-    private fun socketConnect() {
-        mSocket.connect()
-        mSocket.on(Socket.EVENT_CONNECT) {
-            Timber.tag("Connect").d("SOCKET CONNECT")
-        }.on(Socket.EVENT_DISCONNECT) { _ ->
-            Timber.tag("Connect").d("SOCKET DISCONNECT")
-        }.on(Socket.EVENT_CONNECT_ERROR) { args ->
-            if (args[0] is EngineIOException) Timber.tag("Disconnect").d("SOCKET ERROR")
-        }.on("gameApply") {
-            applyGameServerData =
-                Gson().fromJson(it[0].toString(), ApplyGameFromServerData::class.java)
-            Timber.d("Other Id: ${applyGameServerData.userId}")
-            viewModel.setOtherUser(applyGameServerData.userId.toInt())
-            viewModel.getGame()
-        }
-    }
-
     private fun toggleFab() {
         if (isFabOpen) {
             ObjectAnimator.ofFloat(binding.floatingSetting, "translationY", 0f).apply { start() }
@@ -311,8 +287,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     private fun submitUserLocation() {
         if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
-            locationTimer = Timer()
-            locationTimer.scheduleAtFixedRate(500, 3000) {
+            Timer().scheduleAtFixedRate(0, 3000) {
                 lifecycleScope.launch {
                     val drawPinDeferred = async {
                         binding.map.getFragment<MapFragment>()
@@ -339,7 +314,8 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }
 
         is MapUiEvent.MessageOpen -> {
-            MessageDialog().show(parentFragmentManager, "messageDialog")
+            findNavController().navigate(R.id.action_mapFragment_to_messageDialog)
+            //MessageDialog().show(parentFragmentManager, "messageDialog")
         }
 
         is MapUiEvent.ToGame -> {
@@ -359,10 +335,11 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }
 
         is MapUiEvent.RejectGame -> {
-            rejectGame(applyGameServerData.roomId)
+            viewModel.applyGameFromServerData.value?.roomId?.let { rejectGame(it) }
         }
 
         is MapUiEvent.GetGame -> {
+            //findNavController().navigate(R.id.action_mapFragment_to_getGameDialog)
             GetGameDialog().show(parentFragmentManager, "getGame")
         }
 

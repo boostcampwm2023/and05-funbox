@@ -50,3 +50,8 @@ data class ScoreFromServerItem(
 data class QuitGameToServer(
     val roomId: String
 )
+
+data class Chat(
+    val userId: Int,
+    val message: String
+)

@@ -9,6 +9,7 @@ import com.rpg.funbox.data.repository.UserRepository
 import com.rpg.funbox.data.repository.UserRepositoryImpl
 import com.rpg.funbox.data.repository.UsersLocationRepository
 import com.rpg.funbox.data.repository.UsersLocationRepositoryImpl
+import com.rpg.funbox.presentation.map.MapUiEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -146,6 +147,24 @@ class SettingViewModel : ViewModel() {
             if (userRepository.withdraw()) {
                 _settingUiEvent.emit(SettingUiEvent.Withdraw)
             }
+        }
+    }
+
+    fun rejectGame() {
+        viewModelScope.launch {
+            _settingUiEvent.emit(SettingUiEvent.RejectGame)
+        }
+    }
+
+    fun getGame() {
+        viewModelScope.launch {
+            _settingUiEvent.emit(SettingUiEvent.GetGame)
+        }
+    }
+
+    fun toGame() {
+        viewModelScope.launch {
+            _settingUiEvent.emit(SettingUiEvent.ToGame)
         }
     }
 }
