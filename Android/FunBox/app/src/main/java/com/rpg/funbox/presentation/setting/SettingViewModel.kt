@@ -9,11 +9,12 @@ import com.rpg.funbox.data.repository.UserRepository
 import com.rpg.funbox.data.repository.UserRepositoryImpl
 import com.rpg.funbox.data.repository.UsersLocationRepository
 import com.rpg.funbox.data.repository.UsersLocationRepositoryImpl
-import com.rpg.funbox.presentation.map.MapUiEvent
+import com.rpg.funbox.presentation.login.nickname.NicknameValidState
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 
@@ -39,6 +40,23 @@ class SettingViewModel : ViewModel() {
 
     private val _settingUiEvent = MutableSharedFlow<SettingUiEvent>()
     val settingUiEvent = _settingUiEvent.asSharedFlow()
+
+    private val _settingUiState = MutableStateFlow<SettingUiState>(SettingUiState())
+    val settingUiState = _settingUiState.asStateFlow()
+
+    fun validateUserNickname(id: CharSequence) {
+        if (id.isBlank()) {
+            _settingUiState.update { uiState ->
+                uiState.copy(nicknameValidState = NicknameValidState.None)
+            }
+        }
+        else {
+            _settingUiState.update { uiState ->
+                uiState.copy(nicknameValidState = NicknameValidState.Valid)
+            }
+        }
+        _newName.value = id.toString()
+    }
 
     private fun closeSetNameDialog() {
         viewModelScope.launch {
@@ -88,6 +106,8 @@ class SettingViewModel : ViewModel() {
 
     fun setUserName() {
         viewModelScope.launch {
+            _newName.value = ""
+            validateUserNickname(_newName.value)
             _settingUiEvent.emit(SettingUiEvent.SetName)
         }
     }
@@ -97,6 +117,8 @@ class SettingViewModel : ViewModel() {
             if (userRepository.patchUserName(userName = _newName.value)) {
                 setUserInfo()
             }
+            _newName.value = ""
+            validateUserNickname(_newName.value)
         }
         closeSetNameDialog()
     }
