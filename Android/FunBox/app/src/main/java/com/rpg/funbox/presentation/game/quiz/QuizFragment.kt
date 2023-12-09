@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
@@ -25,7 +26,7 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 import com.rpg.funbox.presentation.CustomNaverMap
-import com.rpg.funbox.presentation.MapSocket.quitGame
+import com.rpg.funbox.presentation.MapSocket
 import com.rpg.funbox.presentation.MapSocket.send
 import com.rpg.funbox.presentation.MapSocket.sendQuizAnswer
 import com.rpg.funbox.presentation.MapSocket.verifyAnswer
@@ -35,7 +36,6 @@ import com.rpg.funbox.presentation.login.AccessPermission.LOCATION_PERMISSION_RE
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import timber.log.Timber
 import java.util.Timer
 import kotlin.concurrent.scheduleAtFixedRate
 
@@ -48,6 +48,8 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var fusedLocationSource: FusedLocationSource
     private lateinit var backPressedCallback: OnBackPressedCallback
+
+    private var backPressTime: Long = 0
 
     private val requestMultiPermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
@@ -151,7 +153,11 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
                         null
                     ).await()
                     val makePinDeferred = async {
-                        viewModel.setUsersLocations(location.latitude, location.longitude)
+                        try {
+                            viewModel.setUsersLocations(location.latitude, location.longitude)
+                        } catch (e: Exception) {
+                            Toast.makeText(requireContext(), resources.getString(R.string.gps_on_toast_message), Toast.LENGTH_LONG).show()
+                        }
                     }
                     makePinDeferred.await()
                 }
@@ -162,9 +168,15 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
     private fun setBackPressedCallback() {
         backPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                Timber.d("GameActivity 나갈게")
-                viewModel.roomId.value?.let { quitGame(it) }
-                requireActivity().finish()
+                if (backPressTime + 3000 > System.currentTimeMillis()) {
+                    viewModel.roomId.value?.let { roomId ->
+                        MapSocket.quitGame(roomId)
+                    }
+                    requireActivity().finish()
+                } else {
+                    Toast.makeText(requireContext(), resources.getString(R.string.finish_quiz_toast_message), Toast.LENGTH_LONG).show()
+                    backPressTime = System.currentTimeMillis()
+                }
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(
@@ -180,13 +192,11 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
 
         is QuizUiEvent.QuizAnswerSubmit -> {
             findNavController().navigate(R.id.action_QuizFragment_to_loadingDialog)
-            //LoadingDialog().show(childFragmentManager,"loading")
             viewModel.roomId.value?.let { sendQuizAnswer(it, viewModel.latestAnswer.value) }
         }
 
         is QuizUiEvent.QuizAnswerCheckStart -> {
             findNavController().navigate(R.id.action_QuizFragment_to_answerCheckFragment)
-            //AnswerCheckFragment().show(childFragmentManager, "AnswerCheckStart")
         }
 
         is QuizUiEvent.QuizAnswerCheckRight -> {
@@ -199,19 +209,20 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
 
         is QuizUiEvent.QuizNetworkDisconnected -> {
             findNavController().navigate(R.id.action_QuizFragment_to_networkAlertFragment)
-            //NetworkAlertFragment().show(childFragmentManager, "NetworkDisconnected")
         }
 
         is QuizUiEvent.QuizScoreBoard -> {
             viewModel.setUserQuizStateTrue()
-            //findNavController().navigate(R.id.action_QuizFragment_to_scoreBoardFragment)
-            ScoreBoardFragment().show(childFragmentManager, "ScoreBoard")
+            findNavController().navigate(R.id.action_QuizFragment_to_scoreBoardFragment)
+        }
+
+        is QuizUiEvent.QuizFinishTry -> {
+            findNavController().navigate(R.id.action_QuizFragment_to_QuizFinishFragment)
         }
 
         is QuizUiEvent.SendMessage -> {
             send(viewModel.otherUserId.value, viewModel.sendingMessage.value)
             viewModel.addMessage(MessageItem(0, viewModel.sendingMessage.value))
-            Timber.d("${viewModel.chatMessages}")
         }
 
         else -> {}
