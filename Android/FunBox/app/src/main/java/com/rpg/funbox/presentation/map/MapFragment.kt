@@ -140,7 +140,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     @UiThread
     override fun onMapReady(map: NaverMap) {
-        val infoWindow = InfoWindow()
         this.naverMap = map.apply {
             locationSource = this@MapFragment.locationSource
             locationTrackingMode = LocationTrackingMode.Face
@@ -157,15 +156,15 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 //                naverMap.moveCamera(cameraUpdate)
                 viewModel.setXY(location.latitude, location.longitude)
             }
-            viewModel.users.value.let { users ->
-                users.forEach { user ->
-                    viewModel.userDetail.value?.let { userDetail ->
-                        if ((user.id == userDetail.id) && (user.isInfoOpen)) {
-                            infoWindow.open(this)
-                        }
-                    }
-                }
-            }
+//            viewModel.users.value.let { users ->
+//                users.forEach { user ->
+//                    viewModel.userDetail.value?.let { userDetail ->
+//                        if ((user.id == userDetail.id) && (user.isInfoOpen)) {
+//                            infoWindow.open(this)
+//                        }
+//                    }
+//                }
+//            }
         }
 
         naverMap.locationOverlay.apply {
@@ -173,12 +172,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             iconHeight = 120
             iconWidth = 120
             icon = OverlayImage.fromResource(R.drawable.navi_icon)
-        }
-        val hasMsg = InfoWindow()
-        hasMsg.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
-            override fun getText(infoWindow: InfoWindow): CharSequence {
-                return "● ● ●"
-            }
         }
 
         map.setOnMapClickListener { _, _ ->
@@ -188,7 +181,14 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 it.mapPin?.infoWindow?.close()
                 Timber.d("@111111")
                 if (it.isMsg) {
-                    it.mapPin?.let { mapPin -> hasMsg.open(mapPin) }
+                    it.mapPin?.let { mapPin ->
+                        val hasMsg = InfoWindow()
+                        hasMsg.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
+                            override fun getText(infoWindow: InfoWindow): CharSequence {
+                                return "● ● ●"
+                            }
+                        }
+                        hasMsg.open(mapPin) }
                 }
             }
         }
@@ -218,9 +218,16 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                                     captionText = user.name.toString()
                                     captionTextSize = 20F
                                     if (user.isMsg) {
-                                        user.mapPin?.let { mapPin -> hasMsg.open(mapPin) }
+                                        user.mapPin?.let { mapPin ->
+                                            val hasMsg = InfoWindow()
+                                            hasMsg.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
+                                                override fun getText(infoWindow: InfoWindow): CharSequence {
+                                                    return "● ● ●"
+                                                }
+                                            }
+                                            hasMsg.open(mapPin) }
                                     }
-                                    setMarkerClickListener(user, infoWindow, hasMsg)
+                                    setMarkerClickListener(user)
                                 }
                                 marker.map = naverMap
                                 user.mapPin = marker
@@ -239,10 +246,16 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     }
 
     private fun Marker.setMarkerClickListener(
-        user: User,
-        infoWindow: InfoWindow,
-        hasMsg: InfoWindow
+        user: User
     ) {
+        val infoWindow = InfoWindow()
+        val hasMsg = InfoWindow()
+        hasMsg.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
+            override fun getText(infoWindow: InfoWindow): CharSequence {
+                return "● ● ●"
+            }
+        }
+
         var adapter1 = MapProfileAdapter(requireContext(), viewModel.userDetail.value, null)
         setOnClickListener { _ ->
             Timber.d("클릭리스너!!!!!!!!!!!!!!!!!!!!!!!!!!!")
