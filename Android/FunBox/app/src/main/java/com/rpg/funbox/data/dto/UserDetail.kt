@@ -4,5 +4,5 @@ data class UserDetail (
     val id: Int,
     var msg: String,
     val profile: String,
-    val name: String
+    var name: String
 )

@@ -115,6 +115,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }
 
         initMapView()
+
     }
 
     override fun onResume() {
@@ -157,15 +158,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 //                naverMap.moveCamera(cameraUpdate)
                 viewModel.setXY(location.latitude, location.longitude)
             }
-//            viewModel.users.value.let { users ->
-//                users.forEach { user ->
-//                    viewModel.userDetail.value?.let { userDetail ->
-//                        if ((user.id == userDetail.id) && (user.isInfoOpen)) {
-//                            infoWindow.open(this)
-//                        }
-//                    }
-//                }
-//            }
+
+
+
         }
 
         naverMap.locationOverlay.apply {
@@ -259,6 +254,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         setOnClickListener { _ ->
             Timber.d("클릭리스너!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             val adapter1 = MapProfileAdapter(requireContext(), viewModel.getDetail(user.id), viewModel.getProfile(user.id))
+            viewModel.updateClickedUserId(user.id)
             infoWindow.adapter = adapter1
             Timber.d(viewModel.getProfile(user.id).toString())
             infoWindow.open(this@setMarkerClickListener)
@@ -370,8 +366,8 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         is MapUiEvent.GameStart -> {
             val intent = Intent(context, GameActivity::class.java)
             intent.putExtra("StartGame", true)
-            intent.putExtra("OtherUserId", viewModel.userDetail.value?.id)
-            viewModel.userDetail.value?.let { applyGame(it.id) }
+            intent.putExtra("OtherUserId", viewModel.clickedUserId.value)
+            applyGame(viewModel.clickedUserId.value)
             startActivity(intent, requireActivity().slideLeft())
         }
 

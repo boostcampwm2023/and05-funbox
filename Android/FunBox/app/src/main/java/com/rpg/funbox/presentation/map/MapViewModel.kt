@@ -49,8 +49,8 @@ class MapViewModel : ViewModel() {
     private val _myLocation = MutableStateFlow<Pair<Double, Double>?>(null)
     val myLocation = _myLocation.asStateFlow()
 
-    private val _userDetail = MutableStateFlow<UserDetail?>(null)
-    val userDetail: StateFlow<UserDetail?> = _userDetail
+    private val _clickedUserId = MutableStateFlow<Int>(-1)
+    val clickedUserId= _clickedUserId.asStateFlow()
 
     private val _mapUiEvent = MutableSharedFlow<MapUiEvent>()
     val mapUiEvent = _mapUiEvent.asSharedFlow()
@@ -214,6 +214,10 @@ class MapViewModel : ViewModel() {
                         if(it.profile != res.profileUrl){
                             responseProfile(res.profileUrl,id)
                         }
+
+                        if(it.name != res.userName){
+                            it.name = res.userName ?: ""
+                        }
                     }
                 }
             }
@@ -265,5 +269,9 @@ class MapViewModel : ViewModel() {
 
     fun getProfile(id: Int): Bitmap? {
         return _userProfileTable.value.get(id)
+    }
+
+    fun updateClickedUserId(id: Int) {
+        _clickedUserId.update { id }
     }
 }
