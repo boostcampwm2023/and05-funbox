@@ -139,9 +139,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
         viewModel.buttonGone()
         isFabOpen = false
-        viewModel.users.value.forEach { user ->
-            user.isInfoOpen = false
-        }
     }
 
     override fun onDestroyView() {
@@ -168,15 +165,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 //                naverMap.moveCamera(cameraUpdate)
                 viewModel.setXY(location.latitude, location.longitude)
             }
-//            viewModel.users.value.let { users ->
-//                users.forEach { user ->
-//                    viewModel.userDetail.value?.let { userDetail ->
-//                        if ((user.id == userDetail.id) && (user.isInfoOpen)) {
-//                            infoWindow.open(this)
-//                        }
-//                    }
-//                }
-//            }
+
+
+
         }
 
         naverMap.locationOverlay.apply {
@@ -189,7 +180,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         map.setOnMapClickListener { _, _ ->
             viewModel.buttonGone()
             viewModel.users.value.forEach {
-                it.isInfoOpen = false
                 it.mapPin?.infoWindow?.close()
                 Timber.d("@111111")
                 if (it.isMsg) {
@@ -270,6 +260,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         setOnClickListener { _ ->
             Timber.d("클릭리스너!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             val adapter1 = MapProfileAdapter(mContext, viewModel.getDetail(user.id), viewModel.getProfile(user.id))
+            viewModel.updateClickedUserId(user.id)
             infoWindow.adapter = adapter1
             Timber.d(viewModel.getProfile(user.id).toString())
             infoWindow.open(this@setMarkerClickListener)
@@ -281,11 +272,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                         user.mapPin?.let { mapPin -> hasMsg.open(mapPin) }
                     }
                 }
-                user.isInfoOpen = true
                 infoUserId = user.id
                 viewModel.users.value.forEach { temp ->
                     if (temp.id != user.id) {
-                        temp.isInfoOpen = false
                         temp.mapPin?.infoWindow?.close()
                         Timber.d("@111111")
                         if (temp.isMsg) {
@@ -297,7 +286,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 Timber.d("@@@@@@")
             } else {
                 viewModel.buttonGone()
-                user.isInfoOpen = false
                 this.infoWindow?.close()
                 Timber.d("!!!!!!!")
                 if (user.isMsg) {
@@ -305,26 +293,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 }
             }
             true
-        }
-    }
-
-    private suspend fun returnProfileImage(test: String?) = try {
-        withContext(Dispatchers.IO) {
-            Glide.with(mContext)
-                .asBitmap()
-                .load(test)
-                .apply(RequestOptions().override(100, 100))
-                .submit()
-                .get()
-        }
-    } catch (e: Exception) {
-        withContext(Dispatchers.IO) {
-            Glide.with(mContext)
-                .asBitmap()
-                .load(R.drawable.close_24)
-                .apply(RequestOptions().override(100, 100))
-                .submit()
-                .get()
         }
     }
 
@@ -400,9 +368,8 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         is MapUiEvent.GameStart -> {
             val intent = Intent(context, GameActivity::class.java)
             intent.putExtra("StartGame", true)
-            intent.putExtra("OtherUserId", viewModel.userDetail.value?.id)
-            viewModel.userDetail.value?.let { applyGame(it.id) }
-            Timber.d("Other Id: ${viewModel.userDetail.value?.id}")
+            intent.putExtra("OtherUserId", viewModel.clickedUserId.value)
+            applyGame(viewModel.clickedUserId.value)
             startActivity(intent, requireActivity().slideLeft())
         }
 

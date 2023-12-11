@@ -49,8 +49,8 @@ class MapViewModel : ViewModel() {
     private val _myLocation = MutableStateFlow<Pair<Double, Double>?>(null)
     val myLocation = _myLocation.asStateFlow()
 
-    private val _userDetail = MutableStateFlow<UserDetail?>(null)
-    val userDetail: StateFlow<UserDetail?> = _userDetail
+    private val _clickedUserId = MutableStateFlow<Int>(-1)
+    val clickedUserId= _clickedUserId.asStateFlow()
 
     private val _mapUiEvent = MutableSharedFlow<MapUiEvent>()
     val mapUiEvent = _mapUiEvent.asSharedFlow()
@@ -100,6 +100,12 @@ class MapViewModel : ViewModel() {
     fun toGame() {
         viewModelScope.launch {
             _mapUiEvent.emit(MapUiEvent.ToGame)
+        }
+    }
+
+    fun cancelGame() {
+        viewModelScope.launch {
+            _mapUiEvent.emit(MapUiEvent.CancelGame)
         }
     }
 
@@ -173,8 +179,6 @@ class MapViewModel : ViewModel() {
                         )
                     }
                 }
-                //newUsers.forEach {Timber.d( it.mapPin?.infoWindow.toString()) }
-
                 _users.update { newUsers.toList() }
                 _usersUpdate.update { !it }
             }
@@ -190,16 +194,15 @@ class MapViewModel : ViewModel() {
         }
     }
 
-    fun userDetailApi(id: Int) {
-        if (id !in _userDetailTable.value) {
-            viewModelScope.launch {
-                val response = userRepository.getSpecificUserInfo(id)
-//                Log.d("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",response!!.profileUrl.toString())
+    private fun userDetailApi(id: Int) {
+        viewModelScope.launch {
+            val response = userRepository.getSpecificUserInfo(id)
+            if (id !in _userDetailTable.value) {
                 response?.let { res ->
                     _userDetailTable.value.set(
                         id, UserDetail(
                             id,
-                            res.message.toString(),
+                            res.message?:"",
                             res.profileUrl.toString(),
                             res.userName.toString()
                         )
@@ -207,6 +210,22 @@ class MapViewModel : ViewModel() {
                     responseProfile(res.profileUrl, id)
                 }
 
+            } else {
+                _userDetailTable.value[id]?.let {
+                    response?.let{res->
+                        if(it.msg != res.message){
+                            it.msg = res.message?: ""
+                        }
+
+                        if(it.profile != res.profileUrl){
+                            responseProfile(res.profileUrl,id)
+                        }
+
+                        if(it.name != res.userName){
+                            it.name = res.userName ?: ""
+                        }
+                    }
+                }
             }
         }
     }
@@ -256,5 +275,9 @@ class MapViewModel : ViewModel() {
 
     fun getProfile(id: Int): Bitmap? {
         return _userProfileTable.value.get(id)
+    }
+
+    fun updateClickedUserId(id: Int) {
+        _clickedUserId.update { id }
     }
 }

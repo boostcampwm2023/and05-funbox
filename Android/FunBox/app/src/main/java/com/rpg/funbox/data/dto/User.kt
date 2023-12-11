@@ -10,7 +10,5 @@ data class User(
     var loc: LatLng,
     val name: String?,
     val isMsg: Boolean,
-    var mapPin: Marker? = null,
-    var isInfoOpen: Boolean = false,
-    var marker: InfoWindow? = null
+    var mapPin: Marker? = null
 )
