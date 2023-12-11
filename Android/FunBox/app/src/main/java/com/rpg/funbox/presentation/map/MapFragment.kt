@@ -2,7 +2,9 @@ package com.rpg.funbox.presentation.map
 
 import android.Manifest
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
@@ -12,12 +14,17 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.naver.maps.geometry.LatLng
@@ -31,6 +38,8 @@ import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
+import com.naver.maps.map.util.MarkerIcons
+import com.naver.maps.map.widget.ZoomControlView
 import com.rpg.funbox.R
 import com.rpg.funbox.data.dto.User
 import com.rpg.funbox.databinding.FragmentMapBinding
@@ -143,9 +152,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
             extent = LatLngBounds(LatLng(31.43, 122.37), LatLng(44.35, 132.0))
             addOnLocationChangeListener { location ->
-                val cameraUpdate =
-                    CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))
-                naverMap.moveCamera(cameraUpdate)
+//                val cameraUpdate =
+//                    CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))
+//                naverMap.moveCamera(cameraUpdate)
                 viewModel.setXY(location.latitude, location.longitude)
             }
             viewModel.users.value.let { users ->
@@ -184,6 +193,15 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             }
         }
 
+        map.addOnCameraChangeListener { _, _ ->
+            naverMap.locationOverlay.apply {
+                circleOutlineColor=resources.getColor(R.color.purple, null)
+                circleColor=resources.getColor(R.color.not, null)
+                circleRadius=(600/naverMap.projection.metersPerPixel).toInt()
+                circleOutlineWidth=10
+            }
+        }
+
         lifecycleScope.launch {
             viewModel.usersUpdate.collect {
                 viewModel.users.value.also {
@@ -193,7 +211,10 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                             if (user.mapPin == null) {
                                 val marker = Marker().apply {
                                     position = user.loc
-                                    iconTintColor = Color.YELLOW
+                                    icon = MarkerIcons.BLACK
+                                    iconTintColor = resources.getColor(R.color.purple, null)
+                                    width=Marker.SIZE_AUTO
+                                    height=Marker.SIZE_AUTO
                                     captionText = user.name.toString()
                                     captionTextSize = 20F
                                     if (user.isMsg) {
