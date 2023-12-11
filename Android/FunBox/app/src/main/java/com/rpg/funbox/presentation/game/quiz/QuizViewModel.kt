@@ -314,6 +314,7 @@ class QuizViewModel : ViewModel() {
 
     fun sendMessage() {
         viewModelScope.launch {
+            addMessage(MessageItem(0, sendingMessage.value))
             _quizUiEvent.emit(QuizUiEvent.SendMessage)
             sendingMessage.value = ""
         }
