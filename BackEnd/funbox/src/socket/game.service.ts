@@ -58,7 +58,7 @@ export class GameService {
   }
 
   checkGamePlaying(gameRoom: GameRoomDto) {
-    if (!gameRoom.round) {
+    if (gameRoom.round === null) {
       throw new ForbiddenException("Game isn't playing");
     }
   }
