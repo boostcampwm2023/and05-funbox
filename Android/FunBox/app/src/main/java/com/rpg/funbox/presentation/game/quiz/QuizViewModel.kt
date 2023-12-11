@@ -228,16 +228,26 @@ class QuizViewModel : ViewModel() {
             }
             .on("directMessage") {
                 val json = Gson().fromJson(it[0].toString(), Chat::class.java)
-                Timber.d("${json.message}")
                 addMessage(MessageItem(1, json.message))
-                receiveMessage()
+                //receiveMessage()
             }
         Timber.d("이벤트 등록")
         setQuizGame()
     }
 
     fun addMessage(message:MessageItem){
-        _chatMessages.value.add(message)
+        Timber.d("add 메시지  ${message.message}")
+        viewModelScope.launch {
+            val temp = mutableListOf<MessageItem>()
+            _chatMessages.value.forEach {
+                temp.add(it)
+            }
+            temp.add(message)
+            _chatMessages.update {
+                temp
+            }
+        }
+
     }
 
     fun setUserState(state: Boolean) {
@@ -313,6 +323,7 @@ class QuizViewModel : ViewModel() {
 
     fun sendMessage() {
         viewModelScope.launch {
+            addMessage(MessageItem(0, sendingMessage.value))
             _quizUiEvent.emit(QuizUiEvent.SendMessage)
             sendingMessage.value = ""
         }
