@@ -36,6 +36,7 @@ import com.rpg.funbox.presentation.login.AccessPermission.LOCATION_PERMISSION_RE
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 import java.util.Timer
 import kotlin.concurrent.scheduleAtFixedRate
 
