@@ -104,7 +104,7 @@ export class SocketService {
   getRoomId(client: Socket): string {
     const roomId = client.data.roomId;
     if (!roomId) {
-      throw new BadRequestException();
+      throw new BadRequestException("Client isn't in game");
     }
     return roomId;
   }

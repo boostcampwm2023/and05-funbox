@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { GameRoomDto } from './dto/game-room.dto';
 
@@ -10,7 +15,7 @@ export class GameService {
   getGameRoom(roomId: string): GameRoomDto {
     const gameRoom = this.gameRoomList.get(roomId);
     if (!gameRoom) {
-      throw new NotFoundException();
+      throw new NotFoundException('Game room not found');
     }
     return gameRoom;
   }
@@ -52,8 +57,15 @@ export class GameService {
     this.nextQuiz(roomId);
   }
 
+  checkGamePlaying(gameRoom: GameRoomDto) {
+    if (!gameRoom.round) {
+      throw new ForbiddenException("Game isn't playing");
+    }
+  }
+
   nextQuiz(roomId: string) {
     const gameRoom = this.getGameRoom(roomId);
+    this.checkGamePlaying(gameRoom);
 
     const quiz = gameRoom.quizzes[++gameRoom.round];
     const target = this.getTarget(gameRoom).data.userId;
@@ -77,6 +89,7 @@ export class GameService {
 
   verifyAnswer(roomId: string, isCorrect: boolean) {
     const gameRoom = this.getGameRoom(roomId);
+    this.checkGamePlaying(gameRoom);
 
     this.getTarget(gameRoom).data.score += isCorrect ? 1 : 0;
 
@@ -90,6 +103,7 @@ export class GameService {
 
   showScore(roomId: string) {
     const gameRoom = this.getGameRoom(roomId);
+    this.checkGamePlaying(gameRoom);
 
     const data = JSON.stringify(
       gameRoom.players.map((player: Socket) => {
