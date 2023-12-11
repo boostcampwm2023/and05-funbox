@@ -103,6 +103,12 @@ class MapViewModel : ViewModel() {
         }
     }
 
+    fun cancelGame() {
+        viewModelScope.launch {
+            _mapUiEvent.emit(MapUiEvent.CancelGame)
+        }
+    }
+
     fun gameStart() {
         viewModelScope.launch {
             _mapUiEvent.emit(MapUiEvent.GameStart)

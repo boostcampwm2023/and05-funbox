@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.lifecycleScope
@@ -138,6 +139,13 @@ class MainActivity : AppCompatActivity() {
             mapViewModel.setApplyGameData(applyGameServerData)
             mapViewModel.getGame()
             settingViewModel.getGame()
+        }.on("quitGame") {
+            mapViewModel.cancelGame()
+            Toast.makeText(
+                this,
+                "상대방이 게임을 취소하였습니다.",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 }
