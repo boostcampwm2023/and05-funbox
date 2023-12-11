@@ -58,9 +58,7 @@ class WaitFragment : BaseFragment<FragmentWaitBinding>(R.layout.fragment_wait) {
         backPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (backPressTime + 3000 > System.currentTimeMillis()) {
-                    viewModel.roomId.value?.let { roomId ->
-                        MapSocket.quitGame(roomId)
-                    }
+                    MapSocket.quitGame()
                     requireActivity().finish()
                 } else {
                     Toast.makeText(requireContext(), resources.getString(R.string.finish_quiz_toast_message), Toast.LENGTH_LONG).show()
