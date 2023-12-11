@@ -95,6 +95,7 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
         lifecycleScope.launch {
             viewModel.chatMessages.collect{
                 viewModel.chatAdapter.submitList(it)
+                binding.rvChat.scrollToPosition(viewModel.chatMessages.value.size -1)
             }
         }
     }

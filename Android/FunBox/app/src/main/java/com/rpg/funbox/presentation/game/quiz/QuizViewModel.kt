@@ -135,7 +135,6 @@ class QuizViewModel : ViewModel() {
         viewModelScope.launch {
             _quizUiEvent.emit(QuizUiEvent.ReceiveMessage)
             chatAdapter.notifyDataSetChanged()
-            //scrollToPosition(_chatMessages.value.size - 1)
         }
     }
 
