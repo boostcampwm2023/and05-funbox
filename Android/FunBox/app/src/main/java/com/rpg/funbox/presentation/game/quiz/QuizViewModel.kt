@@ -134,7 +134,6 @@ class QuizViewModel : ViewModel() {
     private fun receiveMessage() {
         viewModelScope.launch {
             _quizUiEvent.emit(QuizUiEvent.ReceiveMessage)
-            chatAdapter.notifyDataSetChanged()
         }
     }
 
@@ -229,15 +228,15 @@ class QuizViewModel : ViewModel() {
             }
             .on("directMessage") {
                 val json = Gson().fromJson(it[0].toString(), Chat::class.java)
-                Timber.d("${json.message}")
                 addMessage(MessageItem(1, json.message))
-                receiveMessage()
+                //receiveMessage()
             }
         Timber.d("이벤트 등록")
         setQuizGame()
     }
 
     fun addMessage(message:MessageItem){
+        Timber.d("add 메시지  ${message.message}")
         _chatMessages.value.add(message)
     }
 
