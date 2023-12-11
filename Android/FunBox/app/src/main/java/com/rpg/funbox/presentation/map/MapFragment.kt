@@ -3,6 +3,7 @@ package com.rpg.funbox.presentation.map
 import android.Manifest
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -66,6 +67,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     private val viewModel: MapViewModel by activityViewModels()
 
+    private lateinit var mContext: Context
     private lateinit var locationTimer: Timer
     private lateinit var naverMap: NaverMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -92,6 +94,12 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             }
         }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        mContext = context
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -113,12 +121,12 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             viewModel.setLocationPermitted()
         }
 
-        initMapView()
     }
 
     override fun onResume() {
         super.onResume()
 
+        initMapView()
         submitUserLocation()
     }
 
@@ -258,7 +266,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 }, 1500)
                 adapter1 =
                     MapProfileAdapter(
-                        requireContext(),
+                        mContext,
                         viewModel.userDetail.value,
                         image
                     )
@@ -301,7 +309,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     private suspend fun returnProfileImage(test: String?) = try {
         withContext(Dispatchers.IO) {
-            Glide.with(requireContext())
+            Glide.with(mContext)
                 .asBitmap()
                 .load(test)
                 .apply(RequestOptions().override(100, 100))
@@ -310,7 +318,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }
     } catch (e: Exception) {
         withContext(Dispatchers.IO) {
-            Glide.with(requireContext())
+            Glide.with(mContext)
                 .asBitmap()
                 .load(R.drawable.close_24)
                 .apply(RequestOptions().override(100, 100))
