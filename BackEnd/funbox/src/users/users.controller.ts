@@ -43,7 +43,7 @@ export class UsersController {
     @Body() userLocationDto: UserLocationDto,
   ): Promise<NearUsersDto[]> {
     await this.usersService.updateUserLocation(req.user.id, userLocationDto);
-    return await this.usersService.findNearUsers(req.user.id);
+    return await this.usersService.findNearUsers(req.user.id, userLocationDto);
   }
 
   @Get()
