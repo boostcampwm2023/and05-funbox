@@ -173,6 +173,10 @@ class QuizViewModel : ViewModel() {
                     "REJECT" -> {
                         finishQuiz()
                     }
+
+                    "PLAYING" -> {
+                        otherPlaying()
+                    }
                 }
             }
             .on("quiz") {
@@ -344,6 +348,12 @@ class QuizViewModel : ViewModel() {
     fun finishQuiz() {
         viewModelScope.launch {
             _quizUiEvent.emit(QuizUiEvent.QuizFinish)
+        }
+    }
+
+    fun otherPlaying() {
+        viewModelScope.launch {
+            _quizUiEvent.emit(QuizUiEvent.OtherPlaying)
         }
     }
 }

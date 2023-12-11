@@ -23,4 +23,6 @@ sealed class QuizUiEvent {
     data object SendMessage : QuizUiEvent()
 
     data object ReceiveMessage : QuizUiEvent()
+
+    data object OtherPlaying : QuizUiEvent()
 }
