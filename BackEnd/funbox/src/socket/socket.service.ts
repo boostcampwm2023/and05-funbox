@@ -49,8 +49,11 @@ export class SocketService {
 
   gameApply(client: Socket, opponentId: number) {
     const opponentClient = this.userIdToClient.get(opponentId);
-    if (!opponentClient) {
-      const data = JSON.stringify({ answer: GameApplyAnswer.OFFLINE });
+    if (!opponentClient || opponentClient.data.roomId) {
+      const answer = !opponentClient
+        ? GameApplyAnswer.OFFLINE
+        : GameApplyAnswer.PLAYING;
+      const data = JSON.stringify({ answer });
       this.logger.log(`gameApplyAnswer to ${client.data.userId}: ${data}`);
       client.emit('gameApplyAnswer', data);
     } else {
