@@ -147,10 +147,18 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         locationTimer.cancel()
     }
 
+    @SuppressLint("MissingPermission")
     @UiThread
     override fun onMapReady(map: NaverMap) {
         this.naverMap = map.apply {
             locationSource = this@MapFragment.locationSource
+            this@MapFragment.locationSource.lastLocation?.latitude?.let {
+                this@MapFragment.locationSource.lastLocation?.longitude?.let { it1 ->
+                    LatLng(
+                        it, it1
+                    )
+                }
+            }?.let { CameraUpdate.scrollTo(it) }?.let { naverMap.moveCamera(it) }
             locationTrackingMode = LocationTrackingMode.Face
             uiSettings.isLocationButtonEnabled = true
 
