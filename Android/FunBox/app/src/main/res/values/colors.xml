@@ -6,4 +6,6 @@
     <color name="success_button_color">#FF00DFA2</color>
     <color name="edittext_color">#FFE8DFCA</color>
     <color name="disabled_color">#FFD9D9D9</color>
+    <color name="not">#00000000</color>
+    <color name="purple">#CCADFF</color>
 </resources>
