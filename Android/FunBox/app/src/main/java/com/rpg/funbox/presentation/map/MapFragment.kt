@@ -129,9 +129,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
         viewModel.buttonGone()
         isFabOpen = false
-        viewModel.users.value.forEach { user ->
-            user.isInfoOpen = false
-        }
     }
 
     override fun onDestroyView() {
