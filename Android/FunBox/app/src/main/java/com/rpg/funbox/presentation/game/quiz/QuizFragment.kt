@@ -97,6 +97,9 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
         lifecycleScope.launch {
             viewModel.chatMessages.collect{
                 viewModel.chatAdapter.submitList(it)
+                viewModel.chatAdapter.notifyDataSetChanged()
+                Timber.d(viewModel.chatMessages.value.size.toString())
+                binding.rvChat.smoothScrollToPosition(viewModel.chatMessages.value.size)
             }
         }
     }
@@ -218,7 +221,7 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
 
         is QuizUiEvent.SendMessage -> {
             send(viewModel.otherUserId.value, viewModel.sendingMessage.value)
-            viewModel.addMessage(MessageItem(0, viewModel.sendingMessage.value))
+            //Timber.d("${viewModel.chatMessages.value}")
         }
 
         else -> {}
