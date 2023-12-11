@@ -296,7 +296,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             true
         }
     }
-    
+
 
     private fun initMapView() {
         Timber.d("Init MapView")

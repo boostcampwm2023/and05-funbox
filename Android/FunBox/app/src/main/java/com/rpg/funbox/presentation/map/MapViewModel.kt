@@ -173,8 +173,6 @@ class MapViewModel : ViewModel() {
                         )
                     }
                 }
-                //newUsers.forEach {Timber.d( it.mapPin?.infoWindow.toString()) }
-
                 _users.update { newUsers.toList() }
                 _usersUpdate.update { !it }
             }
@@ -190,16 +188,15 @@ class MapViewModel : ViewModel() {
         }
     }
 
-    fun userDetailApi(id: Int) {
+    private fun userDetailApi(id: Int) {
         viewModelScope.launch {
             val response = userRepository.getSpecificUserInfo(id)
             if (id !in _userDetailTable.value) {
-//                Log.d("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",response!!.profileUrl.toString())
                 response?.let { res ->
                     _userDetailTable.value.set(
                         id, UserDetail(
                             id,
-                            res.message.toString(),
+                            res.message?:"",
                             res.profileUrl.toString(),
                             res.userName.toString()
                         )
