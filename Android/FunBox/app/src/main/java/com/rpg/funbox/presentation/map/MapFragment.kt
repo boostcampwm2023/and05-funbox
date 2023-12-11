@@ -55,6 +55,7 @@ import com.rpg.funbox.presentation.login.AccessPermission.LOCATION_PERMISSION_RE
 import com.rpg.funbox.presentation.slideLeft
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
@@ -121,17 +122,20 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             viewModel.setLocationPermitted()
         }
 
+        locationTimer = Timer()
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onPause() {
+        super.onPause()
 
-        initMapView()
-        submitUserLocation()
+        locationTimer.cancel()
     }
 
     override fun onStart() {
         super.onStart()
+
+        initMapView()
+        submitUserLocation()
 
         viewModel.buttonGone()
         isFabOpen = false
@@ -148,7 +152,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     @UiThread
     override fun onMapReady(map: NaverMap) {
-        val infoWindow = InfoWindow()
         this.naverMap = map.apply {
             locationSource = this@MapFragment.locationSource
             locationTrackingMode = LocationTrackingMode.Face
@@ -165,15 +168,15 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 //                naverMap.moveCamera(cameraUpdate)
                 viewModel.setXY(location.latitude, location.longitude)
             }
-            viewModel.users.value.let { users ->
-                users.forEach { user ->
-                    viewModel.userDetail.value?.let { userDetail ->
-                        if ((user.id == userDetail.id) && (user.isInfoOpen)) {
-                            infoWindow.open(this)
-                        }
-                    }
-                }
-            }
+//            viewModel.users.value.let { users ->
+//                users.forEach { user ->
+//                    viewModel.userDetail.value?.let { userDetail ->
+//                        if ((user.id == userDetail.id) && (user.isInfoOpen)) {
+//                            infoWindow.open(this)
+//                        }
+//                    }
+//                }
+//            }
         }
 
         naverMap.locationOverlay.apply {
@@ -181,12 +184,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             iconHeight = 120
             iconWidth = 120
             icon = OverlayImage.fromResource(R.drawable.navi_icon)
-        }
-        val hasMsg = InfoWindow()
-        hasMsg.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
-            override fun getText(infoWindow: InfoWindow): CharSequence {
-                return "● ● ●"
-            }
         }
 
         map.setOnMapClickListener { _, _ ->
@@ -196,7 +193,14 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 it.mapPin?.infoWindow?.close()
                 Timber.d("@111111")
                 if (it.isMsg) {
-                    it.mapPin?.let { mapPin -> hasMsg.open(mapPin) }
+                    it.mapPin?.let { mapPin ->
+                        val hasMsg = InfoWindow()
+                        hasMsg.adapter = object : InfoWindow.DefaultTextAdapter(mContext) {
+                            override fun getText(infoWindow: InfoWindow): CharSequence {
+                                return "● ● ●"
+                            }
+                        }
+                        hasMsg.open(mapPin) }
                 }
             }
         }
@@ -226,9 +230,16 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                                     captionText = user.name.toString()
                                     captionTextSize = 20F
                                     if (user.isMsg) {
-                                        user.mapPin?.let { mapPin -> hasMsg.open(mapPin) }
+                                        user.mapPin?.let { mapPin ->
+                                            val hasMsg = InfoWindow()
+                                            hasMsg.adapter = object : InfoWindow.DefaultTextAdapter(mContext) {
+                                                override fun getText(infoWindow: InfoWindow): CharSequence {
+                                                    return "● ● ●"
+                                                }
+                                            }
+                                            hasMsg.open(mapPin) }
                                     }
-                                    setMarkerClickListener(user, infoWindow, hasMsg)
+                                    setMarkerClickListener(user)
                                 }
                                 marker.map = naverMap
                                 user.mapPin = marker
@@ -247,33 +258,23 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     }
 
     private fun Marker.setMarkerClickListener(
-        user: User,
-        infoWindow: InfoWindow,
-        hasMsg: InfoWindow
+        user: User
     ) {
-        var adapter1 = MapProfileAdapter(requireContext(), viewModel.userDetail.value, null)
+        val infoWindow = InfoWindow()
+        val hasMsg = InfoWindow()
+        hasMsg.adapter = object : InfoWindow.DefaultTextAdapter(mContext) {
+            override fun getText(infoWindow: InfoWindow): CharSequence {
+                return "● ● ●"
+            }
+        }
         setOnClickListener { _ ->
             Timber.d("클릭리스너!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            viewModel.userDetailApi(user.id)
+            val adapter1 = MapProfileAdapter(mContext, viewModel.getDetail(user.id), viewModel.getProfile(user.id))
             infoWindow.adapter = adapter1
-            runBlocking {
-                val test = viewModel.userDetail.value?.profile
-                val image: Bitmap = returnProfileImage(test)
-                Handler(Looper.getMainLooper()).postDelayed({
-                    infoWindow.adapter = adapter1
-                    Timber.d(adapter1.toString())
-                    infoWindow.open(this@setMarkerClickListener)
-                }, 1500)
-                adapter1 =
-                    MapProfileAdapter(
-                        mContext,
-                        viewModel.userDetail.value,
-                        image
-                    )
-            }
+            Timber.d(viewModel.getProfile(user.id).toString())
+            infoWindow.open(this@setMarkerClickListener)
 
-
-            if (!this.hasInfoWindow() || this.infoWindow == hasMsg) {
+            if (this.hasInfoWindow() || this.infoWindow == hasMsg) {
                 viewModel.buttonVisible()
                 viewModel.users.value.forEach { user ->
                     if (user.isMsg) {
@@ -362,7 +363,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                             viewModel.setUsersLocations(location.latitude, location.longitude)
                         } catch (e: Exception) {
                             Toast.makeText(
-                                requireContext(),
+                                mContext,
                                 resources.getString(R.string.gps_on_toast_message),
                                 Toast.LENGTH_LONG
                             ).show()
@@ -401,6 +402,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             intent.putExtra("StartGame", true)
             intent.putExtra("OtherUserId", viewModel.userDetail.value?.id)
             viewModel.userDetail.value?.let { applyGame(it.id) }
+            Timber.d("Other Id: ${viewModel.userDetail.value?.id}")
             startActivity(intent, requireActivity().slideLeft())
         }
 
