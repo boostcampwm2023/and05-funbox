@@ -45,6 +45,11 @@
     <string name="withdraw_setting">회원 탈퇴하기</string>
     <string name="tv_withdraw_setting">정말로 탈퇴하시겠습니까?</string>
     <string name="game_apply_message">게임 신청 도착</string>
+    <string name="finish_quiz_btn_text">게임 종료</string>
+    <string name="not_finish_quiz_btn_text">계속하기</string>
+    <string name="finish_quiz_message">게임을 종료하시겠습니까?</string>
+    <string name="finish_quiz_toast_message">뒤로 가기 버튼을 한 번 더 클릭하시면 게임을 종료합니다.</string>
+    <string name="gps_on_toast_message">GPS가 꺼져 있습니다.</string>
 
     <string name="iv_main_logo_description">FunBox 로고</string>
     <string name="btn_main_naver_login_description">NAVER 소셜 로그인 버튼</string>

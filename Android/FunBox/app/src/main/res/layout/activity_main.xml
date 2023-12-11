@@ -20,12 +20,14 @@
         <ImageButton
             android:id="@+id/ib_side"
             android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_height="120dp"
+            android:paddingStart="30dp"
             android:backgroundTint="#DAFFFFFF"
-            android:src="@drawable/menu_24"
-
+            android:src="@drawable/navigate_next_24"
+            android:layout_marginStart="-25dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

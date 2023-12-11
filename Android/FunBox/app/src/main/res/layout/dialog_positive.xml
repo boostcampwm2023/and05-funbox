@@ -20,25 +20,10 @@
             android:layout_height="200dp"
             android:background="@drawable/bg_dialog_rectangle"
             android:elevation="100dp"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/positiveButton"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:background="@drawable/bg_green_rectangle"
-                android:onClick="@{()->vm.submitNewNickname()}"
-                android:text="@string/modify"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
 
             <EditText
                 android:id="@+id/dialogEditText"
@@ -50,12 +35,28 @@
                 android:ems="10"
                 android:gravity="center_horizontal|center_vertical"
                 android:inputType="text"
-                android:text="@={vm.newName}"
+                android:onTextChanged="@{(userNickname, s, b, c) -> vm.validateUserNickname(userNickname)}"
                 app:layout_constraintBottom_toTopOf="@+id/positiveButton"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="1.0" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/positiveButton"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:background="@{(vm.settingUiState.isSubmitBtnEnable == true) ? @drawable/success_button : @drawable/fail_button}"
+                android:enabled="@{vm.settingUiState.isSubmitBtnEnable}"
+                android:onClick="@{()->vm.submitNewNickname()}"
+                android:text="@string/modify"
+                android:textColor="@{(vm.settingUiState.isSubmitBtnEnable == true) ? @color/white : @color/black}"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
