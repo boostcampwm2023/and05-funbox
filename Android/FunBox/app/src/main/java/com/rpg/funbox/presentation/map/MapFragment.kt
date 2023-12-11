@@ -54,6 +54,7 @@ import com.rpg.funbox.presentation.login.AccessPermission.LOCATION_PERMISSION_RE
 import com.rpg.funbox.presentation.slideLeft
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
@@ -255,30 +256,14 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 return "● ● ●"
             }
         }
-
-        var adapter1 = MapProfileAdapter(requireContext(), viewModel.userDetail.value, null)
         setOnClickListener { _ ->
             Timber.d("클릭리스너!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            viewModel.userDetailApi(user.id)
+            val adapter1 = MapProfileAdapter(requireContext(), viewModel.getDetail(user.id), viewModel.getProfile(user.id))
             infoWindow.adapter = adapter1
-            runBlocking {
-                val test = viewModel.userDetail.value?.profile
-                val image: Bitmap = returnProfileImage(test)
-                Handler(Looper.getMainLooper()).postDelayed({
-                    infoWindow.adapter = adapter1
-                    Timber.d(adapter1.toString())
-                    infoWindow.open(this@setMarkerClickListener)
-                }, 1500)
-                adapter1 =
-                    MapProfileAdapter(
-                        requireContext(),
-                        viewModel.userDetail.value,
-                        image
-                    )
-            }
+            Timber.d(viewModel.getProfile(user.id).toString())
+            infoWindow.open(this@setMarkerClickListener)
 
-
-            if (!this.hasInfoWindow() || this.infoWindow == hasMsg) {
+            if (this.hasInfoWindow() || this.infoWindow == hasMsg) {
                 viewModel.buttonVisible()
                 viewModel.users.value.forEach { user ->
                     if (user.isMsg) {
