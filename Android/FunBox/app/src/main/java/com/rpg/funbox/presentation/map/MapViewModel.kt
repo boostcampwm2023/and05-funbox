@@ -191,9 +191,9 @@ class MapViewModel : ViewModel() {
     }
 
     fun userDetailApi(id: Int) {
-        if (id !in _userDetailTable.value) {
-            viewModelScope.launch {
-                val response = userRepository.getSpecificUserInfo(id)
+        viewModelScope.launch {
+            val response = userRepository.getSpecificUserInfo(id)
+            if (id !in _userDetailTable.value) {
 //                Log.d("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",response!!.profileUrl.toString())
                 response?.let { res ->
                     _userDetailTable.value.set(
@@ -207,6 +207,18 @@ class MapViewModel : ViewModel() {
                     responseProfile(res.profileUrl, id)
                 }
 
+            } else {
+                _userDetailTable.value[id]?.let {
+                    response?.let{res->
+                        if(it.msg != res.message){
+                            it.msg = res.message?: ""
+                        }
+
+                        if(it.profile != res.profileUrl){
+                            responseProfile(res.profileUrl,id)
+                        }
+                    }
+                }
             }
         }
     }
