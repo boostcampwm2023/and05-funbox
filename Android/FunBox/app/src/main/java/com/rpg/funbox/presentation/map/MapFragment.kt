@@ -296,26 +296,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             true
         }
     }
-
-    private suspend fun returnProfileImage(test: String?) = try {
-        withContext(Dispatchers.IO) {
-            Glide.with(requireContext())
-                .asBitmap()
-                .load(test)
-                .apply(RequestOptions().override(100, 100))
-                .submit()
-                .get()
-        }
-    } catch (e: Exception) {
-        withContext(Dispatchers.IO) {
-            Glide.with(requireContext())
-                .asBitmap()
-                .load(R.drawable.close_24)
-                .apply(RequestOptions().override(100, 100))
-                .submit()
-                .get()
-        }
-    }
+    
 
     private fun initMapView() {
         Timber.d("Init MapView")
