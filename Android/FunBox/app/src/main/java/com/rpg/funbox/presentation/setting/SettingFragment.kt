@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -70,8 +71,8 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
         submitUserLocation()
     }
 
-    override fun onDetach() {
-        super.onDetach()
+    override fun onDestroyView() {
+        super.onDestroyView()
 
         locationTimer.cancel()
     }
@@ -86,7 +87,11 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
                         null
                     ).await()
                     val makePinDeferred = async {
-                        viewModel.submitLocation(location.latitude, location.longitude)
+                        try {
+                            viewModel.submitLocation(location.latitude, location.longitude)
+                        } catch (e: Exception) {
+                            Toast.makeText(requireContext(), resources.getString(R.string.gps_on_toast_message), Toast.LENGTH_LONG).show()
+                        }
                     }
                     makePinDeferred.await()
                 }
@@ -101,17 +106,14 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
 
         is SettingUiEvent.SetName -> {
             findNavController().navigate(R.id.action_settingFragment_to_setNameDialog)
-            //SetNameDialog().show(childFragmentManager, "")
         }
 
         is SettingUiEvent.SetProfile -> {
             findNavController().navigate(R.id.action_settingFragment_to_setProfileDialog)
-            //SetProfileDialog().show(childFragmentManager, "")
         }
 
         is SettingUiEvent.StartWithdrawal -> {
             findNavController().navigate(R.id.action_settingFragment_to_withdrawalDialog)
-            //WithdrawalDialog().show(childFragmentManager, "")
         }
 
         is SettingUiEvent.ToGame -> {

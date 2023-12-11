@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
 import androidx.fragment.app.activityViewModels
@@ -18,7 +19,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.gson.Gson
 import com.google.android.gms.location.Priority
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
@@ -36,16 +36,13 @@ import com.rpg.funbox.data.dto.User
 import com.rpg.funbox.databinding.FragmentMapBinding
 import com.rpg.funbox.presentation.BaseFragment
 import com.rpg.funbox.presentation.MapSocket.applyGame
-import com.rpg.funbox.presentation.MapSocket.mSocket
 import com.rpg.funbox.presentation.MapSocket.rejectGame
-import io.socket.client.Socket
 import com.rpg.funbox.presentation.game.GameActivity
 import com.rpg.funbox.presentation.checkPermission
 import com.rpg.funbox.presentation.fadeInOut
 import com.rpg.funbox.presentation.login.AccessPermission
 import com.rpg.funbox.presentation.login.AccessPermission.LOCATION_PERMISSION_REQUEST_CODE
 import com.rpg.funbox.presentation.slideLeft
-import io.socket.engineio.client.EngineIOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -60,6 +57,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     private val viewModel: MapViewModel by activityViewModels()
 
+    private lateinit var locationTimer: Timer
     private lateinit var naverMap: NaverMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationSource: FusedLocationSource
@@ -106,18 +104,24 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             viewModel.setLocationPermitted()
         }
 
-        initMapView()
-        submitUserLocation()
     }
 
     override fun onStart() {
         super.onStart()
 
+        initMapView()
+        submitUserLocation()
         viewModel.buttonGone()
         isFabOpen = false
         viewModel.users.value?.forEach { user ->
             user.isInfoOpen = false
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        locationTimer.cancel()
     }
 
     @UiThread
@@ -313,21 +317,22 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     private fun submitUserLocation() {
         if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
-            Timer().scheduleAtFixedRate(0, 3000) {
+            locationTimer = Timer()
+            locationTimer.scheduleAtFixedRate(0, 3000) {
                 lifecycleScope.launch {
-//                     val drawPinDeferred = async {
-//                         binding.map.getFragment<MapFragment>()
-//                             .getMapAsync(this@MapFragment)
-//                     }
-//                     drawPinDeferred.await()
                     val location = fusedLocationClient.getCurrentLocation(
                         Priority.PRIORITY_HIGH_ACCURACY,
                         null
                     ).await()
                     val makePinDeferred = async {
-                        viewModel.setUsersLocations(location.latitude, location.longitude)
+                        try {
+                            viewModel.setUsersLocations(location.latitude, location.longitude)
+                        } catch (e: Exception) {
+                            Toast.makeText(requireContext(), resources.getString(R.string.gps_on_toast_message), Toast.LENGTH_LONG).show()
+                        }
                     }
                     makePinDeferred.await()
+
                 }
             }
         }
