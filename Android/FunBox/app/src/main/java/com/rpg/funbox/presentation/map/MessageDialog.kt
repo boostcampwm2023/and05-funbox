@@ -7,6 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.DialogMessageBinding
 import com.rpg.funbox.presentation.BaseDialogFragment
+import com.rpg.funbox.presentation.setting.SettingViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 

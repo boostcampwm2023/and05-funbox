@@ -1,16 +1,19 @@
 package com.rpg.funbox.presentation.map
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.naver.maps.geometry.LatLng
 import com.rpg.funbox.data.dto.User
 import com.rpg.funbox.data.dto.UserDetail
-import com.naver.maps.geometry.LatLng
 import com.rpg.funbox.data.dto.UserInfoResponse
 import com.rpg.funbox.data.dto.UserLocation
 import com.rpg.funbox.data.repository.UserRepository
 import com.rpg.funbox.data.repository.UserRepositoryImpl
 import com.rpg.funbox.data.repository.UsersLocationRepository
 import com.rpg.funbox.data.repository.UsersLocationRepositoryImpl
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +21,10 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.net.URL
 
 class MapViewModel : ViewModel() {
 
@@ -43,8 +49,8 @@ class MapViewModel : ViewModel() {
     private val _myLocation = MutableStateFlow<Pair<Double, Double>?>(null)
     val myLocation = _myLocation.asStateFlow()
 
-    private val _userDetail = MutableStateFlow<UserDetail?>(null)
-    val userDetail: StateFlow<UserDetail?> = _userDetail
+    private val _clickedUserId = MutableStateFlow<Int>(-1)
+    val clickedUserId= _clickedUserId.asStateFlow()
 
     private val _mapUiEvent = MutableSharedFlow<MapUiEvent>()
     val mapUiEvent = _mapUiEvent.asSharedFlow()
@@ -54,6 +60,12 @@ class MapViewModel : ViewModel() {
 
     private val _applyGameFromServerData = MutableStateFlow<ApplyGameFromServerData?>(null)
     val applyGameFromServerData = _applyGameFromServerData.asStateFlow()
+
+    private val _userDetailTable = MutableStateFlow<HashMap<Int, UserDetail>>(hashMapOf())
+    val userDetailTable = _userDetailTable.asStateFlow()
+
+    private val _userProfileTable = MutableStateFlow<HashMap<Int, Bitmap?>>(hashMapOf())
+    val userProfileTable = _userProfileTable.asStateFlow()
 
     fun setLocationPermitted() {
         viewModelScope.launch {
@@ -69,8 +81,8 @@ class MapViewModel : ViewModel() {
         }
     }
 
-    fun setApplyGameData(applyGameFromServerData: ApplyGameFromServerData){
-        _applyGameFromServerData.value=applyGameFromServerData
+    fun setApplyGameData(applyGameFromServerData: ApplyGameFromServerData) {
+        _applyGameFromServerData.value = applyGameFromServerData
     }
 
     fun startMessageDialog() {
@@ -88,6 +100,12 @@ class MapViewModel : ViewModel() {
     fun toGame() {
         viewModelScope.launch {
             _mapUiEvent.emit(MapUiEvent.ToGame)
+        }
+    }
+
+    fun cancelGame() {
+        viewModelScope.launch {
+            _mapUiEvent.emit(MapUiEvent.CancelGame)
         }
     }
 
@@ -122,19 +140,22 @@ class MapViewModel : ViewModel() {
     fun setUsersLocations(locX: Double, locY: Double) {
         viewModelScope.launch {
             Timber.d("유저 위치 불러옴")
-            _usersLocations.value = usersLocationRepository.getUsersLocation(locX, locY).userLocations
+            _usersLocations.value =
+                usersLocationRepository.getUsersLocation(locX, locY).userLocations
             _usersLocations.value?.let { list ->
-                val idList = list.map{it.id}
-                val newUsers = _users.value.filter{user->
-                    user.id in idList}.toMutableList()
+                val idList = list.map { it.id }
+                val newUsers = _users.value.filter { user ->
+                    user.id in idList
+                }.toMutableList()
                 deleteOldPlayer(idList)
                 list.forEach { location ->
                     if ((location.locX != null) && (location.locY != null)) {
-                        newUsers.find {it.id == location.id}?.let {
+                        newUsers.find { it.id == location.id }?.let {
                             val idx = newUsers.indexOf(it)
                             newUsers[idx].loc = LatLng(location.locX, location.locY)
                             Timber.d("User ID: ${location.id}")
-                        }?: run{
+                        } ?: run {
+                            userDetailApi(location.id)
                             newUsers.add(
                                 User(
                                     200,
@@ -158,8 +179,6 @@ class MapViewModel : ViewModel() {
                         )
                     }
                 }
-                //newUsers.forEach {Timber.d( it.mapPin?.infoWindow.toString()) }
-
                 _users.update { newUsers.toList() }
                 _usersUpdate.update { !it }
             }
@@ -175,19 +194,59 @@ class MapViewModel : ViewModel() {
         }
     }
 
-    fun userDetailApi(id: Int) {
+    private fun userDetailApi(id: Int) {
         viewModelScope.launch {
             val response = userRepository.getSpecificUserInfo(id)
-            _userDetail.update {
-                response?.let { response ->
-                    UserDetail(
-                        id,
-                        response.message.toString(),
-                        response.profileUrl.toString(),
-                        response.userName.toString()
+            if (id !in _userDetailTable.value) {
+                response?.let { res ->
+                    _userDetailTable.value.set(
+                        id, UserDetail(
+                            id,
+                            res.message?:"",
+                            res.profileUrl.toString(),
+                            res.userName.toString()
+                        )
                     )
+                    responseProfile(res.profileUrl, id)
+                }
+
+            } else {
+                _userDetailTable.value[id]?.let {
+                    response?.let{res->
+                        if(it.msg != res.message){
+                            it.msg = res.message?: ""
+                        }
+
+                        if(it.profile != res.profileUrl){
+                            responseProfile(res.profileUrl,id)
+                        }
+
+                        if(it.name != res.userName){
+                            it.name = res.userName ?: ""
+                        }
+                    }
                 }
             }
+        }
+    }
+
+    private fun responseProfile(profileUrl: String?, id: Int) {
+        profileUrl?.let {
+            viewModelScope.launch {
+                var bitmap: Bitmap
+                runBlocking {
+                    val url =
+                        URL("https://kr.object.ncloudstorage.com/funbox-profiles/" + profileUrl)
+                    bitmap = withContext(Dispatchers.IO) {
+                        BitmapFactory.decodeStream(
+                            url.openConnection().getInputStream()
+                        )
+                    }
+                }
+                _userProfileTable.value[id] = bitmap
+            }
+        } ?: run {
+            _userProfileTable.value[id] = null
         }
     }
 
@@ -208,5 +267,17 @@ class MapViewModel : ViewModel() {
                 _mapUiEvent.emit(MapUiEvent.NetworkErrorEvent())
             }
         }
+    }
+
+    fun getDetail(id: Int): UserDetail? {
+        return _userDetailTable.value.get(id)
+    }
+
+    fun getProfile(id: Int): Bitmap? {
+        return _userProfileTable.value.get(id)
+    }
+
+    fun updateClickedUserId(id: Int) {
+        _clickedUserId.update { id }
     }
 }

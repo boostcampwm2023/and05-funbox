@@ -47,10 +47,6 @@ data class ScoreFromServerItem(
     val username: String
 )
 
-data class QuitGameToServer(
-    val roomId: String
-)
-
 data class Chat(
     val userId: Int,
     val message: String

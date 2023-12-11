@@ -2,7 +2,6 @@ package com.rpg.funbox.presentation.game.quiz
 
 import android.Manifest
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -25,6 +24,7 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
+import com.naver.maps.map.util.MarkerIcons
 import com.rpg.funbox.presentation.CustomNaverMap
 import com.rpg.funbox.presentation.MapSocket
 import com.rpg.funbox.presentation.MapSocket.send
@@ -129,7 +129,8 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
             viewModel.nowOtherUser.value?.let { user ->
                 user.mapPin = Marker().apply {
                     this.position = user.loc
-                    iconTintColor = Color.YELLOW
+                    icon = MarkerIcons.BLACK
+                    iconTintColor = resources.getColor(R.color.purple, null)
                     captionText = user.name.toString()
                 }
                 user.mapPin?.map = quizMap
@@ -174,9 +175,7 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
         backPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (backPressTime + 3000 > System.currentTimeMillis()) {
-                    viewModel.roomId.value?.let { roomId ->
-                        MapSocket.quitGame(roomId)
-                    }
+                    MapSocket.quitGame()
                     requireActivity().finish()
                 } else {
                     Toast.makeText(requireContext(), resources.getString(R.string.finish_quiz_toast_message), Toast.LENGTH_LONG).show()
