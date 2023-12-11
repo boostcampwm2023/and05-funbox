@@ -216,10 +216,6 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
             findNavController().navigate(R.id.action_QuizFragment_to_scoreBoardFragment)
         }
 
-        is QuizUiEvent.QuizFinishTry -> {
-            findNavController().navigate(R.id.action_QuizFragment_to_QuizFinishFragment)
-        }
-
         is QuizUiEvent.SendMessage -> {
             send(viewModel.otherUserId.value, viewModel.sendingMessage.value)
             viewModel.addMessage(MessageItem(0, viewModel.sendingMessage.value))

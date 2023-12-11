@@ -132,9 +132,8 @@ class MapViewModel : ViewModel() {
                     if ((location.locX != null) && (location.locY != null)) {
                         newUsers.find {it.id == location.id}?.let {
                             val idx = newUsers.indexOf(it)
-                            Timber.d(newUsers[idx].mapPin?.infoWindow.toString())
                             newUsers[idx].loc = LatLng(location.locX, location.locY)
-                            Timber.d(newUsers[idx].mapPin.toString())
+                            Timber.d("User ID: ${location.id}")
                         }?: run{
                             newUsers.add(
                                 User(

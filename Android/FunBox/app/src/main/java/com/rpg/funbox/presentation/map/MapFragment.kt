@@ -63,7 +63,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     private lateinit var locationSource: FusedLocationSource
 
     private var isFabOpen = false
-    private var infoUserId : Int? = null
+    private var infoUserId: Int? = null
     private val requestMultiPermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             when {
@@ -104,16 +104,21 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             viewModel.setLocationPermitted()
         }
 
+        initMapView()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        submitUserLocation()
     }
 
     override fun onStart() {
         super.onStart()
 
-        initMapView()
-        submitUserLocation()
         viewModel.buttonGone()
         isFabOpen = false
-        viewModel.users.value?.forEach { user ->
+        viewModel.users.value.forEach { user ->
             user.isInfoOpen = false
         }
     }
@@ -143,7 +148,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 naverMap.moveCamera(cameraUpdate)
                 viewModel.setXY(location.latitude, location.longitude)
             }
-            viewModel.users.value?.let { users ->
+            viewModel.users.value.let { users ->
                 users.forEach { user ->
                     viewModel.userDetail.value?.let { userDetail ->
                         if ((user.id == userDetail.id) && (user.isInfoOpen)) {
@@ -169,7 +174,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
         map.setOnMapClickListener { _, _ ->
             viewModel.buttonGone()
-            viewModel.users.value?.forEach {
+            viewModel.users.value.forEach {
                 it.isInfoOpen = false
                 it.mapPin?.infoWindow?.close()
                 Timber.d("@111111")
@@ -180,12 +185,12 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }
 
         lifecycleScope.launch {
-            viewModel.usersUpdate.collect{
+            viewModel.usersUpdate.collect {
                 viewModel.users.value.also {
-                    it.forEach{Timber.d(it.toString())}
+                    it.forEach { Timber.d("User MapPin: ${it.id}") }
                     it.map { user ->
                         runBlocking {
-                            if (user.mapPin == null){
+                            if (user.mapPin == null) {
                                 val marker = Marker().apply {
                                     position = user.loc
                                     iconTintColor = Color.YELLOW
@@ -198,20 +203,17 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                                 }
                                 marker.map = naverMap
                                 user.mapPin = marker
-                            } else{
-                                user.mapPin!!.position= user.loc
+                            } else {
+                                user.mapPin?.let { marker ->
+                                    Timber.d("${user.id} Marker")
+                                    marker.position = user.loc
+                                    marker.map = naverMap
+                                }
                             }
-
-//                        launch {
-
-                            //user.mapPin?.map = naverMap
-//                        }
                         }
                     }
-
                 }
             }
-
         }
     }
 
@@ -297,6 +299,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     }
 
     private fun initMapView() {
+        Timber.d("Init MapView")
         binding.map.getFragment<MapFragment>().getMapAsync(this)
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
@@ -318,6 +321,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     private fun submitUserLocation() {
         if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
             locationTimer = Timer()
+            Timber.d("타이머 실행")
             locationTimer.scheduleAtFixedRate(0, 3000) {
                 lifecycleScope.launch {
                     val location = fusedLocationClient.getCurrentLocation(
@@ -328,7 +332,11 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                         try {
                             viewModel.setUsersLocations(location.latitude, location.longitude)
                         } catch (e: Exception) {
-                            Toast.makeText(requireContext(), resources.getString(R.string.gps_on_toast_message), Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                requireContext(),
+                                resources.getString(R.string.gps_on_toast_message),
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                     }
                     makePinDeferred.await()
