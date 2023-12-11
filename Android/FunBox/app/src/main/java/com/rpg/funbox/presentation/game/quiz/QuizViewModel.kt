@@ -237,7 +237,17 @@ class QuizViewModel : ViewModel() {
 
     fun addMessage(message:MessageItem){
         Timber.d("add 메시지  ${message.message}")
-        _chatMessages.value.add(message)
+        viewModelScope.launch {
+            val temp = mutableListOf<MessageItem>()
+            _chatMessages.value.forEach {
+                temp.add(it)
+            }
+            temp.add(message)
+            _chatMessages.update {
+                temp
+            }
+        }
+
     }
 
     fun setUserState(state: Boolean) {
