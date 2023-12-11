@@ -22,8 +22,6 @@ class MessageDialog: BaseDialogFragment<DialogMessageBinding>(R.layout.dialog_me
         lifecycleScope.launch {
             viewModel.mapUiEvent.collectLatest { uiEvent ->
                 if (uiEvent == MapUiEvent.MessageSubmit) dismiss()
-
-                if (uiEvent == MapUiEvent.CancelGame) dismiss()
             }
         }
     }

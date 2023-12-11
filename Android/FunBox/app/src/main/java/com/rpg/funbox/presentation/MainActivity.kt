@@ -141,11 +141,6 @@ class MainActivity : AppCompatActivity() {
             settingViewModel.getGame()
         }.on("quitGame") {
             mapViewModel.cancelGame()
-            Toast.makeText(
-                this,
-                "상대방이 게임을 취소하였습니다.",
-                Toast.LENGTH_LONG
-            ).show()
         }
     }
 }
