@@ -178,7 +178,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         map.setOnMapClickListener { _, _ ->
             viewModel.buttonGone()
             viewModel.users.value.forEach {
-                it.isInfoOpen = false
                 it.mapPin?.infoWindow?.close()
                 Timber.d("@111111")
                 if (it.isMsg) {
@@ -270,11 +269,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                         user.mapPin?.let { mapPin -> hasMsg.open(mapPin) }
                     }
                 }
-                user.isInfoOpen = true
                 infoUserId = user.id
                 viewModel.users.value.forEach { temp ->
                     if (temp.id != user.id) {
-                        temp.isInfoOpen = false
                         temp.mapPin?.infoWindow?.close()
                         Timber.d("@111111")
                         if (temp.isMsg) {
@@ -286,7 +283,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 Timber.d("@@@@@@")
             } else {
                 viewModel.buttonGone()
-                user.isInfoOpen = false
                 this.infoWindow?.close()
                 Timber.d("!!!!!!!")
                 if (user.isMsg) {
