@@ -33,6 +33,7 @@ import com.rpg.funbox.presentation.MapSocket.verifyAnswer
 import com.rpg.funbox.presentation.checkPermission
 import com.rpg.funbox.presentation.login.AccessPermission
 import com.rpg.funbox.presentation.login.AccessPermission.LOCATION_PERMISSION_REQUEST_CODE
+import com.rpg.funbox.presentation.safeNavigate
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -216,8 +217,8 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
         }
 
         is QuizUiEvent.QuizScoreBoard -> {
-            viewModel.setUserQuizStateTrue()
-            findNavController().navigate(R.id.action_QuizFragment_to_scoreBoardFragment)
+            // viewModel.setUserQuizStateTrue()
+            findNavController().safeNavigate(QuizFragmentDirections.actionQuizFragmentToScoreBoardFragment())
         }
 
         is QuizUiEvent.SendMessage -> {

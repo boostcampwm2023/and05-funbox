@@ -48,7 +48,13 @@
     <dialog
         android:id="@+id/loadingDialog"
         android:name="com.rpg.funbox.presentation.game.quiz.LoadingDialog"
-        android:label="LoadingDialog" />
+        android:label="LoadingDialog">
+
+        <action
+            android:id="@+id/action_loadingDialog_to_scoreBoardFragment"
+            app:destination="@id/scoreBoardFragment" />
+
+    </dialog>
 
     <dialog
         android:id="@+id/networkAlertFragment"
