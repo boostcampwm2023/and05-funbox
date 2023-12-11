@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './user.entity';
 import { UserLocationDto } from './dto/user-location.dto';
 import { NearUsersDto } from './dto/near-users.dto';
-import { MoreThanOrEqual, Not } from 'typeorm';
+import { Between, MoreThanOrEqual, Not } from 'typeorm';
 import * as crypto from 'crypto';
 
 const AWS = require('aws-sdk');
@@ -34,15 +34,19 @@ export class UsersService {
     return;
   }
 
-  async findNearUsers(id: number): Promise<NearUsersDto[]> {
-    const users = await findNearUsersAlgorithm(id);
+  async findNearUsers(
+    id: number,
+    userLocationDto: UserLocationDto,
+  ): Promise<NearUsersDto[]> {
+    const users = await findNearUsersAlgorithm(id, userLocationDto);
+    //const users = await findAllUsersAlgorithm(id);
     const nearUsersDto = [];
     users.forEach((user) => {
       nearUsersDto.push(NearUsersDto.of(user));
     });
     return nearUsersDto;
 
-    async function findNearUsersAlgorithm(idSelf: number): Promise<User[]> {
+    async function findAllUsersAlgorithm(idSelf: number): Promise<User[]> {
       const now = new Date();
       const fiveSecondsAgo = new Date();
       fiveSecondsAgo.setSeconds(now.getSeconds() - 5);
@@ -50,6 +54,29 @@ export class UsersService {
         where: {
           id: Not(idSelf),
           last_polling_at: MoreThanOrEqual(fiveSecondsAgo),
+        },
+      });
+    }
+
+    async function findNearUsersAlgorithm(
+      idSelf: number,
+      userLocationDto: UserLocationDto,
+    ): Promise<User[]> {
+      const now = new Date();
+      const fiveSecondsAgo = new Date();
+      fiveSecondsAgo.setSeconds(now.getSeconds() - 5);
+
+      const locX = userLocationDto.locX;
+      const locY = userLocationDto.locY;
+      const deltaX = (0.000001 / 0.089) * 600;
+      const deltaY = (0.000001 / 0.111) * 600;
+
+      return await User.find({
+        where: {
+          id: Not(idSelf),
+          last_polling_at: MoreThanOrEqual(fiveSecondsAgo),
+          locX: Between(locX - deltaX, locX + deltaX),
+          locY: Between(locY - deltaY, locY + deltaY),
         },
       });
     }
