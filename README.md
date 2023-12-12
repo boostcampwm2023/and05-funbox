@@ -13,19 +13,18 @@
 
 ## 주요 기능
 
-### 네이버 소셜 로그인
-네이버 계정으로 간편하게 로그인해요
-
+### 네이버 소셜 로그인과 프로필 사진
+* 네이버 계정으로 간편하게 로그인해요
+* 나만의 프로필 사진을 보여줄 수 있어요
 <img src="https://github.com/boostcampwm2023/and05-funbox/assets/11827454/9c8f29f4-b453-41a1-b95a-d2bd4e12cf7c" width="200">
 <img src="https://github.com/boostcampwm2023/and05-funbox/assets/11827454/cc33c9d3-1953-40a8-ae93-be604018ec0f" width="200">
 
 ### 네이버 지도상 실시간 위치 공유
-폴링으로 유저들의 실시간 위치를 공유해요
-
-<img src="" width="200">
+* 폴링으로 유저들의 실시간 위치를 공유해요
+<img src="https://github.com/boostcampwm2023/and05-funbox/assets/11827454/bffe0656-2107-4f50-bf7d-8f5e84a02de7" width="200">
 
 ### 채팅과 미니 게임 (TMI 퀴즈)
-Socket.io로 채팅과 미니 게임을 구현했어요 
+* Socket.io로 채팅과 미니 게임을 구현했어요 
 
 <img src="https://github.com/boostcampwm2023/and05-funbox/assets/11827454/0d95f3d8-cb0d-45bb-9cd3-eae76eb093a9" width="200">
 <img src="https://github.com/boostcampwm2023/and05-funbox/assets/11827454/5e173e39-6ea8-4b98-9c5f-b7fbbbeb70db" width="200">
