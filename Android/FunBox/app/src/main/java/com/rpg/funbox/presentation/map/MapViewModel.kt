@@ -153,6 +153,10 @@ class MapViewModel : ViewModel() {
                         newUsers.find { it.id == location.id }?.let {
                             val idx = newUsers.indexOf(it)
                             newUsers[idx].loc = LatLng(location.locX, location.locY)
+                            if(location.isMsgInAnHour){
+                                newUsers[idx].isMsg = location.isMsgInAnHour
+                                updateMessage(newUsers[idx].id,idx)
+                            }
                             Timber.d("User ID: ${location.id}")
                         } ?: run {
                             userDetailApi(location.id)
@@ -182,6 +186,16 @@ class MapViewModel : ViewModel() {
                 _users.update { newUsers.toList() }
                 _usersUpdate.update { !it }
             }
+        }
+    }
+
+    private fun updateMessage(id: Int, idx: Int) {
+        viewModelScope.launch {
+            val response = userRepository.getSpecificUserInfo(id)
+            response?.let { res ->
+                _userDetailTable.value.get(idx)?.msg = res.message?:""
+            }
+
         }
     }
 
