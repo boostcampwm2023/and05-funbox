@@ -35,14 +35,17 @@
 ### Android
 | Category  | TechStack |
 | ------------- | ------------- |
-| Architecture  | Clean Architecture, Multi Module, MVVM  | 
-| Network | Retrofit, OkHttp, Kotlin Serialization | 
-| Asynchronous | Coroutines, Flow
-| Jetpack | Media3, DataBinding, Navigation, DataStore |
-| Image | Glide
-| CI/CD | Github Actions |
-| Test | Kotest |
-| Logging | Timber |
+| Architecture  | MVVM | 
+| Network | Retrofit, OkHttp, Moshi, soket.io | 
+| Asynchronous | Coroutines, Flow | 
+| Jetpack | DataBinding, Navigation, Fragment, Lifecycle, Material Design Components | 
+| Image | Coil, Glide | 
+| Map | GMS, Naver Map | 
+| Login | Oauth | 
+| Distribute | Firebase | 
+| CI/CD | Github Actions | 
+| Test | Junit | 
+| Logging | Timber | 
 
 ### Backend
 | Category  | TechStack |
