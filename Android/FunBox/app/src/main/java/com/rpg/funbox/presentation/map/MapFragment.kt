@@ -17,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -30,10 +31,12 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
+import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
+import com.naver.maps.map.NaverMapOptions
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
@@ -147,18 +150,11 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         locationTimer.cancel()
     }
 
-    @SuppressLint("MissingPermission")
     @UiThread
     override fun onMapReady(map: NaverMap) {
         this.naverMap = map.apply {
             locationSource = this@MapFragment.locationSource
-            this@MapFragment.locationSource.lastLocation?.latitude?.let {
-                this@MapFragment.locationSource.lastLocation?.longitude?.let { it1 ->
-                    LatLng(
-                        it, it1
-                    )
-                }
-            }?.let { CameraUpdate.scrollTo(it) }?.let { naverMap.moveCamera(it) }
+
             locationTrackingMode = LocationTrackingMode.Face
             uiSettings.isLocationButtonEnabled = true
 
@@ -306,8 +302,20 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
     private fun initMapView() {
         Timber.d("Init MapView")
-        binding.map.getFragment<MapFragment>().getMapAsync(this)
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+
+        val mapFragment = binding.map.getFragment()
+            ?: MapFragment.newInstance().also { _ ->
+                NaverMapOptions().camera(locationSource.lastLocation?.latitude?.let { latitude ->
+                    locationSource.lastLocation?.longitude?.let { longitude ->
+                        LatLng(
+                            latitude,
+                            longitude
+                        )
+                    }
+                }?.let { CameraPosition(it, 8.0) })
+            }
+        mapFragment.getMapAsync(this)
     }
 
     private fun toggleFab() {
