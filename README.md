@@ -3,11 +3,11 @@
 
 "아이스브레이킹 앱으로 우리동네에서 친구 만들기!"
 
-<img src="https://gist.github.com/assets/11827454/651b285a-4362-48fd-9787-0d08a1f3726a" width="200">
-<img src="https://gist.github.com/assets/11827454/c01d7062-e933-4232-86bd-a7cd48d5a2a9" width="200">
-<img src="https://gist.github.com/assets/11827454/0c4a86fa-0e6c-465f-b569-cbc56dc08449" width="200">
+<img src="https://github.com/boostcampwm2023/and05-funbox/assets/11827454/2f6c6652-87ea-445f-b730-197689e9d98c" width="200">
+<img src="https://github.com/boostcampwm2023/and05-funbox/assets/11827454/a005eeae-9acf-4cb4-9bd6-2d083de7e47b" width="200">
+<img src="https://github.com/boostcampwm2023/and05-funbox/assets/11827454/5039c0d0-c930-45bc-af99-25ad69b8fb96" width="200">
 
-* 지도에서 새로운 친구를 찾아요
+* 지도에서 새로운 친구를 찾아요!
 * 친구를 찾으면 오프라인으로 만나러 가요
 * 만나서 미니게임으로 아이스브레이킹을 해요
 
@@ -16,11 +16,20 @@
 ### 네이버 소셜 로그인
 네이버 계정으로 간편하게 로그인해요
 
+<img src="https://github.com/boostcampwm2023/and05-funbox/assets/11827454/9c8f29f4-b453-41a1-b95a-d2bd4e12cf7c" width="200">
+<img src="https://github.com/boostcampwm2023/and05-funbox/assets/11827454/cc33c9d3-1953-40a8-ae93-be604018ec0f" width="200">
+
 ### 네이버 지도상 실시간 위치 공유
 폴링으로 유저들의 실시간 위치를 공유해요
 
+<img src="" width="200">
+
 ### 채팅과 미니 게임 (TMI 퀴즈)
 Socket.io로 채팅과 미니 게임을 구현했어요 
+
+<img src="https://github.com/boostcampwm2023/and05-funbox/assets/11827454/0d95f3d8-cb0d-45bb-9cd3-eae76eb093a9" width="200">
+<img src="https://github.com/boostcampwm2023/and05-funbox/assets/11827454/5e173e39-6ea8-4b98-9c5f-b7fbbbeb70db" width="200">
+<img src="https://github.com/boostcampwm2023/and05-funbox/assets/11827454/0f5020d1-572a-493f-a694-879cbc8c0be6" width="200">
 
 ## Team RPG (Rythm, Power, Gypjoongryuk!)
 
