@@ -42,8 +42,7 @@
 | Image | Coil, Glide | 
 | Map | GMS, Naver Map | 
 | Login | Oauth | 
-| Distribute | Firebase | 
-| CI/CD | Github Actions | 
+| CI/CD | Github Actions, Firebase | 
 | Test | Junit | 
 | Logging | Timber | 
 
