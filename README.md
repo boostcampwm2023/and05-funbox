@@ -30,6 +30,30 @@
 <img src="https://github.com/boostcampwm2023/and05-funbox/assets/11827454/5e173e39-6ea8-4b98-9c5f-b7fbbbeb70db" width="200">
 <img src="https://github.com/boostcampwm2023/and05-funbox/assets/11827454/0f5020d1-572a-493f-a694-879cbc8c0be6" width="200">
 
+## 기술스택
+
+### Android
+| Category  | TechStack |
+| ------------- | ------------- |
+| Architecture  | Clean Architecture, Multi Module, MVVM  | 
+| Network | Retrofit, OkHttp, Kotlin Serialization | 
+| Asynchronous | Coroutines, Flow
+| Jetpack | Media3, DataBinding, Navigation, DataStore |
+| Image | Glide
+| CI/CD | Github Actions |
+| Test | Kotest |
+| Logging | Timber |
+
+### Backend
+| Category  | TechStack |
+| ------------- | ------------- |
+| Framework, Language | NestJS, TypeScript  |
+| DB | MySQL  |
+| ORM | TypeORM  |
+| API Docs | Swagger |
+| CI/CD | Github Actions  |
+| NCP | Server, VPC, Object Storage|
+
 ## Team RPG (Rythm, Power, Gypjoongryuk!)
 
 ### 팀 구성
