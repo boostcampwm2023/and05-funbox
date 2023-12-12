@@ -23,4 +23,6 @@ sealed class MapUiEvent {
     data object MessageSubmit : MapUiEvent()
 
     data object CancelGame : MapUiEvent()
+
+    data object Change : MapUiEvent()
 }

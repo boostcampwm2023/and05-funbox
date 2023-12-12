@@ -91,6 +91,12 @@ class MapViewModel : ViewModel() {
         }
     }
 
+    fun change() {
+        viewModelScope.launch {
+            _mapUiEvent.emit(MapUiEvent.Change)
+        }
+    }
+
     fun setToggle() {
         viewModelScope.launch {
             _mapUiEvent.emit(MapUiEvent.Toggle)
