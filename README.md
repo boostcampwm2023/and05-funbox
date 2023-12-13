@@ -35,7 +35,7 @@
 ### Android
 | Category  | TechStack |
 | ------------- | ------------- |
-| Architecture  | MVVM | 
+| Architecture  | ![MVVM](https://img.shields.io/badge/MVVM) | 
 | Network | Retrofit, OkHttp, Moshi, soket.io | 
 | Asynchronous | Coroutines, Flow | 
 | Jetpack | DataBinding, Navigation, Fragment, Lifecycle, Material Design Components | 
@@ -68,5 +68,6 @@
 </div>
 
 ### 링크
-* [팀 노션](https://www.notion.so/standingtiger/FunBox-17ef334b88974d09b356c4833cc37806)
-* [팀 위키](https://github.com/boostcampwm2023/and05-funbox/wiki)
+![Notion](https://img.shields.io/badge/Notion-%2523000000.svg?style=for-the-badge&logo=notion&logoColor=white&labelColor=black&color=black&link=https%3A%2F%2Fwww.notion.so%2Fstandingtiger%2FFunBox-17ef334b88974d09b356c4833cc37806)
+![GitHub Wiki](https://img.shields.io/badge/github%20wiki-%2523121011.svg?style=for-the-badge&logo=github&logoColor=white&labelColor=black&color=black&link=https%3A%2F%2Fgithub.com%2Fboostcampwm2023%2Fand05-funbox%2Fwiki)
+
