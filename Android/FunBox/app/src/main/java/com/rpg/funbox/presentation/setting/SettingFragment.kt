@@ -45,11 +45,13 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
                 permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
                     fusedLocationClient =
                         LocationServices.getFusedLocationProviderClient(requireActivity())
+                    submitUserLocation()
                 }
 
                 permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                     fusedLocationClient =
                         LocationServices.getFusedLocationProviderClient(requireActivity())
+                    submitUserLocation()
                 }
 
                 else -> {
@@ -86,7 +88,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
     override fun onDestroyView() {
         super.onDestroyView()
 
-        if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
+        if (::locationTimer.isInitialized) {
             locationTimer.cancel()
         }
     }

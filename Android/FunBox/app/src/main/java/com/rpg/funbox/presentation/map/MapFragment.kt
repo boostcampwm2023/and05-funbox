@@ -69,11 +69,15 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
                     fusedLocationClient =
                         LocationServices.getFusedLocationProviderClient(requireActivity())
+                    initMapView()
+                    submitUserLocation()
                 }
 
                 permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                     fusedLocationClient =
                         LocationServices.getFusedLocationProviderClient(requireActivity())
+                    initMapView()
+                    submitUserLocation()
                 }
 
                 else -> {
@@ -119,7 +123,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     override fun onPause() {
         super.onPause()
 
-        if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
+        if (::locationTimer.isInitialized) {
             locationTimer.cancel()
         }
     }
@@ -137,7 +141,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     override fun onDestroyView() {
         super.onDestroyView()
 
-        locationTimer.cancel()
+        if (::locationTimer.isInitialized) {
+            locationTimer.cancel()
+        }
     }
 
     @UiThread
