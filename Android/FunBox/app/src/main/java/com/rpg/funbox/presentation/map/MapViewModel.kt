@@ -175,6 +175,7 @@ class MapViewModel : ViewModel() {
                                 newUsers[idx].isMsg = location.isMsgInAnHour
                                 updateMessage(newUsers[idx].id,idx)
                             }
+                            newUsers[idx].name = location.username
                         } ?: run {
                             newUsers.add(
                                 User(
