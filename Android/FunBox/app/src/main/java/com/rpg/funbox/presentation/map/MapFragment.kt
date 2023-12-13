@@ -40,24 +40,16 @@ import com.rpg.funbox.presentation.fadeInOut
 import com.rpg.funbox.presentation.login.AccessPermission
 import com.rpg.funbox.presentation.login.AccessPermission.LOCATION_PERMISSION_REQUEST_CODE
 import com.rpg.funbox.presentation.slideLeft
-
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.yield
 import timber.log.Timber
 import java.util.Timer
 import kotlin.concurrent.scheduleAtFixedRate
-import kotlin.coroutines.coroutineContext
 
 class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnMapReadyCallback {
 
@@ -105,9 +97,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
         requestMultiPermissions.launch(AccessPermission.locationPermissionList)
-        if (!requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
-            requestMultiPermissions.launch(AccessPermission.locationPermissionList)
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -130,7 +119,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     override fun onPause() {
         super.onPause()
 
-        locationTimer.cancel()
+        if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
+            locationTimer.cancel()
+        }
     }
 
     override fun onStart() {
