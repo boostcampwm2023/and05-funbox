@@ -1,7 +1,7 @@
 # FunBox
 ### 지도 기반 아이스브레이킹 소셜 플랫폼
 
-"아이스브레이킹 앱으로 우리동네에서 친구 만들기!"
+> "아이스브레이킹 앱으로 우리동네에서 친구 만들기!"
 
 <img src="https://github.com/boostcampwm2023/and05-funbox/assets/11827454/2f6c6652-87ea-445f-b730-197689e9d98c" width="200">
 <img src="https://github.com/boostcampwm2023/and05-funbox/assets/11827454/a005eeae-9acf-4cb4-9bd6-2d083de7e47b" width="200">
@@ -11,7 +11,7 @@
 * 친구를 찾으면 오프라인으로 만나러 가요
 * 만나서 미니게임으로 아이스브레이킹을 해요
 
-## 주요 기능
+## 📒 주요 기능
 
 ### 네이버 소셜 로그인과 프로필 사진
 * 네이버 계정으로 간편하게 로그인해요
@@ -30,7 +30,7 @@
 <img src="https://github.com/boostcampwm2023/and05-funbox/assets/11827454/5e173e39-6ea8-4b98-9c5f-b7fbbbeb70db" width="200">
 <img src="https://github.com/boostcampwm2023/and05-funbox/assets/11827454/0f5020d1-572a-493f-a694-879cbc8c0be6" width="200">
 
-## 기술스택
+## ⚒ 기술스택
 
 ### Android
 | Category  | TechStack |
@@ -56,7 +56,7 @@
 | CI/CD | Github Actions  |
 | NCP | Server, VPC, Object Storage|
 
-## Team RPG (Rhythm, Power, Gypjoongryuk!)
+## 👥 Team RPG (Rhythm, Power, Gypjoongryuk!)
 
 ### 팀 구성
 <div align="center">
