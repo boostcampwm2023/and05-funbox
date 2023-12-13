@@ -158,7 +158,6 @@ class MapViewModel : ViewModel() {
 
     fun setUsersLocations(locX: Double, locY: Double) {
         viewModelScope.launch {
-            Timber.d("유저 위치 불러옴")
             _usersLocations.value =
                 usersLocationRepository.getUsersLocation(locX, locY).userLocations
             _usersLocations.value?.let { list ->
@@ -176,9 +175,7 @@ class MapViewModel : ViewModel() {
                                 newUsers[idx].isMsg = location.isMsgInAnHour
                                 updateMessage(newUsers[idx].id,idx)
                             }
-                            Timber.d("User ID: ${location.id}")
                         } ?: run {
-                            userDetailApi(location.id)
                             newUsers.add(
                                 User(
                                     200,
@@ -189,6 +186,7 @@ class MapViewModel : ViewModel() {
                                 )
                             )
                         }
+                        userDetailApi(location.id)
 
                     } else {
                         newUsers.add(
@@ -218,6 +216,7 @@ class MapViewModel : ViewModel() {
         }
     }
 
+
     private fun deleteOldPlayer(idList: List<Int>) {
         users.value.forEach { user ->
             if (user.id !in idList) {
@@ -230,6 +229,7 @@ class MapViewModel : ViewModel() {
     private fun userDetailApi(id: Int) {
         viewModelScope.launch {
             val response = userRepository.getSpecificUserInfo(id)
+            Timber.d(userDetailTable.value.toString())
             if (id !in _userDetailTable.value) {
                 response?.let { res ->
                     _userDetailTable.value.set(
