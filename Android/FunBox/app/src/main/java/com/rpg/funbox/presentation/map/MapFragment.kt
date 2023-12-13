@@ -2,37 +2,22 @@ package com.rpg.funbox.presentation.map
 
 import android.Manifest
 import android.animation.ObjectAnimator
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.view.get
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraPosition
-import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
@@ -43,7 +28,6 @@ import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
-import com.naver.maps.map.widget.ZoomControlView
 import com.rpg.funbox.R
 import com.rpg.funbox.data.dto.User
 import com.rpg.funbox.databinding.FragmentMapBinding
@@ -56,6 +40,7 @@ import com.rpg.funbox.presentation.fadeInOut
 import com.rpg.funbox.presentation.login.AccessPermission
 import com.rpg.funbox.presentation.login.AccessPermission.LOCATION_PERMISSION_REQUEST_CODE
 import com.rpg.funbox.presentation.slideLeft
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -100,7 +85,11 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 }
 
                 else -> {
-                    requireActivity().finish()
+                    Toast.makeText(
+                        mContext,
+                        resources.getString(R.string.location_permission_message),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
@@ -115,7 +104,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         super.onCreate(savedInstanceState)
 
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
-        requestMultiPermissions.launch(AccessPermission.locationPermissionList)
+        if (!requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
+            requestMultiPermissions.launch(AccessPermission.locationPermissionList)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -171,14 +162,8 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
             extent = LatLngBounds(LatLng(31.43, 122.37), LatLng(44.35, 132.0))
             addOnLocationChangeListener { location ->
-//                val cameraUpdate =
-//                    CameraUpdate.scrollTo(LatLng(location.latitude, location.longitude))
-//                naverMap.moveCamera(cameraUpdate)
                 viewModel.setXY(location.latitude, location.longitude)
             }
-
-
-
         }
 
         naverMap.locationOverlay.apply {
@@ -192,7 +177,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             viewModel.buttonGone()
             viewModel.users.value.forEach {
                 it.mapPin?.infoWindow?.close()
-                Timber.d("@111111")
                 if (it.isMsg) {
                     it.mapPin?.let { mapPin ->
                         val hasMsg = InfoWindow()
@@ -201,24 +185,24 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                                 return "● ● ●"
                             }
                         }
-                        hasMsg.open(mapPin) }
+                        hasMsg.open(mapPin)
+                    }
                 }
             }
         }
 
         map.addOnCameraChangeListener { _, _ ->
             naverMap.locationOverlay.apply {
-                circleOutlineColor=resources.getColor(R.color.purple, null)
-                circleColor=resources.getColor(R.color.not, null)
-                circleRadius=(600/naverMap.projection.metersPerPixel).toInt()
-                circleOutlineWidth=10
+                circleOutlineColor = resources.getColor(R.color.purple, null)
+                circleColor = resources.getColor(R.color.not, null)
+                circleRadius = (600 / naverMap.projection.metersPerPixel).toInt()
+                circleOutlineWidth = 10
             }
         }
 
         lifecycleScope.launch {
             viewModel.usersUpdate.collect {
                 viewModel.users.value.also {
-                    it.forEach { Timber.d("User MapPin: ${it.id}") }
                     it.map { user ->
                         runBlocking {
                             if (user.mapPin == null) {
@@ -226,19 +210,21 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                                     position = user.loc
                                     icon = MarkerIcons.BLACK
                                     iconTintColor = resources.getColor(R.color.purple, null)
-                                    width=Marker.SIZE_AUTO
-                                    height=Marker.SIZE_AUTO
+                                    width = Marker.SIZE_AUTO
+                                    height = Marker.SIZE_AUTO
                                     captionText = user.name.toString()
                                     captionTextSize = 20F
                                     if (user.isMsg) {
                                         user.mapPin?.let { mapPin ->
                                             val hasMsg = InfoWindow()
-                                            hasMsg.adapter = object : InfoWindow.DefaultTextAdapter(mContext) {
-                                                override fun getText(infoWindow: InfoWindow): CharSequence {
-                                                    return "● ● ●"
+                                            hasMsg.adapter =
+                                                object : InfoWindow.DefaultTextAdapter(mContext) {
+                                                    override fun getText(infoWindow: InfoWindow): CharSequence {
+                                                        return "● ● ●"
+                                                    }
                                                 }
-                                            }
-                                            hasMsg.open(mapPin) }
+                                            hasMsg.open(mapPin)
+                                        }
                                     }
                                     setMarkerClickListener(user)
                                 }
@@ -246,7 +232,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                                 user.mapPin = marker
                             } else {
                                 user.mapPin?.let { marker ->
-                                    Timber.d("${user.id} Marker")
                                     marker.position = user.loc
                                     marker.map = naverMap
                                 }
@@ -269,8 +254,11 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
             }
         }
         setOnClickListener { _ ->
-            Timber.d("클릭리스너!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            val adapter1 = MapProfileAdapter(mContext, viewModel.getDetail(user.id), viewModel.getProfile(user.id))
+            val adapter1 = MapProfileAdapter(
+                mContext,
+                viewModel.getDetail(user.id),
+                viewModel.getProfile(user.id)
+            )
             viewModel.updateClickedUserId(user.id)
             infoWindow.adapter = adapter1
             Timber.d(viewModel.getProfile(user.id).toString())
@@ -287,18 +275,15 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                 viewModel.users.value.forEach { temp ->
                     if (temp.id != user.id) {
                         temp.mapPin?.infoWindow?.close()
-                        Timber.d("@111111")
                         if (temp.isMsg) {
                             temp.mapPin?.let { mapPin -> hasMsg.open(mapPin) }
                         }
                     }
                 }
                 infoWindow.open(this)
-                Timber.d("@@@@@@")
             } else {
                 viewModel.buttonGone()
                 this.infoWindow?.close()
-                Timber.d("!!!!!!!")
                 if (user.isMsg) {
                     hasMsg.open(this)
                 }
@@ -308,7 +293,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     }
 
     private fun initMapView() {
-        Timber.d("Init MapView")
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
         val mapFragment = binding.map.getFragment()
@@ -342,7 +326,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     private fun submitUserLocation() {
         if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
             locationTimer = Timer()
-            Timber.d("타이머 실행")
             locationTimer.scheduleAtFixedRate(0, 3000) {
                 lifecycleScope.launch {
                     val location = fusedLocationClient.getCurrentLocation(

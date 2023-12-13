@@ -60,7 +60,9 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
         super.onCreate(savedInstanceState)
 
         locationSource = FusedLocationSource(this, AccessPermission.LOCATION_PERMISSION_REQUEST_CODE)
-        requestMultiPermissions.launch(AccessPermission.locationPermissionList)
+        if (!requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
+            requestMultiPermissions.launch(AccessPermission.locationPermissionList)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
