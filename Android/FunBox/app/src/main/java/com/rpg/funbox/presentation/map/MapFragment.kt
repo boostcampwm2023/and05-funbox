@@ -104,6 +104,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         super.onCreate(savedInstanceState)
 
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+        requestMultiPermissions.launch(AccessPermission.locationPermissionList)
         if (!requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
             requestMultiPermissions.launch(AccessPermission.locationPermissionList)
         }
