@@ -52,7 +52,7 @@ class WaitFragment : BaseFragment<FragmentWaitBinding>(R.layout.fragment_wait) {
         }
 
         is QuizUiEvent.OtherPlaying -> {
-            showSnackBar(R.string.other_playing)
+            showSnackBar(R.string.other_not)
             requireActivity().finish()
         }
 

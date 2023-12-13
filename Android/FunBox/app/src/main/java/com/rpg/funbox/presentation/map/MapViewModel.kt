@@ -2,6 +2,7 @@ package com.rpg.funbox.presentation.map
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naver.maps.geometry.LatLng
@@ -13,6 +14,8 @@ import com.rpg.funbox.data.repository.UserRepository
 import com.rpg.funbox.data.repository.UserRepositoryImpl
 import com.rpg.funbox.data.repository.UsersLocationRepository
 import com.rpg.funbox.data.repository.UsersLocationRepositoryImpl
+import com.rpg.funbox.presentation.login.profile.ProfileUiState
+import com.rpg.funbox.presentation.login.profile.ProfileValidState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +26,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import okhttp3.MultipartBody
 import timber.log.Timber
 import java.net.URL
 
@@ -55,6 +59,9 @@ class MapViewModel : ViewModel() {
     private val _mapUiEvent = MutableSharedFlow<MapUiEvent>()
     val mapUiEvent = _mapUiEvent.asSharedFlow()
 
+    private val _otherUserState = MutableStateFlow(OtherUserState())
+    val otherUserState = _otherUserState.asStateFlow()
+
     private val _visibility = MutableStateFlow(false)
     val visibility: StateFlow<Boolean> = _visibility
 
@@ -66,6 +73,12 @@ class MapViewModel : ViewModel() {
 
     private val _userProfileTable = MutableStateFlow<HashMap<Int, Bitmap?>>(hashMapOf())
     val userProfileTable = _userProfileTable.asStateFlow()
+
+    fun otherUserStartState(other:OtherState) {
+        _otherUserState.update { isStart ->
+            isStart.copy(otherState = other)
+        }
+    }
 
     fun setLocationPermitted() {
         viewModelScope.launch {

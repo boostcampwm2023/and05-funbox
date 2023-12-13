@@ -56,16 +56,23 @@ import com.rpg.funbox.presentation.fadeInOut
 import com.rpg.funbox.presentation.login.AccessPermission
 import com.rpg.funbox.presentation.login.AccessPermission.LOCATION_PERMISSION_REQUEST_CODE
 import com.rpg.funbox.presentation.slideLeft
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 import timber.log.Timber
 import java.util.Timer
 import kotlin.concurrent.scheduleAtFixedRate
+import kotlin.coroutines.coroutineContext
 
 class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnMapReadyCallback {
 
@@ -360,6 +367,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }
     }
 
+
     private fun handleUiEvent(event: MapUiEvent) = when (event) {
         is MapUiEvent.LocationPermitted -> {
             initMapView()
@@ -382,11 +390,24 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
         }
 
         is MapUiEvent.GameStart -> {
+            viewModel.otherUserStartState(other = OtherState.Online)
             val intent = Intent(context, GameActivity::class.java)
             intent.putExtra("StartGame", true)
             intent.putExtra("OtherUserId", viewModel.clickedUserId.value)
             applyGame(viewModel.clickedUserId.value)
-            startActivity(intent, requireActivity().slideLeft())
+
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(500)
+
+                if (!viewModel.otherUserState.value.canStart){
+                    showSnackBar(R.string.other_not)
+                }else{
+                    startActivity(intent, requireActivity().slideLeft())
+                }
+
+            }
+
+            Timber.d("보내기")
         }
 
         is MapUiEvent.RejectGame -> {

@@ -62,6 +62,6 @@
     <string name="profile_setting_description">환경 설정의 프로필 사진</string>
     <string name="loading_message">상대방이 답변을 확인하는 중입니다.</string>
     <string name="send">send</string>
-    <string name="other_playing">상대방이 이미 다른 게임중에 있습니다.</string>
+    <string name="other_not">상대방이 게임 가능한 상태가 아닙니다.</string>
     <string name="not_yet">미구현 기능 입니다.</string>
 </resources>

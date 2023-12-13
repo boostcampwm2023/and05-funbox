@@ -16,12 +16,15 @@ import androidx.core.view.GravityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.ActivityNavigator
 import coil.load
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.rpg.funbox.R
 import com.rpg.funbox.databinding.ActivityMainBinding
 import com.rpg.funbox.presentation.login.TitleActivity
 import com.rpg.funbox.presentation.map.ApplyGameFromServerData
+import com.rpg.funbox.presentation.map.GameApplyAnswerFromServerData
 import com.rpg.funbox.presentation.map.MapViewModel
+import com.rpg.funbox.presentation.map.OtherState
 import com.rpg.funbox.presentation.setting.SettingUiEvent
 import com.rpg.funbox.presentation.setting.SettingViewModel
 import io.socket.client.Socket
@@ -141,6 +144,24 @@ class MainActivity : AppCompatActivity() {
             settingViewModel.getGame()
         }.on("quitGame") {
             mapViewModel.cancelGame()
+        }.on("gameApplyAnswer") {
+            val json =
+                Gson().fromJson(it[0].toString(), GameApplyAnswerFromServerData::class.java)
+            Timber.tag("gameApplyAnswer").d(json.answer)
+            when (json.answer) {
+                "PLAYING" -> {
+                    mapViewModel.otherUserStartState(OtherState.Playing)
+                }
+
+                "OFFLINE" ->{
+                    mapViewModel.otherUserStartState(OtherState.Offline)
+                }
+
+                else -> {
+                    mapViewModel.otherUserStartState(OtherState.Online)
+                }
+            }
         }
     }
+
 }
