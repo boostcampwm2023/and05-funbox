@@ -69,3 +69,4 @@
 
 ### 링크
 * [팀 노션](https://www.notion.so/standingtiger/FunBox-17ef334b88974d09b356c4833cc37806)
+* [팀 위키](https://github.com/boostcampwm2023/and05-funbox/wiki)
