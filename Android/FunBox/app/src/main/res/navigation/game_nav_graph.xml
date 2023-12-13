@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/game_nav_graph"
+    app:startDestination="@id/WaitFragment">
+
+    <fragment
+        android:id="@+id/WaitFragment"
+        android:name="com.rpg.funbox.presentation.game.wait.WaitFragment"
+        android:label="@string/fragment_wait_label"
+        tools:layout="WaitFragment">
+
+        <action
+            android:id="@+id/action_WaitFragment_to_QuizFragment"
+            app:destination="@id/QuizFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/QuizFragment"
+        android:name="com.rpg.funbox.presentation.game.quiz.QuizFragment"
+        android:label="@string/fragment_quiz_label"
+        tools:layout="QuizFragment">
+
+        <action
+            android:id="@+id/action_QuizFragment_to_answerCheckFragment"
+            app:destination="@id/answerCheckFragment" />
+        <action
+            android:id="@+id/action_QuizFragment_to_loadingDialog"
+            app:destination="@id/loadingDialog" />
+        <action
+            android:id="@+id/action_QuizFragment_to_scoreBoardFragment"
+            app:destination="@id/scoreBoardFragment" />
+        <action
+            android:id="@+id/action_QuizFragment_to_networkAlertFragment"
+            app:destination="@id/networkAlertFragment" />
+
+    </fragment>
+
+    <dialog
+        android:id="@+id/answerCheckFragment"
+        android:name="com.rpg.funbox.presentation.game.quiz.AnswerCheckFragment"
+        android:label="AnswerCheckFragment" />
+
+    <dialog
+        android:id="@+id/loadingDialog"
+        android:name="com.rpg.funbox.presentation.game.quiz.LoadingDialog"
+        android:label="LoadingDialog">
+
+        <action
+            android:id="@+id/action_loadingDialog_to_scoreBoardFragment"
+            app:destination="@id/scoreBoardFragment" />
+
+    </dialog>
+
+    <dialog
+        android:id="@+id/networkAlertFragment"
+        android:name="com.rpg.funbox.presentation.game.quiz.NetworkAlertFragment"
+        android:label="NetworkAlertFragment" />
+
+    <dialog
+        android:id="@+id/scoreBoardFragment"
+        android:name="com.rpg.funbox.presentation.game.quiz.ScoreBoardFragment"
+        android:label="ScoreBoardFragment" />
+
+</navigation>

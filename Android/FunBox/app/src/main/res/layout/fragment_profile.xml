@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.rpg.funbox.presentation.login.title.TitleViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_color"
+        tools:context=".presentation.login.profile.ProfileFragment">
+
+        <TextView
+            android:id="@+id/tv_title_profile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="180dp"
+            android:layout_marginBottom="24dp"
+            android:text="@string/profile_setting_title"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@id/btn_add_profile"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/btn_add_profile"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:background="@null"
+            android:contentDescription="@string/btn_add_profile_description"
+            android:onClick="@{() -> vm.startSelectProfile()}"
+            android:scaleType="fitCenter"
+            android:src="@drawable/group_1940"
+            app:layout_constraintBottom_toTopOf="@id/btn_profile"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_title_profile"
+            app:profile_image_uri="@{vm.profileImageUri}" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_profile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="120dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="120dp"
+            android:background="@{(vm.profileUiState.isBtnProfileEnable == true) ? @drawable/success_button : @drawable/fail_button}"
+            android:onClick="@{() -> vm.submitProfile()}"
+            android:text="@string/submit"
+            android:textColor="@{(vm.profileUiState.isBtnProfileEnable == true) ? @color/white : @color/black}"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_add_profile" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

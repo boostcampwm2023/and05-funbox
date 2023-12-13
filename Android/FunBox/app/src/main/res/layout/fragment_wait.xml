@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.rpg.funbox.presentation.game.quiz.QuizViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_color"
+        tools:context=".presentation.game.wait.WaitFragment">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/user_info_wait"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="36dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/wait_background"
+            android:contentDescription="@string/user_wait_description"
+            app:cardBackgroundColor="@color/edittext_color"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="10dp"
+            app:layout_constraintBottom_toTopOf="@id/side_info_wait"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/user_profile_wait"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="top|center"
+                android:layout_margin="16dp"
+                android:background="@null"
+                android:contentDescription="@string/user_profile_wait_description"
+                android:elevation="10dp"
+                android:padding="16dp"
+                android:scaleType="fitCenter"
+                app:setImage="@{vm.user.profileUrl}" />
+
+            <TextView
+                android:id="@+id/user_id_wait"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="48dp"
+                android:layout_marginEnd="16dp"
+                android:text="@{vm.user.userName}"
+                android:textSize="32sp"
+                tools:text="@string/user_id_wait" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/side_info_wait"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="36dp"
+            android:background="@drawable/wait_background"
+            android:contentDescription="@string/side_wait_description"
+            app:cardBackgroundColor="@color/edittext_color"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/user_info_wait">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/side_profile_wait"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="top|center"
+                android:layout_margin="16dp"
+                android:background="@null"
+                android:contentDescription="@string/side_profile_wait_description"
+                android:elevation="10dp"
+                android:padding="16dp"
+                android:scaleType="fitCenter"
+                app:setImage="@{vm.otherUserInfo.profileUrl}" />
+
+            <TextView
+                android:id="@+id/side_id_wait"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="48dp"
+                android:layout_marginEnd="16dp"
+                android:text="@{vm.otherUserInfo.userName}"
+                android:textSize="32sp"
+                tools:text="@string/side_id_wait" />
+
+            <TextView
+                android:id="@+id/msg_wait"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:layout_margin="16dp"
+                android:text="@string/msg_wait"
+                android:textSize="28sp" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

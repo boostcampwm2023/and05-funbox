@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "897486577056",
+    "project_id": "funbox-f4840",
+    "storage_bucket": "funbox-f4840.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:897486577056:android:d693940bacaab95d2a98c5",
+        "android_client_info": {
+          "package_name": "com.rpg.funbox"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAelvQzX6nCyGANdZlNXxuVimknV7FAmRY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
