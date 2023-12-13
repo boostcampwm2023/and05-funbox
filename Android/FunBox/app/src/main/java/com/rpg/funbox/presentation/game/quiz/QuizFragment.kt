@@ -82,6 +82,7 @@ class QuizFragment : BaseFragment<FragmentQuizBinding>(R.layout.fragment_quiz), 
         super.onCreate(savedInstanceState)
 
         fusedLocationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+        requestMultiPermissions.launch(AccessPermission.locationPermissionList)
         if (!requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
             requestMultiPermissions.launch(AccessPermission.locationPermissionList)
         }
