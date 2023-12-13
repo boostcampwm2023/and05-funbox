@@ -50,6 +50,7 @@
     <string name="finish_quiz_message">게임을 종료하시겠습니까?</string>
     <string name="finish_quiz_toast_message">뒤로 가기 버튼을 한 번 더 클릭하시면 게임을 종료합니다.</string>
     <string name="gps_on_toast_message">GPS가 꺼져 있습니다.</string>
+    <string name="location_permission_message">위치 권한을 허용해주세요.</string>
 
     <string name="iv_main_logo_description">FunBox 로고</string>
     <string name="btn_main_naver_login_description">NAVER 소셜 로그인 버튼</string>
