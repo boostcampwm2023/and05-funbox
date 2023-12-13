@@ -232,6 +232,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
                                 user.mapPin?.let { marker ->
                                     marker.position = user.loc
                                     marker.map = naverMap
+                                    marker.captionText =user.name.toString()
                                 }
                             }
                         }

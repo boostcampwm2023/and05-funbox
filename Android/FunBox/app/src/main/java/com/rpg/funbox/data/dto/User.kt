@@ -8,7 +8,7 @@ data class User(
     val status: Int,
     val id: Int,
     var loc: LatLng,
-    val name: String?,
+    var name: String?,
     var isMsg: Boolean,
     var mapPin: Marker? = null
 )
