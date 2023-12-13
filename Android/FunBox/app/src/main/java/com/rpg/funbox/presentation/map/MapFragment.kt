@@ -105,9 +105,6 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
 
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
         requestMultiPermissions.launch(AccessPermission.locationPermissionList)
-        if (!requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
-            requestMultiPermissions.launch(AccessPermission.locationPermissionList)
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -130,7 +127,9 @@ class MapFragment : BaseFragment<FragmentMapBinding>(R.layout.fragment_map), OnM
     override fun onPause() {
         super.onPause()
 
-        locationTimer.cancel()
+        if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
+            locationTimer.cancel()
+        }
     }
 
     override fun onStart() {

@@ -1,6 +1,7 @@
 package com.rpg.funbox.presentation.setting
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -33,6 +34,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
     private val viewModel: SettingViewModel by activityViewModels()
     private val mapViewModel: MapViewModel by activityViewModels()
 
+    private lateinit var mContext: Context
     private lateinit var locationTimer: Timer
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationSource: FusedLocationSource
@@ -51,18 +53,26 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
                 }
 
                 else -> {
-                    requireActivity().finish()
+                    Toast.makeText(
+                        mContext,
+                        resources.getString(R.string.location_permission_message),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        mContext = context
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         locationSource = FusedLocationSource(this, AccessPermission.LOCATION_PERMISSION_REQUEST_CODE)
-        if (!requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
-            requestMultiPermissions.launch(AccessPermission.locationPermissionList)
-        }
+        requestMultiPermissions.launch(AccessPermission.locationPermissionList)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -76,7 +86,9 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
     override fun onDestroyView() {
         super.onDestroyView()
 
-        locationTimer.cancel()
+        if (requireActivity().checkPermission(AccessPermission.locationPermissionList)) {
+            locationTimer.cancel()
+        }
     }
 
     private fun submitUserLocation() {
@@ -92,7 +104,7 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
                         try {
                             viewModel.submitLocation(location.latitude, location.longitude)
                         } catch (e: Exception) {
-                            Toast.makeText(requireContext(), resources.getString(R.string.gps_on_toast_message), Toast.LENGTH_LONG).show()
+                            Toast.makeText(mContext, resources.getString(R.string.gps_on_toast_message), Toast.LENGTH_LONG).show()
                         }
                     }
                     makePinDeferred.await()
