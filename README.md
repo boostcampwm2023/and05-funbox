@@ -47,14 +47,14 @@
 | Logging | [Timber](https://www.notion.so/standingtiger/Timber-eea2750e4aba4f5e8a811aa0b45fccf5) | 
 
 ### Backend
-| Category  | TechStack |
-| ------------- | ------------- |
-| Framework, Language | NestJS, TypeScript  |
-| DB | MySQL  |
-| ORM | TypeORM  |
-| API Docs | Swagger |
-| CI/CD | Github Actions  |
-| NCP | Server, VPC, Object Storage|
+| Category  | TechStack | Reason |
+| ------------- | ------------- | ------------- |
+| Framework, Language | NestJS, TypeScript  | 강력한 타입 시스템과 모듈화된 구조로 협업에 적합 |
+| DB | MySQL  | 안정적이고 널리 사용되는 관계형 데이터베이스 |
+| ORM | TypeORM  | TypeScript와 잘 통합되며 객체 지향적 데이터베이스 관리 가능 |
+| API Docs | Swagger | API 설계와 문서화 자동화로 개발 과정 간소화 |
+| CI/CD | Github Actions  |  코드 변경에 대한 자동 빌드, 테스트, 배포로 CI/CD 효율성 향상 |
+| NCP | Server, VPC, Object Storage|안정적인 서버 운영, 보안 네트워크, 확장 가능한 데이터 저장소 |
 
 ## 👥 Team RPG (Rhythm, Power, Gypjoongryuk!)
 
