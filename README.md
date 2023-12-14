@@ -35,16 +35,16 @@
 ### Android
 | Category  | TechStack |
 | ------------- | ------------- |
-| Architecture  | MVVM | 
-| Network | Retrofit, OkHttp, Moshi, soket.io | 
-| Asynchronous | Coroutines, Flow | 
+| Architecture  | [MVVM](https://www.notion.so/standingtiger/Android-MVVM-17b0401697b440abbfce093c37ce2664) | 
+| Network | [Retrofit](https://www.notion.so/standingtiger/Android-Retrofit2-with-moshi-424c2a23ba67468c983c0ed50deec952), [OkHttp](https://www.notion.so/standingtiger/Android-Retrofit2-with-moshi-424c2a23ba67468c983c0ed50deec952), [Moshi](https://www.notion.so/standingtiger/Android-Retrofit2-with-moshi-424c2a23ba67468c983c0ed50deec952), socket.io | 
+| Asynchronous | [Coroutines](https://www.notion.so/standingtiger/Android-Coroutines-188727db63d24c9582817f4958156fb0), [Flow](https://www.notion.so/standingtiger/Android-SharedFlow-vs-StateFlow-d21f3d6ac52d4d729952dd63858ea267) | 
 | Jetpack | DataBinding, Navigation, Fragment, Lifecycle, Material Design Components | 
-| Image | Coil, Glide | 
-| Map | GMS, Naver Map | 
-| Login | Oauth | 
-| CI/CD | Github Actions, Firebase | 
+| Image | [Coil](https://www.notion.so/standingtiger/Android-Coil-38933ade945444fe91e968fb1e5f839d), Glide | 
+| Map | [Naver Map](https://www.notion.so/standingtiger/Android-NAVER-4fc0840f69fd4018b909874982285eaf) | 
+| Login | [OAuth](https://www.notion.so/standingtiger/Android-NAVER-3eca4c9d3dcc4691bd794af1649efb1c) | 
+| CI/CD | [Firebase App Distribution](https://www.notion.so/standingtiger/Android-Firebase-App-Distribution-d4cedd3dc6de4af2a2807f49214306f7) | 
 | Test | Junit | 
-| Logging | Timber | 
+| Logging | [Timber](https://www.notion.so/standingtiger/Timber-eea2750e4aba4f5e8a811aa0b45fccf5) | 
 
 ### Backend
 | Category  | TechStack |
@@ -76,10 +76,10 @@
 1. 퀴즈 게임 로직 구현
  - 퀴즈 게임 기능을 구현하기 위하여 BE와 협업하여 소켓 프로그래밍을 바탕으로 한 퀴즈 게임 로직을 구현하였습니다.
  - 구현하는 과정에서 2가지의 문제와 마주치게 되어, 해결 방법을 고민하고 선택했습니다.
-   - 첫 번째로, 저희는 메인 화면부터 대기 및 게임 화면까지 여러 개의 화면에서 소켓 객체에 연결하는 코드를 작성했습니다. 그러나 **소켓 이벤트 통신이 제대로 발생하지 않는 현상이 발생**하였습니다.
+   - 첫 번째로, **소켓 이벤트 통신이 제대로 발생하지 않는 현상이 발생**하였습니다.
      - 예를 들어 게임 신청 후 상대방은 신청을 수락한 후 게임 화면으로 바로 이동하는데, 정작 게임 신청을 한 유저는 대기 화면에서 게임 화면으로 넘어가지 않는 등, 이벤트를 수신하지 못 하는 현상이 발생하였습니다.
-     - 각 화면별로 소켓을 새로 연결하고 있어 소켓 통신이 원활하게 동작하지 않는다고 판단하였고, 각 화면에서 같은 소켓을 활용해야 필요한 이벤트를 모두 수신할 수 있기 때문에, **싱글톤 패턴을 적용하여 하나의 소켓 객체를 만들고 여러 화면이 그 소켓 객체만을 활용하도록** 하였습니다.
-   - 두 번째로, 게임 신청을 하는 사람은 대기 화면에서 대기하고 있다가 상대방이 신청을 수락하는 경우 게임 시작 이벤트가 발생하고, 클라이언트가 해당 이벤트를 수신한 경우 게임 화면으로 이동하는데, 게임 시작 이벤트를 게임 화면의 onViewCreated에서 구독하고 있었기 때문에 **게임 시작이 되었다는 이벤트를 수신하지 못 해 대기 화면에서 계속 대기하는 현상이 발생**하였습니다.
+     - 각 화면별로 소켓을 새로 연결하고 있어 소켓 통신이 원활하게 동작하지 않는다고 판단하였고, **싱글톤 패턴을 적용하여 하나의 소켓 객체를 만들고 여러 화면이 그 소켓 객체만을 활용하도록** 하였습니다.
+   - 두 번째로, 게임 신청을 하는 사람은 대기 화면에서 대기하고 있다가 상대방이 신청을 수락하는 경우 게임 시작 이벤트가 발생하고, 클라이언트가 해당 이벤트를 수신한 경우 게임 화면으로 이동하는데, **게임 시작이 되었다는 이벤트를 수신하지 못 해 대기 화면에서 계속 대기하는 현상이 발생**하였습니다.
      - 회의끝에 Fragment의 lifecycle을 고려하였을 때, 게임 화면이 Activity에 onAttach되기 전에 **이미 게임 시작 이벤트를 구독한 상태로 로직을 변경한다면 해당 문제를 해결할 수 있겠다**는 결론을 내렸습니다.
      - 저희는 대기 화면과 게임 화면을 같은 Activity가 관리하며, 같은 ViewModel을 참조하도록 구현하였기 때문에 화면에서 이벤트를 구독하는 것이 아닌, **ViewModel에서 이벤트를 구독**할 수 있게 하였고, 그 결과 **Activity의 onCreate 단계에서 게임에 필요한 모든 이벤트를 구독하여 게임 시작 이벤트를 수신**하여 게임 화면이 출력되도록 할 수 있었습니다.
 
