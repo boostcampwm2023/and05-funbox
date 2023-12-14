@@ -56,20 +56,9 @@
 | CI/CD | Github Actions  |  코드 변경에 대한 자동 빌드, 테스트, 배포로 CI/CD 효율성 향상 |
 | NCP | Server, VPC, Object Storage|안정적인 서버 운영, 보안 네트워크, 확장 가능한 데이터 저장소 |
 
-## 👥 Team RPG (Rhythm, Power, Gypjoongryuk!)
+## 기술적 고민과 선택
 
-### 팀 구성
-<div align="center">
-
-|김선범(BE)|김승찬(BE)|김시환(AOS)|김신영(AOS)|정지원(AOS)|
-|:--:|:--:|:--:|:--:|:--:|
-|<a href="https://github.com/k33ps/"> <img src="https://avatars.githubusercontent.com/u/11827454?v=4" width="100px" height="100px"> </a>|<a href="https://github.com/sschan99"> <img src="https://avatars.githubusercontent.com/u/42964952?v=4" width="100px" height="100px"> </a>|<a href="https://github.com/van1164"> <img src="https://avatars.githubusercontent.com/u/52437971?v=4" width="100px" height="100px"> </a>|<a href="https://github.com/tlsdud135"> <img src="https://avatars.githubusercontent.com/u/62438036?v=4" width="100px" height="100px"> </a>|<a href="https://github.com/littlesam95"> <img src="https://avatars.githubusercontent.com/u/55424662?v=4" width="100px" height="100px"> </a>|
-|"이때까지 배운것들의 복습. 기본기에 충실하자!"|"기본적인 아키텍처나 디자인 패턴 등을 완성도있게 활용할 생각입니다."|"이력서 포트폴리오에 쓸 수있는 최종 배포까지 가는 프로젝트"|"끝까지 했으면 좋겠습니다"|"멤버십에서 8주간 학습한 것을 활용해보고 싶습니다."|
-</div>
-
-### 기술적 고민과 선택
-
-#### Backend
+### Backend
 1. 백엔드 for 클라이언트 개발 : 안드로이드 팀과 협업을 위한 도구 구현
    - Swagger를 도입해 수시로 바뀌는 API를 효과적으로 전달하고 또 테스트 도구로도 활용했습니다.
    - 개발용 인증 우회 API를 구현해 개발 과정을 가속시켰습니다.
@@ -89,7 +78,7 @@
 
    자세한 내용은 링크를 참고해주세요!
 
-#### Android
+### Android
 1. 퀴즈 게임 로직 구현 : 소켓 이벤트 수신의 문제
    - 퀴즈 게임 기능을 구현하면서 발생한 문제를 해결하였습니다.
      - 각 화면별로 소켓을 새로 연결하는 것이 아닌 **싱글톤으로 하나의 소켓 객체를 여러 화면이 활용하도록** 하였습니다.
@@ -122,3 +111,14 @@
 <a href="https://github.com/boostcampwm2023/and05-funbox/wiki">
   <img alt="Static Badge" src="https://img.shields.io/badge/github%20wiki-%252523121011.svg?style=for-the-badge&logo=github&logoColor=white&labelColor=black&color=black&link=https%3A%2F%2Fgithub.com%2Fboostcampwm2023%2Fand05-funbox%2Fwiki">
 </a>
+
+## 👥 Team RPG (Rhythm, Power, Gypjoongryuk!)
+
+### 팀 구성
+<div align="center">
+
+|김선범(BE)|김승찬(BE)|김시환(AOS)|김신영(AOS)|정지원(AOS)|
+|:--:|:--:|:--:|:--:|:--:|
+|<a href="https://github.com/k33ps/"> <img src="https://avatars.githubusercontent.com/u/11827454?v=4" width="100px" height="100px"> </a>|<a href="https://github.com/sschan99"> <img src="https://avatars.githubusercontent.com/u/42964952?v=4" width="100px" height="100px"> </a>|<a href="https://github.com/van1164"> <img src="https://avatars.githubusercontent.com/u/52437971?v=4" width="100px" height="100px"> </a>|<a href="https://github.com/tlsdud135"> <img src="https://avatars.githubusercontent.com/u/62438036?v=4" width="100px" height="100px"> </a>|<a href="https://github.com/littlesam95"> <img src="https://avatars.githubusercontent.com/u/55424662?v=4" width="100px" height="100px"> </a>|
+|"이때까지 배운것들의 복습. 기본기에 충실하자!"|"기본적인 아키텍처나 디자인 패턴 등을 완성도있게 활용할 생각입니다."|"이력서 포트폴리오에 쓸 수있는 최종 배포까지 가는 프로젝트"|"끝까지 했으면 좋겠습니다"|"멤버십에서 8주간 학습한 것을 활용해보고 싶습니다."|
+</div>
